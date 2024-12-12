@@ -1,0 +1,36 @@
+{% extends 'auth/base.html.twig' %}
+
+{% block title %}Register{% endblock %}
+
+{% block authBody %}
+    {{ form_start(registrationForm) }}
+        <div class="d-flex flex-column gap-4">
+            <div>
+                <h1>Signup</h1>
+                <p>Already signed up? <a href="{{ path('app_login') }}">Login</a></p>
+            </div>
+
+            <div>
+                {{ form_errors(registrationForm) }}
+                {{ form_row(registrationForm.email, {
+                    label: 'Email',
+                    attr: {
+                        placeholder: 'Email',
+                        class: 'form-control mb-2'
+                    }
+                }) }}
+                {{ form_row(registrationForm.plainPassword, {
+                    label: 'Password',
+                    attr: {
+                        placeholder: 'Password',
+                        class: 'form-control mb-2'
+                    }
+                }) }}
+            </div>
+
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary">Register</button>
+            </div>
+        </div>
+    {{ form_end(registrationForm) }}
+{% endblock %}

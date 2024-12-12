@@ -1,0 +1,82 @@
+@import "./colors.scss";
+
+/* === CARDS ============================================================= */
+
+.card {
+    border-radius: 15px;
+    // background-color: $light-gray;
+}
+
+.card-options {
+    display: none;
+}
+
+.card .card-body:hover .card-options {
+    display: block;
+}
+
+/* class for the input text field with no borders; this makes it easy to integrate in an UI and the user can edit it with a simple click on it */
+.magic-input {
+    width: 100%;
+    border-style: none; 
+    border-color: Transparent;
+    border-radius: 10px;
+    background-color: Transparent;
+    overflow: auto !important;      
+    cursor: pointer;
+}
+
+
+/* === NAV ============================================================= */
+
+.nav-item-options {
+    display: none;
+}
+
+.nav-item:hover .nav-item-options {
+    display: block;
+}
+
+.nav-item, .nav-create-item {
+    border-radius: 2rem !important;
+}
+
+.nav-create-item {
+    color: white !important;
+}
+
+.nav-link {
+    text-align: left !important;
+    border-radius: 2rem !important;
+    font-size: 0.9rem !important;
+    cursor: pointer;
+
+    &.active {
+        color: white !important;
+        background-color: $dark-gray !important;
+        border-color: $dark-gray !important;
+        border-width: 2px !important;
+        border-style: solid !important;
+    }
+    &.inactive {
+        // make whole div a bit transparent
+        opacity: 0.5;
+        color: black !important;
+
+        background-color: transparent !important;
+        -webkit-transition: background-color 50ms linear;
+        -ms-transition: background-color 50ms linear;
+        transition: background-color 50ms linear;
+
+        &:hover {
+            opacity: 1.0;
+            -webkit-transition: opacity 300ms linear;
+            -ms-transition: opacity 300ms linear;
+            // color: white !important;
+            background-color: $light-green-20 !important;
+            -webkit-transition: background-color 100ms linear;
+            -ms-transition: background-color 100ms linear;
+            transition: background-color 100ms linear;
+        }
+    }
+}

@@ -1,0 +1,5 @@
+# config/packages/serializer.yaml
+
+framework:
+    serializer:
+        circular_reference_handler: 'App\Serializer\CircularReferenceHandler'

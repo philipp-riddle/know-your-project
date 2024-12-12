@@ -1,0 +1,35 @@
+{
+    "compilerOptions": {
+        "composite": true,
+        "target": "esnext",
+        "module": "esnext",
+        "strict": true,
+        "jsx": "preserve",
+        "importHelpers": true,
+        "moduleResolution": "node",
+        "skipLibCheck": true,
+        "esModuleInterop": true,
+        "noImplicitAny": false,
+        "resolveJsonModule": true,
+        "allowSyntheticDefaultImports": true,
+        "sourceMap": true,
+        "baseUrl": ".",
+        "types": ["webpack-env", "jquery", "youtube"],
+        "paths": {
+            "@/*": ["src-frontend/*"],
+            "react": ["./stub/types__react/index.d.ts"]
+        },
+        "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
+    },
+    "include": [
+        "src-frontend/**/*.ts",
+        "src-frontend-frontend/**/*.tsx",
+        "src/**/*.vue",
+        "tests/**/*.ts",
+        "tests/**/*.tsx",
+        "src-frontend/**/*.json",
+        "defaultObjects/*.json",
+        "src-frontend/**/*.svg"
+, "src-frontend/app.ts", "src-frontend/fetch/WorkflowFetcher.js", "src-frontend/router/index.js"    ],
+    "exclude": ["node_modules", "src-frontend/**/*.cy.ts"]
+}

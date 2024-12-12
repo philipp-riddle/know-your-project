@@ -1,0 +1,19 @@
+$green: #46891B;
+$dark-green: #2a5210;
+$light-green: #9be26e;
+$light-green-20: rgba(155, 226, 110, 0.2);
+$dark-gray: #333333;
+$light-gray: lightgray;
+
+.green-bold {
+    color: $green !important;
+    font-weight: 600 !important;
+}
+
+.white {
+    color: white !important;
+}
+
+.bg-white {
+    background-color: white !important;
+}
