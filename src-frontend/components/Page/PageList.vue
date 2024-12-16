@@ -38,13 +38,17 @@
             </div>
 
             <div class="nav-item-options" v-if="!page.task">
-                <DeletionButton label="page" :onConfirm="() => onPageDelete(page)" />
+                <div class="d-flex flex-row align-items-center gap-2">
+                    <NavigationCreateContentMenu />
+                    <DeletionButton label="page" :onConfirm="() => onPageDelete(page)" />
+                </div>
             </div>
         </li>
     </ul>
 </template>
 <script setup>
     import { defineProps, computed, ref, onMounted } from 'vue';
+    import NavigationCreateContentMenu from '@/components/Navigation/NavigationCreateContentMenu.vue';
     import DeletionButton from '@/components/Util/DeletionButton.vue';
     import { usePageStore } from '@/stores/PageStore.js';
     import { useUserStore } from '@/stores/UserStore.js';

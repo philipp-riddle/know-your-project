@@ -103,10 +103,9 @@ export function useTaskProvider() {
         taskStore.deleteTask(task);
 
         return new Promise((resolve) => {
-            resolve(null);
-            // fetchDeleteTask(task).then((task) => {
-            //     resolve(task);
-            // });
+            fetchDeleteTask(task.id).then((task) => {
+                resolve(null);
+            });
         });
         
     }

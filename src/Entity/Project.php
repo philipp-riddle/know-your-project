@@ -39,17 +39,17 @@ class Project implements UserPermissionInterface
     private Collection $pages;
 
     /**
-     * @var Collection<int, ProjectUserEmailInvitation>
+     * @var Collection<int, UserInvitation>
      */
-    #[ORM\OneToMany(mappedBy: 'project', targetEntity: ProjectUserEmailInvitation::class, orphanRemoval: true)]
-    private Collection $projectUserEmailInvitations;
+    #[ORM\OneToMany(mappedBy: 'project', targetEntity: UserInvitation::class, orphanRemoval: true)]
+    private Collection $UserInvitations;
 
     public function __construct()
     {
         $this->tasks = new ArrayCollection();
         $this->projectUsers = new ArrayCollection();
         $this->pages = new ArrayCollection();
-        $this->projectUserEmailInvitations = new ArrayCollection();
+        $this->UserInvitations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -210,29 +210,29 @@ class Project implements UserPermissionInterface
     }
 
     /**
-     * @return Collection<int, ProjectUserEmailInvitation>
+     * @return Collection<int, UserInvitation>
      */
-    public function getProjectUserEmailInvitations(): Collection
+    public function getUserInvitations(): Collection
     {
-        return $this->projectUserEmailInvitations;
+        return $this->UserInvitations;
     }
 
-    public function addProjectUserEmailInvitation(ProjectUserEmailInvitation $projectUserEmailInvitation): static
+    public function addUserInvitation(UserInvitation $UserInvitation): static
     {
-        if (!$this->projectUserEmailInvitations->contains($projectUserEmailInvitation)) {
-            $this->projectUserEmailInvitations->add($projectUserEmailInvitation);
-            $projectUserEmailInvitation->setProject($this);
+        if (!$this->UserInvitations->contains($UserInvitation)) {
+            $this->UserInvitations->add($UserInvitation);
+            $UserInvitation->setProject($this);
         }
 
         return $this;
     }
 
-    public function removeProjectUserEmailInvitation(ProjectUserEmailInvitation $projectUserEmailInvitation): static
+    public function removeUserInvitation(UserInvitation $UserInvitation): static
     {
-        if ($this->projectUserEmailInvitations->removeElement($projectUserEmailInvitation)) {
+        if ($this->UserInvitations->removeElement($UserInvitation)) {
             // set the owning side to null (unless already changed)
-            if ($projectUserEmailInvitation->getProject() === $this) {
-                $projectUserEmailInvitation->setProject(null);
+            if ($UserInvitation->getProject() === $this) {
+                $UserInvitation->setProject(null);
             }
         }
 

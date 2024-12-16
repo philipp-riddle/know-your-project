@@ -6,7 +6,7 @@
                     <font-awesome-icon :icon="['fas', 'cog']" />
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="dropdownSettingsMenu">
-                    <li><router-link :to="{name: 'Users'}" class="dropdown-item">Invite and manage colleagues</router-link></li>
+                    <li><router-link :to="{name: 'People'}" class="dropdown-item">Invite and manage colleagues</router-link></li>
                     <li><a class="mt-4 dropdown-item" href="/logout">Logout</a></li>
                     <li><small v-if="!isLoading" class="dropdown-item text-muted">Logged in as {{ currentUser.email }}</small></li>
 

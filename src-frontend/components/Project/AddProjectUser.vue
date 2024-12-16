@@ -43,6 +43,7 @@
 <script setup>
     import { defineProps, ref, computed } from 'vue';
     import { useProjectStore } from '@/stores/ProjectStore.js';
+    import { useUserStore } from '@/stores/UserStore.js';
 
     const props = defineProps({
         project: {
@@ -62,6 +63,7 @@
 
         return reg.test(addProjectUserEmail.value ?? '');
     });
+    const userStore = useUserStore();
 
     const onSubmitEmail = () => {
         if (!hasValidEmail) {
@@ -69,9 +71,9 @@
         }
 
         // @todo implement this
-        // useProjectStore().createProjectUser(props.project, addProjectUserEmail.value).then(() => {
+        userStore.createUserProjectInvitation(props.project, addProjectUserEmail.value).then(() => {
             invitedHint.value = addProjectUserEmail.value;
             addProjectUserEmail.value = '';
-        // });
+        });
     };
 </script>

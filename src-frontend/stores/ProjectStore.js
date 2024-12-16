@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { useUserStore } from '@/stores/UserStore';
-import { fetchGetProject, fetchCreateProject, fetchCreateProjectUser } from '@/fetch/ProjectFetcher';
+import { fetchGetProject, fetchCreateProject } from '@/fetch/ProjectFetcher';
 
 export const useProjectStore = defineStore('project', () => {
     const projects = ref({});
@@ -34,19 +34,9 @@ export const useProjectStore = defineStore('project', () => {
         });
     }
 
-    async function createProjectUser(project, userEmail) {
-        return new Promise((resolve) => {
-            fetchCreateProjectUser(project, userEmail).then((project) => {
-                projects.value[project.id].projectUsers.push(project);
-                resolve(project);
-            });
-        });
-    }
-
     return {
         projects,
         getSelectedProject,
         getProject,
-        createProjectUser,
     };
 });

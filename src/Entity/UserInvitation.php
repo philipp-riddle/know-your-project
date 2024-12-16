@@ -4,24 +4,27 @@ namespace App\Entity;
 
 use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\UserPermissionInterface;
-use App\Repository\ProjectUserEmailInvitationRepository;
+use App\Repository\UserInvitationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: ProjectUserEmailInvitationRepository::class)]
-class ProjectUserEmailInvitation implements CrudEntityInterface, UserPermissionInterface
+#[ORM\Entity(repositoryClass: UserInvitationRepository::class)]
+class UserInvitation implements CrudEntityInterface, UserPermissionInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'projectUserEmailInvitations')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(inversedBy: 'UserInvitations')]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Project $project = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: false)]
     private ?string $email = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $code = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $createdAt = null;
@@ -55,6 +58,19 @@ class ProjectUserEmailInvitation implements CrudEntityInterface, UserPermissionI
         return $this;
     }
 
+    public function getCode(): ?string
+    {
+        return $this->code;
+    }
+
+    public function setCode(string $code): static
+    {
+        $this->code = $code;
+
+        return $this;
+    }
+
+
     public function getCreatedAt(): ?\DateTimeInterface
     {
         return $this->createdAt;
@@ -76,6 +92,6 @@ class ProjectUserEmailInvitation implements CrudEntityInterface, UserPermissionI
 
     public function hasUserAccess(User $user): bool
     {
-        return $this->getProject()->getOwner() === $user;
+        return $this->getProject()?->getOwner() === $user;
     }
 }

@@ -16,11 +16,8 @@ export async function fetchCreateProject(project) {
 
 const BaseUserService = "/api/project/user";
 
-export async function fetchCreateProjectUser(project, userEmail) {
-    const resp = await axios.post(`${BaseUserService}`, {
-        project: project.id,
-        userEmail: userEmail,
-    });
+export async function fetchDeleteProjectUser(projectUserId) {
+    const resp = await axios.delete(`${BaseUserService}/${projectUserId}`);
 
     return resp.data;
 }

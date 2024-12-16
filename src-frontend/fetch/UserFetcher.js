@@ -7,3 +7,18 @@ export async function fetchGetCurrentUser() {
 
     return resp.data;
 }
+
+export async function fetchUserProjectInvititations(projectId) {
+    const resp = await axios.get(`${BaseService}/invitation/project/list/${projectId}`);
+
+    return resp.data;
+}
+
+export async function fetchCreateUserProjectInvitation(projectId, email) {
+    const resp = await axios.post(`${BaseService}/invitation`, {
+        email: email,
+        project: projectId,
+    });
+
+    return resp.data;
+}

@@ -1,19 +1,19 @@
 <template>
     <div class="d-flex flex-row gap-3 task-overview h-100 p-5 m-2 pt-2 pb-2">
         <div>
-            <h5>Discover</h5>
+            <h5 v-tooltip="'Discover and understand the problem'">Discover</h5>
             <TaskList workflowStep="Discover" :onTaskSelect="onTaskSelect" :onTaskDrag="onTaskDrag" />
         </div>
         <div>
-            <h5>Define</h5>
+            <h5 v-tooltip="'Define the requirements'">Define</h5>
             <TaskList workflowStep="Define" :onTaskSelect="onTaskSelect" :onTaskDrag="onTaskDrag" />
         </div>
         <div>
-            <h5>Develop</h5>
+            <h5 v-tooltip="'Develop the solution to solve the problem'">Develop</h5>
             <TaskList workflowStep="Develop" :onTaskSelect="onTaskSelect" :onTaskDrag="onTaskDrag" />
         </div>
         <div>
-            <h5>Deliver</h5>
+            <h5 v-tooltip="'Deliver the solution, testing it out'">Deliver</h5>
             <TaskList workflowStep="Deliver" :onTaskSelect="onTaskSelect" :onTaskDrag="onTaskDrag" />
         </div>
     </div>

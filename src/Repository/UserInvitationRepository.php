@@ -2,22 +2,22 @@
 
 namespace App\Repository;
 
-use App\Entity\ProjectUserEmailInvitation;
+use App\Entity\UserInvitation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<ProjectUserEmailInvitation>
+ * @extends ServiceEntityRepository<UserInvitation>
  */
-class ProjectUserEmailInvitationRepository extends ServiceEntityRepository
+class UserInvitationRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, ProjectUserEmailInvitation::class);
+        parent::__construct($registry, UserInvitation::class);
     }
 
     //    /**
-    //     * @return ProjectUserEmailInvitation[] Returns an array of ProjectUserEmailInvitation objects
+    //     * @return UserInvitation[] Returns an array of UserInvitation objects
     //     */
     //    public function findByExampleField($value): array
     //    {
@@ -31,7 +31,7 @@ class ProjectUserEmailInvitationRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?ProjectUserEmailInvitation
+    //    public function findOneBySomeField($value): ?UserInvitation
     //    {
     //        return $this->createQueryBuilder('p')
     //            ->andWhere('p.exampleField = :val')

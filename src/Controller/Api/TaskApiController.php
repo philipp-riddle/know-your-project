@@ -56,7 +56,6 @@ class TaskApiController extends ApiController
         $task
             ->setProject($this->getUser()->getSelectedProject())
             ->setStepType($workflowStepType)
-            ->setDescription('')
             ->setIsArchived(false);
         $this->taskService->addTaskToWorkflowStep($task, $workflowStepType);
 

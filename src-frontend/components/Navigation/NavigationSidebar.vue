@@ -45,6 +45,10 @@
             name: 'Tasks',
             'icon': 'list-check',
         },
+        {
+            name: 'People',
+            'icon': 'user',
+        },
     ];
     const currentRoute = useRoute();
     const taskStore = useTaskStore();

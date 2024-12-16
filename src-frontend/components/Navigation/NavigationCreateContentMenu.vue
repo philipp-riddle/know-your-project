@@ -4,7 +4,7 @@
         :shown="showPopover"
     >
         <!-- This will be the popover reference (for the events and position) -->
-        <div class="d-flex flex-row btn btn-primary nav-create-item" v-tooltip="'Create new page - for you, for others?'">
+        <div class="d-flex flex-row btn btn-primary nav-create-item" v-tooltip="tooltip">
             <span class="white"><font-awesome-icon :icon="['fas', 'pencil']" /></span>
         </div>
 
@@ -47,6 +47,11 @@
             type: Object,
             required: true,
         },
+        page: {
+            type: Object,
+            required: false,
+            default: null,
+        },
     });
     const createModes = [
         {
@@ -68,6 +73,9 @@
     const router = useRouter();
     const pageStore = usePageStore();
     const showPopover = ref(false);
+    const tooltip = computed(() => {
+        return 'Create page - for you, for others?';
+    });
 
     onMounted(() => {
         userStore.getCurrentUser().then((user) => {

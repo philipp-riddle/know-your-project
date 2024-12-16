@@ -1,0 +1,18 @@
+{% extends 'auth/base.html.twig' %}
+
+{% block title %}Verify invitation{% endblock %}
+
+{% block authBody %}
+    <div class="d-flex flex-column gap-3">
+        <h1 class="mb-0 font-weight-normal">Verify invitation</h1>
+
+        {{ form_start(form) }}
+            <div class="d-flex flex-column gap-2">
+                {{ form_widget(form.email, {attr: {class: 'form-control', placeholder: 'Enter your email'}}) }}
+                {{ form_widget(form.password, {attr: {class: 'form-control', placeholder: 'Enter password'}}) }}
+                {{ form_widget(form.passwordRepeat, {attr: {class: 'form-control', placeholder: 'Repeat password'}}) }}
+                <button type="submit" class="btn btn-primary">Verify</button>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

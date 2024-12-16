@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Authentication;
 
-use App\Entity\Organization;
 use App\Entity\Project;
 use App\Entity\ProjectUser;
 use App\Entity\User;
@@ -14,7 +13,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SignupController extends AbstractController
 {
@@ -22,7 +20,7 @@ class SignupController extends AbstractController
         private EmailVerifier $emailVerifier,
     ) { }
 
-    #[Route('/signup', name: 'app_signup')]
+    #[Route('/auth/signup', name: 'app_signup')]
     public function signup(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
     {
         $user = new User();
