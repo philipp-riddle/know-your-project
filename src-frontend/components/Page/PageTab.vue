@@ -1,19 +1,27 @@
 <template>
-    <div class="">
-        <div v-for="pageSection in pageSectionStore.displayedPageSections">
-            <PageSection :page="page" :pageSection="pageSection" :onPageSectionSubmit="onPageSectionSubmit" :onPageSectionDelete="onPageSectionDelete" />
-        </div>
+    <div class="d-grid flex-column gap-4">
+        <PageSectionDraggable :page="page" :pageTab="pageTab" :onPageSectionSubmit="onPageSectionSubmit" />
 
-        <PageSectionCreateWidget :page="page" :onCreate="onPageSectionSubmit" />
+        <div>
+            <div class="row">
+                <div class="col-sm-1">
+                    <PageSectionCreateButton />
+                </div>
+                <div class="col-sm-11">
+                    <PageSectionCreateWidget :page="page" :onCreate="onPageSectionSubmit" />
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <script setup>
-    import PageSection from '@/components/Page/PageSection.vue';
-    import PageSectionCreateWidget from '@/components/Page/PageSectionCreateWidget.vue';
+    import PageSection from '@/components/Page/PageSection/PageSection.vue';
+    import PageSectionCreateButton from '@/components/Page/PageSection/PageSectionCreateButton.vue';
+    import PageSectionCreateWidget from '@/components/Page/PageSection/PageSectionCreateWidget.vue';
+    import PageSectionDraggable from '@/components/Page/PageSection/PageSectionDraggable.vue';
     import { usePageSectionStore } from '@/stores/PageSectionStore.js';
-    import { usePageTabStore } from '@/stores/PageTabStore.js';
-    import { defineProps } from 'vue';
+    import { defineProps, ref } from 'vue';
 
     const props = defineProps({
         page: {
@@ -29,7 +37,13 @@
             required: false,
         },
     });
-    const pageTabStore = usePageTabStore();
+
+    /**
+     * This value is set if the user is currently adding a new section.
+     * This may be null if the user is not adding a new section.
+     * Making it one value is practical as this limits the application naturally to only add a section at one place at a time.
+     */
+    const sectionAddIndex = ref(null);
     const pageSectionStore = usePageSectionStore();
 
     const onPageSectionSubmit = async (pageSection, updatedPageSectionItem) => {

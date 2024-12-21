@@ -31,7 +31,8 @@ class PageService
         $pageSection = (new PageSection())
             ->setAuthor($task->getProject()->getOwner())
             ->setUpdatedAt(new \DateTime())
-            ->setCreatedAt(new \DateTime());
+            ->setCreatedAt(new \DateTime())
+            ->setOrderIndex(0);
         $pageSectionText = (new PageSectionText())
             ->setContent('This is the overview section for the task ' . $task->getName());
         $pageSection->setPageSectionText($pageSectionText);

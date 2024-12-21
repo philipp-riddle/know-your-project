@@ -1,13 +1,11 @@
 <template>
-    <div class="row mt-4">
-        <div class="col-sm-12 col-md-10">
-            <div v-if="selectedTabId && pageTabStore.pageTabs[selectedTabId]">
-                <PageTab :page="page" :pageTab="pageTabStore.selectedTab" />
-            </div>
-            <div v-else>
-                <div class="alert alert-danger">
-                    <p>Cannot display selected tab.</p>
-                </div>
+    <div class="mt-4">
+        <div v-if="selectedTabId && pageTabStore.pageTabs[selectedTabId]">
+            <PageTab :page="page" :pageTab="pageTabStore.selectedTab" />
+        </div>
+        <div v-else>
+            <div class="alert alert-danger">
+                <p>Cannot display selected tab.</p>
             </div>
         </div>
 

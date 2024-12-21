@@ -16,9 +16,13 @@ export const usePageStore = defineStore('page', () => {
         });
     }
     
+    /**
+     * Cleanup method when the user navigates away from a page. This makes sure that all displayed data is cleared and the store is ready for the next page.
+     */
     async function resetStore() {
         pages.value = {};
         selectedPage.value = null;
+        pageTabStore.resetStore(); // this clears the tab store as well as the section store
     }
 
     async function setSelectedPage(page) {

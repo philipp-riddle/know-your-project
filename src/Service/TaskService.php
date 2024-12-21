@@ -16,6 +16,7 @@ class TaskService
 
     public function addTaskToWorkflowStep(Task $task, string $workflowStepType): void
     {
+        $task->setStepType($workflowStepType);
         $tasks = $this->getTasks($task->getProject(), $workflowStepType);
         $this->orderListHandler->add($task, $tasks);
 

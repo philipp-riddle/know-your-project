@@ -102,6 +102,14 @@ export async function fetchUpdatePageSection(pageSectionId, pageSection) {
     return resp.data;
 }
 
+export async function fetchChangePageSectionOrder(pageTabId, sectionIds) {
+    const resp = await axios.put(`${BasePageSectionService}/order/${pageTabId}`, {
+        idOrder: sectionIds,
+    });
+
+    return resp.data;
+}
+
 // ==== PageSectionChecklistItem API FUNCTIONS
 
 const BaseChecklistItemService = BasePageSectionService + "/checklist/item";

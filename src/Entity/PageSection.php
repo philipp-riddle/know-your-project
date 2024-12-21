@@ -3,13 +3,14 @@
 namespace App\Entity;
 
 use App\Entity\Interface\CrudEntityInterface;
+use App\Entity\Interface\OrderListItemInterface;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Repository\PageSectionRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PageSectionRepository::class)]
-class PageSection implements UserPermissionInterface, CrudEntityInterface
+class PageSection implements UserPermissionInterface, CrudEntityInterface, OrderListItemInterface
 {
     public const TYPE_COMMENT = 'comment';
     public const TYPE_CHECKLIST = 'checklist';
@@ -38,6 +39,9 @@ class PageSection implements UserPermissionInterface, CrudEntityInterface
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $author = null;
+
+    #[ORM\Column]
+    private ?int $orderIndex = null;
 
     public function getId(): ?int
     {
@@ -135,6 +139,18 @@ class PageSection implements UserPermissionInterface, CrudEntityInterface
     {
         $this->setCreatedAt(new \DateTime());
         $this->setUpdatedAt(new \DateTime());
+
+        return $this;
+    }
+
+    public function getOrderIndex(): ?int
+    {
+        return $this->orderIndex;
+    }
+
+    public function setOrderIndex(int $orderIndex): static
+    {
+        $this->orderIndex = $orderIndex;
 
         return $this;
     }

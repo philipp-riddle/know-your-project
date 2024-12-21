@@ -11,10 +11,20 @@ export const usePageTabStore = defineStore('pageTab', () => {
     const pageStore = usePageStore();
     const pageSectionStore = usePageSectionStore();
 
+    function resetStore() {
+        pageTabs.value = {};
+        selectedTab.value = null;
+        pageTabsByPage.value = {};
+        pageSectionStore.resetStore();
+    }
+
     async function setSelectedTab(pageTab) {
         selectedTab.value = pageTab;
 
+        // first, write the displayed page sections to the store
         pageSectionStore.displayedPageSections = pageTab.pageSections;
+        // then order the displayed page sections by their order index
+        pageSectionStore.displayedPageSections = pageSectionStore.displayedPageSections.sort((a, b) => a.orderIndex - b.orderIndex);
     }
 
     async function getTab(pageTabId) {
@@ -95,6 +105,7 @@ export const usePageTabStore = defineStore('pageTab', () => {
     }
 
     return {
+        resetStore,
         pageTabs,
         selectedTab,
         setSelectedTab,

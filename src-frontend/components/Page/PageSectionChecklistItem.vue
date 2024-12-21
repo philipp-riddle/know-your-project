@@ -1,14 +1,12 @@
 <template>
     <div class="d-flex flex-row align-items-center gap-3">
-        <div>
-            <input
-                v-if="displayCompleteInput"
-                class="form-check-input m-0"
-                type="checkbox"
-                v-model="item.complete"
-                @click="onCheckboxClick"
-            />
-        </div>
+        <input
+            v-if="displayCompleteInput"
+            class="form-check-input m-0"
+            type="checkbox"
+            v-model="item.complete"
+            @click="onCheckboxClick"
+        />
         <input
             class="form-control magic-input"
             type="text"
@@ -124,6 +122,7 @@
         border: 5px solid $green;
         border-radius: 2rem;
         padding:3%;
+        background-color: 5px solid $green !important;
 
         &:focus {
             box-shadow: none !important;

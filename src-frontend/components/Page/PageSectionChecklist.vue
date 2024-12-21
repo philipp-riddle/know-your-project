@@ -1,45 +1,49 @@
 <template>
-    <div v-if="checklist">
-        <div class="d-flex flex-row justify-content-between align-items-center">
-            <h5 class="mb-2">
-                <input
-                    class="form-control magic-input"
-                    type="text"
-                    v-model="checklist.name"
-                    placeholder="Enter checklist name"
-                    @input="onChecklistRename"
-                />
-            </h5>
-            <div v-if="pageSection">
-                <div v-if="areAllItemsCompleted">
-                    <span class="badge rounded-pill bg-primary">
-                        <span>{{ completedChecklistItems }} / {{ checklist.pageSectionChecklistItems.length }}</span>
-                    </span>
-                </div>
-                <div v-else>
-                    <span class="badge rounded-pill bg-danger">
-                        {{ completedChecklistItems }} / {{ checklist.pageSectionChecklistItems.length }}
-                    </span>
-                </div>
-            </div>
-        </div>
-        <div class="d-flex flex-column gap-2">
-            <div v-for="item in checklist.pageSectionChecklistItems" :key="item.id">
-                <div class="d-flex justify-content-between align-items-center">
-                    <PageSectionChecklistItem :item="item" :onItemUpdate="onChecklistUpdateItem" :focusOnInit="false" />
-                    <div class="dropdown">
-                        <h5 class="dropdown-toggle m-0" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false" @click.stop="">
-                            <font-awesome-icon :icon="['fas', 'ellipsis']" />
-                        </h5>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                            <li><span class="dropdown-item" href="#" @click.stop="onChecklistDeleteItem(item)">Delete</span></li>
-                        </ul>
+    <div class="row">
+        <div class="col-sm-12 col-lg-4 card" v-if="checklist">
+            <div class="card-body">
+                <div class="d-flex flex-row justify-content-between align-items-center">
+                    <h5 class="mb-2">
+                        <input
+                            class="form-control magic-input"
+                            type="text"
+                            v-model="checklist.name"
+                            placeholder="Enter checklist name"
+                            @input="onChecklistRename"
+                        />
+                    </h5>
+                    <div v-if="pageSection">
+                        <div v-if="areAllItemsCompleted">
+                            <span class="badge rounded-pill bg-primary">
+                                <span>{{ completedChecklistItems }} / {{ checklist.pageSectionChecklistItems.length }}</span>
+                            </span>
+                        </div>
+                        <div v-else>
+                            <span class="badge rounded-pill bg-danger">
+                                {{ completedChecklistItems }} / {{ checklist.pageSectionChecklistItems.length }}
+                            </span>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-9 ps-3">
-                <PageSectionChecklistItem :onItemEnter="onChecklistAddItem" :resetOnUpdate="true" :displayCompleteInput="false" />
-                <div></div>
+                <div class="d-flex flex-column gap-2">
+                    <div v-for="item in checklist.pageSectionChecklistItems" :key="item.id">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <PageSectionChecklistItem :item="item" :onItemUpdate="onChecklistUpdateItem" :focusOnInit="false" />
+                            <div class="dropdown">
+                                <h5 class="dropdown-toggle m-0" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false" @click.stop="">
+                                    <font-awesome-icon :icon="['fas', 'ellipsis']" />
+                                </h5>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                    <li><span class="dropdown-item" href="#" @click.stop="onChecklistDeleteItem(item)">Delete</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-9 ps-3">
+                        <PageSectionChecklistItem :onItemEnter="onChecklistAddItem" :resetOnUpdate="true" :displayCompleteInput="false" />
+                        <div></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

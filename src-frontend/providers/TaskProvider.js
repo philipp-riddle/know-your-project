@@ -90,10 +90,8 @@ export function useTaskProvider() {
 
     async function createTask(stepType, name) {
         return new Promise((resolve) => {
-            fetchCreateTask(stepType, name).then((tasks) => {
-                const createdTask = tasks[tasks.length - 1];
+            fetchCreateTask(stepType, name).then((createdTask) => {
                 taskStore.addTask(createdTask);
-
                 resolve(createdTask);
             });
         });

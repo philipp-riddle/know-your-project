@@ -2,13 +2,15 @@
 
 namespace App\Entity;
 
+use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\OrderListItemInterface;
+use App\Entity\Interface\UserPermissionInterface;
 use App\Repository\TaskRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
-class Task implements OrderListItemInterface
+class Task implements OrderListItemInterface, CrudEntityInterface, UserPermissionInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -123,6 +125,18 @@ class Task implements OrderListItemInterface
     public function setDueDate(?\DateTimeInterface $dueDate): static
     {
         $this->dueDate = $dueDate;
+
+        return $this;
+    }
+
+    public function hasUserAccess(User $user): bool
+    {
+        return $this->getProject()?->hasUserAccess($user) ?? true;
+    }
+
+    public function initialize(): static
+    {
+        $this->isArchived = false;
 
         return $this;
     }

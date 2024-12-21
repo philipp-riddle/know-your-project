@@ -1,13 +1,29 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { usePageTabStore } from './PageTabStore';
-import { fetchCreatePageSection, fetchUpdatePageSection, fetchDeletePageSection } from '../fetch/PageFetcher';
+import { fetchCreatePageSection, fetchUpdatePageSection, fetchDeletePageSection, fetchChangePageSectionOrder } from '../fetch/PageFetcher';
 
 export const usePageSectionStore = defineStore('pageSection', () => {
     const pageSections = ref({});
+
+    /**
+     * The following two state variables are used to keep track of the section that the user is currently adding to the page.
+     */
+    const pageSectionAddIndex = ref(null);
+    const pageSectionAddType = ref(null);
+
     const displayedPageSections = ref([]);
     const pageSectionsByTab = ref({});
     const pageTabStore = usePageTabStore();
+    const isDraggingPageSection = ref(null);
+
+    function resetStore () {
+        pageSections.value = {};
+        pageSectionAddIndex.value = null;
+        pageSectionAddType.value = null;
+        displayedPageSections.value = [];
+        pageSectionsByTab.value = {};
+    }
 
     // == fetch + store methods
 
@@ -47,6 +63,17 @@ export const usePageSectionStore = defineStore('pageSection', () => {
         displayedPageSections.value = displayedPageSections.value.filter((s) => s.id !== pageSection.id);
 
         return deletedSection;
+    }
+
+    async function reorderSections(pageTabId, sectionIds) {
+        const tab = await pageTabStore.getTab(pageTabId);
+
+        if (!tab) {
+            console.error('Cannot reorder sections for non-existent tab with id:', pageTabId);
+            return;
+        }
+
+        await fetchChangePageSectionOrder(pageTabId, sectionIds);
     }
 
     // == store-only methods
@@ -97,6 +124,13 @@ export const usePageSectionStore = defineStore('pageSection', () => {
     }
 
     return {
+        resetStore,
+
+        pageSectionAddIndex,
+        pageSectionAddType,
+
+        isDraggingPageSection,
+
         pageSections,
         pageSectionsByTab,
         displayedPageSections,
@@ -104,6 +138,7 @@ export const usePageSectionStore = defineStore('pageSection', () => {
         createSection,
         updateSection,
         deleteSection,
+        reorderSections,
         
         addSection,
         removeSection,

@@ -4,7 +4,9 @@ namespace App\Controller\Api\Page;
 
 use App\Controller\Api\CrudApiController;
 use App\Entity\PageSection;
+use App\Entity\PageTab;
 use App\Form\PageSectionForm;
+use App\Service\OrderListHandler;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
@@ -31,11 +33,15 @@ class PageSectionApiController extends CrudApiController
     }
 
     #[Route('', name: 'api_page_section_create', methods: ['POST'])]
-    public function create(Request $request): JsonResponse
+    public function create(Request $request, OrderListHandler $orderListHandler): JsonResponse
     {
-        return $this->crudUpdateOrCreate(
+        return $this->crudUpdateOrCreateOrderListItem(
             null,
             $request,
+            $orderListHandler,
+            itemsToOrder: function (PageSection $pageSection) {
+                return $pageSection->getPageTab()->getPageSections();
+            },
             onProcessEntity: function (PageSection $pageSection) {
                 $pageSection->setAuthor($this->getUser());
 
@@ -49,6 +55,12 @@ class PageSectionApiController extends CrudApiController
                 return $pageSection;
             }
         );
+    }
+
+    #[Route('/order/{pageTab}', name: 'api_page_section_changeOrder', methods: ['PUT'])]
+    public function changeOrder(PageTab $pageTab, Request $request, OrderListHandler $orderListHandler): JsonResponse
+    {
+        return $this->crudChangeOrder($request, $orderListHandler, \iterator_to_array($pageTab->getPageSections()));
     }
 
     public function getEntityClass(): string
