@@ -1,10 +1,10 @@
 <template>
-    <VMenu
-        :distance="8"
+    <VDropdown
+        :distance="5"
         :shown="showPopover"
     >
         <!-- This will be the popover reference (for the events and position) -->
-        <button class="btn btn-sm btn-dark nav-create-item">
+        <button class="btn btn-sm btn-dark nav-create-item" v-tooltip="'Details about this section'">
             <span class="white"><font-awesome-icon :icon="['fas', 'info']" /></span>
         </button>
 
@@ -20,7 +20,7 @@
                 </div>
             </div>
         </template>
-    </VMenu>
+    </VDropdown>
 </template>
 
 <script setup>

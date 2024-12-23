@@ -43,10 +43,6 @@
     import { useUserStore } from '@/stores/UserStore.js';
 
     const props = defineProps({
-        project: {
-            type: Object,
-            required: true,
-        },
         page: {
             type: Object,
             required: false,

@@ -43,6 +43,12 @@ class PageSection implements UserPermissionInterface, CrudEntityInterface, Order
     #[ORM\Column]
     private ?int $orderIndex = null;
 
+    #[ORM\OneToOne(mappedBy: 'pageSection', cascade: ['persist', 'remove'])]
+    private ?PageSectionURL $pageSectionURL = null;
+
+    #[ORM\OneToOne(mappedBy: 'pageSection', cascade: ['persist', 'remove'])]
+    private ?PageSectionUpload $pageSectionUpload = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -151,6 +157,40 @@ class PageSection implements UserPermissionInterface, CrudEntityInterface, Order
     public function setOrderIndex(int $orderIndex): static
     {
         $this->orderIndex = $orderIndex;
+
+        return $this;
+    }
+
+    public function getPageSectionURL(): ?PageSectionURL
+    {
+        return $this->pageSectionURL;
+    }
+
+    public function setPageSectionURL(PageSectionURL $pageSectionURL): static
+    {
+        // set the owning side of the relation if necessary
+        if ($pageSectionURL->getPageSection() !== $this) {
+            $pageSectionURL->setPageSection($this);
+        }
+
+        $this->pageSectionURL = $pageSectionURL;
+
+        return $this;
+    }
+
+    public function getPageSectionUpload(): ?PageSectionUpload
+    {
+        return $this->pageSectionUpload;
+    }
+
+    public function setPageSectionUpload(PageSectionUpload $pageSectionUpload): static
+    {
+        // set the owning side of the relation if necessary
+        if ($pageSectionUpload->getPageSection() !== $this) {
+            $pageSectionUpload->setPageSection($this);
+        }
+
+        $this->pageSectionUpload = $pageSectionUpload;
 
         return $this;
     }

@@ -98,8 +98,6 @@
 
         selectedTabId.value = pageTab.id;
         pageTabStore.setSelectedTab(pageTab);
-
-        console.log(pageSectionStore.displayedPageSections);
     };
 
     const onPageCreateTab = async (page) => {

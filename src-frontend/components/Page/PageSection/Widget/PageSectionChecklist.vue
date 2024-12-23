@@ -50,7 +50,7 @@
 </template>
 
 <script setup>
-    import PageSectionChecklistItem from '@/components/Page/PageSectionChecklistItem.vue';
+    import PageSectionChecklistItem from '@/components/Page/PageSection/Widget/PageSectionChecklistItem.vue';
     import { usePageSectionStore } from '@/stores/PageSectionStore.js';
     import { usePageSectionChecklistItemStore } from '@/stores/PageSectionChecklistItemStore.js';
     import { computed, ref, onMounted, nextTick } from 'vue';
@@ -72,7 +72,9 @@
         name: 'Checklist',
         pageSectionChecklistItems: [],
     };
-    const checklist = ref(null);
+    const checklist = ref(props?.pageSection?.pageSectionChecklist);
+    const pageSectionId = ref(props?.pageSection?.id);
+    const checklistId = ref(checklist.value?.id);
     const completedChecklistItems = computed(() => {
         return checklist.value.pageSectionChecklistItems.filter((item) => item.complete).length;
     });
@@ -89,44 +91,37 @@
     const pageSectionStore = usePageSectionStore();
     const pageSectionChecklistItemStore = usePageSectionChecklistItemStore();
 
-    onMounted(() => {
-        resetToOriginalState();
-    });
-
     const onChecklistAddItem = (item) => {
         // if the checklist item (i.e. the pageSection) already exists we only need to add a nwew checklist item 
-        if (props.pageSection) {
+        if (pageSectionId.value) {
             const createdChecklistItem = {
                 ...item,
                 pageSectionChecklist: checklist.value.id,
             };
 
-            pageSectionChecklistItemStore.createChecklistItem(props.pageSection.id, createdChecklistItem);
+            pageSectionChecklistItemStore.createChecklistItem(pageSectionId.value, createdChecklistItem);
         } else {
+            console.log('Creating entirely new checklist');
+
             // create entirely new checklist
-            checklist.value.pageSectionChecklistItems.push(item);
+            checklist.value = {
+                ...checklist.value,
+                pageSectionChecklistItems: [
+                    {...item} // this causes the item to deconstruct and makes sure all values are copied
+                ],
+            };
+
             props.onPageSectionSubmit({
                 pageSectionChecklist: checklist.value,
+            }).then((createdSection) => {
+                pageSectionId.value = createdSection.id;
+                checklist.value.id = createdSection.pageSectionChecklist.id;
             });
-            resetToOriginalState();
         }
     };
 
     const onChecklistDeleteItem = async (checklistItem) => {
         await pageSectionChecklistItemStore.deleteChecklistItem(props.pageSection.id, checklistItem);
-    };
-
-    /**
-     * Resets the checklist to its original state.
-     * In case it is an existing checklist it will revert back to the DB values.
-     * In case it is a new checklist it will reset to an empty checklist.
-     */
-    const resetToOriginalState = async () => {
-        if (props.pageSection?.pageSectionChecklist) {
-            checklist.value = props.pageSection.pageSectionChecklist;
-        } else {
-            checklist.value = JSON.parse(JSON.stringify(defaultChecklistValue)); // @todo deep clone for default value; maybe use lodash
-        }
     };
 
     const onChecklistUpdateItem = (item) => {

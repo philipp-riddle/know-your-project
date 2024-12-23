@@ -40,30 +40,60 @@ export const usePageSectionChecklistItemStore = defineStore('pageSectionChecklis
     }
 
     function addChecklistItem(pageSectionId, checklistItem) {
-        const section = pageSectionStore.pageSections[pageSectionId] ?? null;
+        const sectionIndex = pageSectionStore.displayedPageSections.findIndex(section => section.id === pageSectionId);
 
-        if (!section) {
+        if (sectionIndex === -1) {
             console.error('Cannot add checklist item to non-existent section with id:', pageSectionId);
             return;
         }
 
-        pageSectionStore.pageSections[pageSectionId].pageSectionChecklist.pageSectionChecklistItems.push(checklistItem);
+        pageSectionStore.displayedPageSections[sectionIndex].pageSectionChecklist.pageSectionChecklistItems.push(checklistItem);
+        console.log('page section state:');
+        console.log(pageSectionStore.displayedPageSections[sectionIndex]);
 
         return checklistItem;
     }
 
     function removeChecklistItem(pageSectionId, checklistItem) {
-        const section = pageSectionStore.pageSections[pageSectionId] ?? null;
+        const sectionIndex = pageSectionStore.displayedPageSections.findIndex(section => section.id === pageSectionId);
 
-        if (!section) {
+        if (sectionIndex === -1) {
             console.error('Cannot delete checklist item from non-existent section with id:', pageSectionId);
             return;
         }
 
-        pageSectionStore.pageSections[pageSectionId].pageSectionChecklist.pageSectionChecklistItems = pageSectionStore.pageSections[pageSectionId].pageSectionChecklist.pageSectionChecklistItems.filter(item => item.id !== checklistItem.id);
+        const section = pageSectionStore.displayedPageSections[sectionIndex];
+        const newChecklistItems = section.pageSectionChecklist.pageSectionChecklistItems.filter(item => item.id !== checklistItem.id);
+        pageSectionStore.displayedPageSections[sectionIndex].pageSectionChecklist.pageSectionChecklistItems = newChecklistItems;
 
         return checklistItem;
     }
+
+    // function addChecklistItem(pageSectionId, checklistItem) {
+    //     const section = pageSectionStore.pageSections[pageSectionId] ?? null;
+
+    //     if (!section) {
+    //         console.error('Cannot add checklist item to non-existent section with id:', pageSectionId);
+    //         return;
+    //     }
+
+    //     pageSectionStore.pageSections[pageSectionId].pageSectionChecklist.pageSectionChecklistItems.push(checklistItem);
+
+    //     return checklistItem;
+    // }
+
+    // function removeChecklistItem(pageSectionId, checklistItem) {
+    //     const section = pageSectionStore.pageSections[pageSectionId] ?? null;
+
+    //     if (!section) {
+    //         console.error('Cannot delete checklist item from non-existent section with id:', pageSectionId);
+    //         return;
+    //     }
+
+    //     pageSectionStore.pageSections[pageSectionId].pageSectionChecklist.pageSectionChecklistItems = pageSectionStore.pageSections[pageSectionId].pageSectionChecklist.pageSectionChecklistItems.filter(item => item.id !== checklistItem.id);
+
+    //     return checklistItem;
+    // }
 
     return {
         createChecklistItem,

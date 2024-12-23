@@ -29,6 +29,7 @@ class PageSectionForm extends AbstractType
 
         $checklist = $pageSection?->getPageSectionChecklist();
         $text = $pageSection?->getPageSectionText();
+        $url = $pageSection?->getPageSectionURL();
 
         // only add the checklist form field if the page section has a checklist or if it's a new object
         // if its' an existing object we make it required to make sure it's not removed
@@ -40,6 +41,11 @@ class PageSectionForm extends AbstractType
         // vice versa for the text form field
         if ($isNewObject || $pageSection?->getPageSectionText()) {
             $builder->add('pageSectionText', PageSectionTextForm::class, ['required' => !$isNewObject, 'data' => $text]);
+        }
+
+        // vice versa for the url form field
+        if ($isNewObject || $pageSection?->getPageSectionURL()) {
+            $builder->add('pageSectionURL', PageSectionURLForm::class, ['required' => !$isNewObject, 'data' => $url]);
         }
     }
 

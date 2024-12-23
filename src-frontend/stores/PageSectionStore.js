@@ -6,12 +6,6 @@ import { fetchCreatePageSection, fetchUpdatePageSection, fetchDeletePageSection,
 export const usePageSectionStore = defineStore('pageSection', () => {
     const pageSections = ref({});
 
-    /**
-     * The following two state variables are used to keep track of the section that the user is currently adding to the page.
-     */
-    const pageSectionAddIndex = ref(null);
-    const pageSectionAddType = ref(null);
-
     const displayedPageSections = ref([]);
     const pageSectionsByTab = ref({});
     const pageTabStore = usePageTabStore();
@@ -19,8 +13,6 @@ export const usePageSectionStore = defineStore('pageSection', () => {
 
     function resetStore () {
         pageSections.value = {};
-        pageSectionAddIndex.value = null;
-        pageSectionAddType.value = null;
         displayedPageSections.value = [];
         pageSectionsByTab.value = {};
     }
@@ -34,7 +26,9 @@ export const usePageSectionStore = defineStore('pageSection', () => {
             return;
         }
 
-        displayedPageSections.value.push(newSection);
+        // @todo if we add this line we effectively change the section the user is editing,
+        // focus is lost. We need to find a way to keep the focus on the section the user is editing and merge the changes somehow
+        // displayedPageSections.value = displayedPageSections.value.map((section) => isNaN(section.id) ? newSection : section);
 
         return newSection;
     }
@@ -126,11 +120,7 @@ export const usePageSectionStore = defineStore('pageSection', () => {
     return {
         resetStore,
 
-        pageSectionAddIndex,
-        pageSectionAddType,
-
         isDraggingPageSection,
-
         pageSections,
         pageSectionsByTab,
         displayedPageSections,

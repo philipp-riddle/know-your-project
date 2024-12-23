@@ -13,6 +13,10 @@ class HomeController extends AbstractController
     #[Route('/', name: 'home')]
     public function home()
     {
-        return $this->render('index.html.twig');
+        $response = $this->render('index.html.twig');
+        // @todo: Uncomment the following line to enable Content Security Policy
+        // $response->headers->set('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; frame-src 'self';");
+
+        return $response;
     }
 }

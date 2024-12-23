@@ -8,7 +8,6 @@
                     <PageSectionCreateButton />
                 </div>
                 <div class="col-sm-11">
-                    <PageSectionCreateWidget :page="page" :onCreate="onPageSectionSubmit" />
                 </div>
             </div>
         </div>
@@ -18,7 +17,6 @@
 <script setup>
     import PageSection from '@/components/Page/PageSection/PageSection.vue';
     import PageSectionCreateButton from '@/components/Page/PageSection/PageSectionCreateButton.vue';
-    import PageSectionCreateWidget from '@/components/Page/PageSection/PageSectionCreateWidget.vue';
     import PageSectionDraggable from '@/components/Page/PageSection/PageSectionDraggable.vue';
     import { usePageSectionStore } from '@/stores/PageSectionStore.js';
     import { defineProps, ref } from 'vue';
@@ -38,12 +36,6 @@
         },
     });
 
-    /**
-     * This value is set if the user is currently adding a new section.
-     * This may be null if the user is not adding a new section.
-     * Making it one value is practical as this limits the application naturally to only add a section at one place at a time.
-     */
-    const sectionAddIndex = ref(null);
     const pageSectionStore = usePageSectionStore();
 
     const onPageSectionSubmit = async (pageSection, updatedPageSectionItem) => {
@@ -60,8 +52,9 @@
             } else {
                 const pageSectionSubmitObject = {
                     id: pageSection.id,
-                    ...pageSection,
+                    ...updatedPageSectionItem,
                 };
+
                 pageSectionStore.createSection(props.pageTab.id, pageSectionSubmitObject).then((createdSection) => {
                     resolve(createdSection);
                 });

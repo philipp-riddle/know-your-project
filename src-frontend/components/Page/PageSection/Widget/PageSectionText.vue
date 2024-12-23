@@ -1,18 +1,22 @@
 <template>
     <div>
-        <TextArea
+        <!-- <TextArea
             placeholder="Start typing"
             :onTextSubmit="onTextSubmit"
             :onTextChange="onTextChange"
             :text="pageSection?.pageSectionText?.content ?? ''"
             :resetOnSubmit="pageSection == null"
-        />
+        /> -->
+
+        <PageSectionTextEditor :text="pageSection?.pageSectionText?.content ?? ''" :onTextChange="onTextSubmit" />
     </div>
 </template>
 
 <script setup>
-    import PageSectionChecklistItem from '@/components/Page/PageSectionChecklistItem.vue';
+    import PageSectionChecklistItem from '@/components/Page/PageSection/Widget/PageSectionChecklistItem.vue';
     import TextArea from '@/components/Util/TextArea.vue';
+
+    import PageSectionTextEditor from '@/components/Page/PageSection/Widget/PageSectionTextEditor.vue';
     import { ref, onMounted } from 'vue';
 
     const props = defineProps({
@@ -25,12 +29,7 @@
             required: true,
         },
     });
-
-    const onTextChange = (text) => {
-        if (props.pageSection?.id) {
-            onTextSubmit(text); // if the pageSection already exists we can submit the text; otherwise we only want to submit if the user presses 'enter'
-        }
-    };
+    const pageSection = ref(props.pageSection);
 
     const onTextSubmit = (text) => {
         props.onPageSectionSubmit({

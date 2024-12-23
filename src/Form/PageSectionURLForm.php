@@ -2,25 +2,25 @@
 
 namespace App\Form;
 
-use App\Entity\PageSectionText;
+use App\Entity\PageSectionURL;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Length;
 
-class PageSectionTextForm extends AbstractType
+class PageSectionURLForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         parent::buildForm($builder, $options);
 
         $builder
-            ->add('content', TextType::class, [
+            ->add('url', UrlType::class, [
                 'constraints' => [
                     new Length([
                         'min' => 0,
-                        'max' => 1024,
+                        'max' => 255,
                     ])
                 ]
             ])
@@ -30,9 +30,8 @@ class PageSectionTextForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'sanitize_html' => false,
             'csrf_protection' => false,
-            'data_class' => PageSectionText::class,
+            'data_class' => PageSectionURL::class,
         ]);
     }
 }

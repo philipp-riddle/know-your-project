@@ -52,6 +52,10 @@ class PageSectionApiController extends CrudApiController
                     }
                 }
 
+                if (null !== $pageSection->getPageSectionURL()) {
+                    var_dump(\get_meta_tags($pageSection->getPageSectionURL()->getUrl()));
+                }
+
                 return $pageSection;
             }
         );

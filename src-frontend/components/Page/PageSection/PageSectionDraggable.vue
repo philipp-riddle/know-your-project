@@ -15,7 +15,7 @@
 					<div
 						:class="{ 'card': pageSectionStore.isDraggingPageSection }"
 					>
-						<PageSection :index="1" :page="page" :pageSection="element" :onPageSectionSubmit="onPageSectionSubmit" :onPageSectionDelete="onPageSectionDelete" />
+						<PageSection :index="1" :page="page" :pageSection="element" :onPageSectionSubmit="onPageSectionDraggableSubmit" :onPageSectionDelete="onPageSectionDelete" />
 					</div>
 				</template>
 			</draggable>
@@ -80,7 +80,6 @@
 		},
 		methods: {
 			onDragStart(event) {
-				console.log('onDragStart', event);
 				this.pageSectionStore.isDraggingPageSection = true;
 			},
 			onDragEnd(event) {
@@ -88,12 +87,25 @@
 				const pageSectionIdOrder = [];
 
                 for (let i = 0; i < event.to.children.length; i++) {
-                    pageSectionIdOrder.push(parseInt(event.to.children[i].getAttribute('page-section')));
+					let pageSectionElement = event.to.children[i];
+
+					// @todo this is weird - in the task modal this is different than in the standalone page editor
+					if (event.to.children[i].getAttribute('data-draggable') == 'true') {
+						pageSectionElement = pageSectionElement.children[0];
+					}
+
+					let pageSectionId = parseInt(pageSectionElement.getAttribute('page-section'));
+
+					if (isNaN(pageSectionId)) {
+						continue; // this is to prevent us from including the non-initialized tasks
+					}
+
+                    pageSectionIdOrder.push(pageSectionId);
                 }
 
 				this.pageSectionStore.reorderSections(this.pageTab.id, pageSectionIdOrder);
 			},
-			onPageSectionSubmit(pageSection, updatedPageSectionItem) {
+			onPageSectionDraggableSubmit(pageSection, updatedPageSectionItem) {
 				return new Promise(async (resolve) => {
 					if (this.onPageSectionSubmit) {
 						this.onPageSectionSubmit(pageSection, updatedPageSectionItem).then((updatedSection) => {
