@@ -6,7 +6,6 @@
 				:data-page="page"
 				tag="ul"
 				v-model="this.pageSectionStore.displayedPageSections"
-				:group="{ name: 'pageSections' }"
 				item-key="id"
 				@start="onDragStart"
         		@end="onDragEnd"

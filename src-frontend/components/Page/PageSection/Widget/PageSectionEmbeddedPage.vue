@@ -33,11 +33,11 @@
                     <p>{{ embeddedPageExtract }}</p>
                 </div>
                 <div v-else class="d-flex flex-column gap-2">
-                    <p class="text-muted bold m-0">SELECT TASK TO EMBED</p>
+                    <p class="text-muted bold m-0">SELECT PAGE TO EMBED</p>
                     <h5><input
                         type="text"
                         class="form-control p"
-                        placeholder="Search for any page or task"
+                        placeholder="Search..."
                         ref="searchInput"
                         @keyup="debouncedFetchApiForResults"
                     ></h5>
@@ -69,6 +69,7 @@
     import { fetchGetPageList } from '@/fetch/PageFetcher.js';
     import { useUserStore } from '@/stores/UserStore.js';
     import { usePageStore } from '@/stores/PageStore.js';
+    import { usePageSectionStore } from '@/stores/PageSectionStore.js';
     import { computed, defineProps, ref, onMounted } from 'vue';
     import { useDebounceFn } from '@vueuse/core';
 
@@ -86,6 +87,7 @@
     const searchResults = ref([]);
     const userStore = useUserStore();
     const pageStore = usePageStore();
+    const pageSectionStore = usePageSectionStore();
     const embeddedPage = ref(props.pageSection?.embeddedPage);
     const embeddedPageExtract = computed(() => {
         if (!embeddedPage.value.page) {
@@ -122,6 +124,9 @@
                 debouncedFetchApiForResults(); // if the user is loaded we can fetch the results when initializing this component
             });
         }
+
+        console.log('gumo ausm embedde page');
+        pageSectionStore.selectedPageSection = props.pageSection;
     });
 
     const fetchApiForResults = () => {

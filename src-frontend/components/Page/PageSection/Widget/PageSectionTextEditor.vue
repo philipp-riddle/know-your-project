@@ -110,7 +110,16 @@
             </div>
         </div>
     </div>
-    <editor-content v-tooltip="tooltip" :editor="editor" />
+
+    <!-- convert the text editor into a paragraph when the sections get rearranged - this way no text can be dropped in this editor from other editors. -->
+    <div v-if="pageSectionStore.isDraggingPageSection">
+        <span v-html="currentText"></span>
+    </div>
+    <editor-content
+        v-else
+        v-tooltip="tooltip"
+        :editor="editor"
+    />
 </template>
 
 <script setup>
@@ -137,6 +146,7 @@
             required: false,
         },
     });
+    const currentText = ref(props.text);
     const tooltip = computed(() => {
         return !pageSectionStore.selectedPageSection == props.pageSection.id ? 'Edit text' : '';
     });
@@ -151,7 +161,8 @@
             Link,
         ],
         onUpdate: ({ editor }) => {
-            props.onTextChange(editor.getHTML());
+            currentText.value = editor.getHTML();
+            props.onTextChange(currentText.value);
         },
         onCreate: ({ editor }) => {
             editor.commands.focus('end'); // this automatically sets the focus to the end of the editor when initialized / created

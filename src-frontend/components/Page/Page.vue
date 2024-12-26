@@ -96,7 +96,6 @@
 
     // this re-fetches the page value on every route change from the store
     watch(() => currentRoute.params.id, async (newPageId) => {
-        console.log('switched page!');
         const newPage = await pageStore.getPage(newPageId);
         page.value = newPage;
         switchPageTab(newPage.pageTabs[0]);
