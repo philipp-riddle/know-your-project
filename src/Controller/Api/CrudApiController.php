@@ -70,7 +70,13 @@ abstract class CrudApiController extends ApiController
             $entityForm = $this->createForm($formClass);
         }
 
-        $entityForm->submit($request->toArray());
+        if ($request->getContent() === '') {
+            // if the body is empty form data parts could have been sent which we can process with ->handleRequest
+            $entityForm->handleRequest($request);
+        } else {
+            // otherwise we submit the request data by serializing the request body to an array
+            $entityForm->submit($request->toArray());
+        }
 
         if (!$entityForm->isSubmitted() || !$entityForm->isValid()) {
             $errorContent = [];
@@ -80,6 +86,16 @@ abstract class CrudApiController extends ApiController
                     'message' => $error->getMessage(),
                     'validation' => $error->getMessageParameters(),
                 ];
+            }
+
+            if (\count($errorContent) === 0) {
+                if (!$entityForm->isSubmitted()) {
+                    $errorContent = ['error' => 'Form was not submitted'];
+                } elseif (!$entityForm->isValid()) {
+                    $errorContent = ['error' => 'Invalid form data'];
+                } else {
+                    $errorContent = ['error' => 'Invalid request body'];
+                }
             }
 
             return $this->json($errorContent, 400);
@@ -132,7 +148,7 @@ abstract class CrudApiController extends ApiController
 
         foreach ($itemsToOrder as $itemToOrder) {
             if (!($itemToOrder instanceof UserPermissionInterface)) {
-                throw new \Exception('Entity must be an instance of UserPermissionInterface');
+                throw new \Exception('All items in the ordered list must be an instance of UserPermissionInterface');
             }
 
             $this->checkUserAccess($itemToOrder);
@@ -146,8 +162,15 @@ abstract class CrudApiController extends ApiController
     }
 
     /**
-     * Standard CRUD operation to update or create an OrderListItemInterface entity.
+     * Standard CRUD operation to update or create an OrderListItemInterface entity (=> has an order index and can be rearranged in the frontend).
      * This automatically adds the entity to the OrderListHandler, i.e. setting the order index based on the current list.
+     * 
+     * @param UserPermissionInterface|null $userPermissionInterface The entity to update or null to create a new entity
+     * @param Request $request The request object
+     * @param OrderListHandler $orderListHandler The OrderListHandler service; used to add the entity to the list properly to the list with a correct order index etc
+     * @param callable $itemsToOrder A callback that returns an array of items to order, the entity being processed is passed as the first argument
+     * @param callable|null $onProcessEntity A callback that processes the entity before it's added to the OrderListHandler; optional, pass null if not needed
+     * 
      */
     protected function crudUpdateOrCreateOrderListItem(?UserPermissionInterface $userPermissionInterface, Request $request, OrderListHandler $orderListHandler, callable $itemsToOrder, ?callable $onProcessEntity = null): JsonResponse
     {

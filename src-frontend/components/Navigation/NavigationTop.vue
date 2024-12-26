@@ -1,9 +1,9 @@
 <template>
     <div class="d-flex flex-column gap-1">
         <div class="d-flex flex-row  justify-content-between gap-3 align-items-center">
-            <span v-if="!isLoading">
-                <small class="text-muted" v-tooltip="'Project name'"><strong>{{ currentUser.selectedProject.name.toUpperCase() }}</strong></small>
-            </span>
+            <div v-if="!isLoading">
+                <small class="text-muted p bold m-0" v-tooltip="'Project name'">{{ currentUser.selectedProject.name.toUpperCase() }}</small>
+            </div>
         </div>
     </div>
 </template>

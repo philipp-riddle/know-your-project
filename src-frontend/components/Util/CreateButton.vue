@@ -4,7 +4,7 @@
         @click="onClick()"
         v-tooltip="tooltip"
     >
-        <strong>+</strong>
+        <strong class="h4">+</strong>
     </button>
 </template>
 
@@ -23,10 +23,3 @@
         },
     });
 </script>
-
-<style scoped>
-    strong {
-        font-size: 1.3rem; 
-        font-weight: 800;
-    }
-</style>

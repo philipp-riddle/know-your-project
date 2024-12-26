@@ -1,14 +1,31 @@
 <template>
-    <div class="dropdown task-options">
-        <h5 class="btn btn-primary dropdown-toggle m-0" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false" @click.stop="">
-            <font-awesome-icon icon="fa-solid fa-plus" />
-        </h5>
-        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1" ref="checklistDropdown">
-            <li><span class="dropdown-item" href="#" @click.stop="switchToPageSectionType('text')">Text</span></li>
-            <li><span class="dropdown-item" href="#" @click.stop="switchToPageSectionType('checklist')">Checklist</span></li>
-            <li><span class="dropdown-item" href="#" @click.stop="switchToPageSectionType('upload')">Upload</span></li>
-        </ul>
-    </div>
+    <VMenu
+        :distance="5"
+        :shown="showPopover"
+        @blur="showPopover = false"
+    >
+        <!-- This will be the popover reference (for the events and position) -->
+        <div class="d-flex flex-row justify-content-center">
+            <button @click.stop="showPopover = !showPopover" class="btn btn-sm btn-primary " v-tooltip="'Add sections'">
+                <font-awesome-icon class="white" :icon="['fas', 'plus']" />
+            </button>
+        </div>
+
+        <!-- This will be the content of the popover -->
+        <template #popper>
+            <div class="p-2">
+                <div class="d-flex flex-column justify-content-center">
+                    <ul class="nav nav-pills nav-fill d-flex flex-column">
+                        <li class="nav-item"><p class="text-muted bold m-0 p-0">ADD CONTENT</p></li>
+                        <li class="nav-item"><button class="nav-link inactive btn btn-sm p" type="button" @click.stop="() => switchToPageSectionType('text')">Text</button></li>
+                        <li class="nav-item"><button class="nav-link inactive btn btn-sm p" type="button" @click.stop="() => switchToPageSectionType('checklist')">Checklist</button></li>
+                        <li class="nav-item"><button class="nav-link inactive btn btn-sm p" type="button" @click.stop="() => switchToPageSectionType('upload')">Upload</button></li>
+                        <li class="nav-item"><button class="nav-link inactive btn btn-sm p" type="button" @click.stop="() => switchToPageSectionType('embeddedPage')">Embed other page / task</button></li>
+                    </ul>
+                </div>
+            </div>
+        </template>
+    </VMenu>
 </template>
 
 <script setup>
@@ -27,11 +44,12 @@
         },
     });
     const checklistDropdown = ref(null);
+    const showPopover = ref(false);
     const createMode = ref(props.openedCreateDialogue ?? 'text');
     const pageSectionStore = usePageSectionStore();
 
     const switchToPageSectionType = (type) => {
-        checklistDropdown.value.classList.remove('show');
+        showPopover.value = false;
         let defaultObject = {};
 
         if (type == 'text') {
@@ -45,6 +63,18 @@
                 pageSectionChecklist: {
                     name: 'Checklist',
                     pageSectionChecklistItems: [],
+                },
+            };
+        } else if (type == 'upload') {
+            defaultObject = {
+                pageSectionUpload: {
+                    files: [],
+                },
+            };
+        } else if (type == 'embeddedPage') {
+            defaultObject = {
+                embeddedPage: {
+                    page: null,
                 },
             };
         }

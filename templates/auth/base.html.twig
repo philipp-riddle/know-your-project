@@ -1,17 +1,24 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <div class="mt-5 row">
-        <div class="mt-5 col-sm-12 offset-md-3 col-md-6">
-            {% for flash_error in app.flashes('verify_email_error') %}
-                <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
-            {% endfor %}
+    <div class="h-100 row m-0 p-0 d-flex flex-xl-column justify-content-xl-center mt-sm-3 mt-xl-0">
+        <div class="col-sm-12 offset-md-3 col-md-6 offset-xl-4 col-xl-4">
+            {% block authErrors %}
+                {% for flash_error in app.flashes('verify_email_error') %}
+                    <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
+                {% endfor %}
+            {% endblock %}
 
-            <div class="card">
-                <div class="card-body">
-                    {% block authBody %}
-                    {% endblock %}
-                </div>
+            <div class="d-flex flex-column gap-4">
+                <h1 class="mb-0">{{ block('title') }}</h1>
+                {% block authParentBody %}
+                    <div class="card">
+                        <div class="card-body">
+                            {% block authBody %}
+                            {% endblock %}
+                        </div>
+                    </div>
+                {% endblock %}
             </div>
         </div>
     </div>

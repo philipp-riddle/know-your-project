@@ -1,35 +1,32 @@
 {% extends 'auth/base.html.twig' %}
 
-{% block title %}Register{% endblock %}
+{% block title %}Create account{% endblock %}
+
+{% block authErrors %}
+    {{ form_errors(registrationForm) }}
+{% endblock %}
 
 {% block authBody %}
     {{ form_start(registrationForm) }}
         <div class="d-flex flex-column gap-4">
-            <div>
-                <h1>Signup</h1>
-                <p>Already signed up? <a href="{{ path('app_login') }}">Login</a></p>
-            </div>
-
-            <div>
-                {{ form_errors(registrationForm) }}
-                {{ form_row(registrationForm.email, {
-                    label: 'Email',
+            <div class="d-flex flex-column gap-2">
+                {{ form_widget(registrationForm.email, {
                     attr: {
                         placeholder: 'Email',
-                        class: 'form-control mb-2'
+                        class: 'form-control'
                     }
                 }) }}
-                {{ form_row(registrationForm.plainPassword, {
-                    label: 'Password',
+                {{ form_widget(registrationForm.plainPassword, {
                     attr: {
                         placeholder: 'Password',
-                        class: 'form-control mb-2'
+                        class: 'form-control'
                     }
                 }) }}
+                <p class="p-0 m-0">Already signed up? <a href="{{ path('app_login') }}">Login</a></p>
             </div>
 
-            <div class="d-grid gap-2">
-                <button type="submit" class="btn btn-primary">Register</button>
+            <div class="d-flex flex-column">
+                <button type="submit" class="btn btn-lg btn-primary">Sign up</button>
             </div>
         </div>
     {{ form_end(registrationForm) }}

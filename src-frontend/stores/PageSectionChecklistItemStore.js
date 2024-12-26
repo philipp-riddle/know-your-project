@@ -48,8 +48,6 @@ export const usePageSectionChecklistItemStore = defineStore('pageSectionChecklis
         }
 
         pageSectionStore.displayedPageSections[sectionIndex].pageSectionChecklist.pageSectionChecklistItems.push(checklistItem);
-        console.log('page section state:');
-        console.log(pageSectionStore.displayedPageSections[sectionIndex]);
 
         return checklistItem;
     }

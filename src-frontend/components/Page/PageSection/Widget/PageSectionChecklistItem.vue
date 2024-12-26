@@ -5,6 +5,7 @@
             class="form-check-input m-0"
             type="checkbox"
             v-model="item.complete"
+            v-tooltip="item.complete ? 'Mark item as incomplete' : 'Mark item as complete'"
             @click="onCheckboxClick"
         />
         <input

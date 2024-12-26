@@ -13,9 +13,9 @@
             <div class="m-4">
                 <div class="d-flex flex-column justify-content-center">
                     <ul class="nav nav-pills nav-fill d-flex flex-column gap-1">
-                        <li class="nav-item" v-for="createMode in createModes">
+                        <li class="nav-item inactive" v-for="createMode in createModes">
                             <a
-                                class="nav-link inactive d-flex flex-row align-items-center gap-3"
+                                class="nav-link d-flex flex-row align-items-center gap-3"
                                 href="#/notes"
                                 :to="{ name: createMode.name }"
                                 @click.stop="onCreateClick($event, createMode.mode)"

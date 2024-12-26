@@ -43,12 +43,15 @@
     display: none;
 }
 
-.nav-item:hover .nav-item-options {
-    display: block;
-}
+.nav-item {
 
-.nav-item, .nav-create-item {
-    border-radius: 2rem !important;
+    &, .nav-create-item {
+        border-radius: 2rem !important;
+    }
+
+    &:hover .nav-item-options {
+        display: block;
+    }
 }
 
 .nav-create-item {
@@ -58,7 +61,6 @@
 .nav-link {
     text-align: left !important;
     border-radius: 2rem !important;
-    font-size: 0.9rem !important;
     cursor: pointer;
 
     &.active {
@@ -68,6 +70,7 @@
         border-width: 2px !important;
         border-style: solid !important;
     }
+
     &.inactive {
         // make whole div a bit transparent
         opacity: 0.5;

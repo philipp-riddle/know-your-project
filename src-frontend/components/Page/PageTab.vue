@@ -39,6 +39,17 @@
     const pageSectionStore = usePageSectionStore();
 
     const onPageSectionSubmit = async (pageSection, updatedPageSectionItem) => {
+        if (updatedPageSectionItem instanceof File) {
+            return new Promise(async (resolve) => {
+                const formData = new FormData();
+                formData.append('file', updatedPageSectionItem);
+
+                pageSectionStore.uploadSection(props.pageTab.id, updatedPageSectionItem).then((response) => {
+                    resolve(response);
+                });
+            });
+        }
+
         return new Promise(async (resolve) => {
             if (pageSection.id) {
                 const pageSectionSubmitObject = {

@@ -1,18 +1,18 @@
 <template>
     <div class="row">
         <div class="col-sm-12 col-lg-4 card" v-if="checklist">
-            <div class="card-body">
+            <div class="card-body p-2">
                 <div class="d-flex flex-row justify-content-between align-items-center">
-                    <h5 class="mb-2">
+                    <h4 class="mb-2">
                         <input
-                            class="form-control magic-input"
+                            class="p bold form-control magic-input"
                             type="text"
                             v-model="checklist.name"
                             placeholder="Enter checklist name"
                             @input="onChecklistRename"
                         />
-                    </h5>
-                    <div v-if="pageSection">
+                    </h4>
+                    <div v-if="pageSection" v-tooltip="areAllItemsCompleted ? 'All items are completed' : 'Not all items are completed'">
                         <div v-if="areAllItemsCompleted">
                             <span class="badge rounded-pill bg-primary">
                                 <span>{{ completedChecklistItems }} / {{ checklist.pageSectionChecklistItems.length }}</span>
@@ -101,8 +101,6 @@
 
             pageSectionChecklistItemStore.createChecklistItem(pageSectionId.value, createdChecklistItem);
         } else {
-            console.log('Creating entirely new checklist');
-
             // create entirely new checklist
             checklist.value = {
                 ...checklist.value,

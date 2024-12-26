@@ -21,25 +21,35 @@
         />
         <PageSectionChecklist
             v-once
-            v-if="pageSection.pageSectionChecklist != null"
+            v-else-if="pageSection.pageSectionChecklist != null"
             class="col-sm-11"
             :pageSection="pageSection"
             :onPageSectionSubmit="(sectionItem) => onPageSectionSubmitHandler(pageSection, sectionItem)"
         />
         <PageSectionURL
             v-once
-            v-if="pageSection.pageSectionURL != null"
+            v-else-if="pageSection.pageSectionURL != null"
             class="col-sm-11"
             :pageSection="pageSection"
             :onPageSectionSubmit="(sectionItem) => onPageSectionSubmitHandler(pageSection, sectionItem)"
         />
         <PageSectionUpload
             v-once
-            v-if="pageSection.pageSectionUpload != null"
+            v-else-if="pageSection.pageSectionUpload != null"
             class="col-sm-11"
             :pageSection="pageSection"
             :onPageSectionSubmit="(sectionItem) => onPageSectionSubmitHandler(pageSection, sectionItem)"
         />
+        <PageSectionEmbeddedPage
+            v-once
+            v-else-if="pageSection.embeddedPage != null"
+            class="col-sm-11"
+            :pageSection="pageSection"
+            :onPageSectionSubmit="(sectionItem) => onPageSectionSubmitHandler(pageSection, sectionItem)"
+        />
+        <div v-else class="alert alert-danger">
+            <p>Unknown section type.</p>
+        </div>
     </div>
 </template>
 
@@ -47,6 +57,7 @@
     import PageSectionCreateButton from '@/components/Page/PageSection/PageSectionCreateButton.vue';
     import PageSectionInfo from '@/components/Page/PageSection/PageSectionInfo.vue';
     import PageSectionChecklist from '@/components/Page/PageSection/Widget/PageSectionChecklist.vue';
+    import PageSectionEmbeddedPage from '@/components/Page/PageSection/Widget/PageSectionEmbeddedPage.vue';
     import PageSectionUpload from '@/components/Page/PageSection/Widget/PageSectionUpload.vue';
     import PageSectionText from '@/components/Page/PageSection/Widget/PageSectionText.vue';
     import PageSectionURL from '@/components/Page/PageSection/Widget/PageSectionURL.vue';

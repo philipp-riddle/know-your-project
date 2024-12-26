@@ -1,4 +1,9 @@
 <template>
+    <div class="row" v-if="showPageTitle">
+        <div class="col-sm-12 offset-md-1 col-md-11">
+            <h1 class="m-0"><input class="magic-input" v-model="props.page.name" @keyup="updatePageTitle" v-tooltip="'Page title'" /></h1>
+        </div>
+    </div>
     <div class="mt-4">
         <div v-if="selectedTabId && pageTabStore.pageTabs[selectedTabId]">
             <PageTab :page="page" :pageTab="pageTabStore.selectedTab" />
@@ -68,6 +73,11 @@
             type: Object,
             required: true,
         },
+        showPageTitle: {
+            type: Boolean,
+            required: false,
+            default: false,
+        },
     });
     const pageStore = usePageStore();
     const pageTabStore = usePageTabStore();
@@ -86,6 +96,7 @@
 
     // this re-fetches the page value on every route change from the store
     watch(() => currentRoute.params.id, async (newPageId) => {
+        console.log('switched page!');
         const newPage = await pageStore.getPage(newPageId);
         page.value = newPage;
         switchPageTab(newPage.pageTabs[0]);
@@ -115,4 +126,14 @@
     const onPageDeleteTab = async (pageTab) => {
         await pageTabStore.deleteTab(props.page.id, pageTab);
     };
+
+    const debouncedPageTitleUpdate = useDebounceFn(async () => {
+        await pageStore.updatePage({
+            id: pageStore.selectedPage.id,
+            name: pageStore.selectedPage.name,
+        });
+    }, 500);
+    const updatePageTitle = async () => {
+        await debouncedPageTitleUpdate();
+    }
 </script>

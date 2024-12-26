@@ -1,7 +1,7 @@
 <template>
     <div class="container-fluid p-0 m-0 h-100" style="max-width: 100%">
         <div class="row h-100 p-0 m-0">
-            <div class="col-sm-4 col-lg-2 p-3">
+            <div class="col-sm-4 col-lg-2 p-0 m-0">
                 <NavigationSidebar />
             </div>
             <div class="col-sm-8 col-lg-10 m-0 p-0 h-100 bg-white page-panel">

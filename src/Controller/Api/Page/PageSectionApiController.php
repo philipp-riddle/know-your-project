@@ -4,9 +4,12 @@ namespace App\Controller\Api\Page;
 
 use App\Controller\Api\CrudApiController;
 use App\Entity\PageSection;
+use App\Entity\PageSectionUpload;
 use App\Entity\PageTab;
 use App\Form\PageSectionForm;
+use App\Form\PageSectionUploadForm;
 use App\Service\OrderListHandler;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
@@ -65,6 +68,35 @@ class PageSectionApiController extends CrudApiController
     public function changeOrder(PageTab $pageTab, Request $request, OrderListHandler $orderListHandler): JsonResponse
     {
         return $this->crudChangeOrder($request, $orderListHandler, \iterator_to_array($pageTab->getPageSections()));
+    }
+
+    #[Route('/upload', name: 'api_page_section_upload', methods: ['POST'])]
+    public function upload(Request $request): JsonResponse
+    {
+        var_dump($request->files->all());
+        var_dump($request->request->all());
+
+        return $this->crudUpdateOrCreate(
+            null,
+            $request,
+            formClass: PageSectionUploadForm::class,
+            onProcessEntity: function(PageSection $pageSection, FormInterface $form) {
+                $file = $form->get('file')->getData();
+
+                if (null === $file) {
+                    throw new \Exception('No file uploaded');
+                }
+
+                die('gumo!');
+
+                var_dump($file);
+
+                // $pageSectionUpload = (new PageSectionUpload())
+                //     ->setFile($file);
+
+                return $pageSection;
+            }
+        );
     }
 
     public function getEntityClass(): string

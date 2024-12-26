@@ -26,9 +26,9 @@ export const usePageStore = defineStore('page', () => {
     }
 
     async function setSelectedPage(page) {
+        resetStore(); // clean up the store before setting a new page
         selectedPage.value = page;
-
-        // @todo clean up old data from old selected page in the stores
+        addPage(selectedPage.value); // to make sure all tabs are loaded into the store
     }
 
     function getSelectedPage() {

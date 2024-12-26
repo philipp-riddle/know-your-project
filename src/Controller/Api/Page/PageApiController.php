@@ -31,10 +31,16 @@ class PageApiController extends CrudApiController
     }
 
     #[Route('/project-list/{project}', name: 'api_page_projectList', methods: ['GET'])]
-    public function projectList(Project $project): JsonResponse
+    public function projectList(Project $project, Request $request): JsonResponse
     {
         $this->checkUserAccess($project);
-        $projectPages = $this->pageRepository->findProjectPages($this->getUser(), $project);
+        $projectPages = $this->pageRepository->findProjectPages(
+            $this->getUser(),
+            $project,
+            $request->query->get('includeUserPages', true),
+            $request->query->get('query'),
+            $request->query->get('limit'),
+        );
 
         return $this->jsonSerialize($projectPages);
     }

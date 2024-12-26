@@ -1,31 +1,34 @@
 <template>
-    <div class="navigation-sidebar d-flex flex-column gap-5 justify-content-between">
+    <div class="navigation-sidebar h-100 d-flex flex-column gap-5 justify-content-between p-3">
+        <div class="d-flex flex-column gap-5">
+            <div class="d-flex flex-column gap-2">
+                <NavigationTop />
 
-        <div class="d-flex flex-column gap-2">
-            <NavigationTop />
+                <ul class="nav nav-pills nav-fill d-flex flex-column gap-1">
+                    <li class="nav-item" v-for="navigationItem in navigationItems">
+                        <router-link
+                            class="nav-link"
+                            :class="{ active: isSelected(navigationItem.name), inactive: !isSelected(navigationItem.name) }"
+                            :to="{ name: navigationItem.name }"
+                        >   
+                        <div class="d-flex flex-row gap-3 align-items-center justify-content-between">
+                            <div class="d-flex flex-row gap-3 align-items-center">
+                                <font-awesome-icon :icon="['fas', navigationItem.icon]" />
+                                <span class="">{{ navigationItem.name }}</span>
+                            </div>
+                            <div v-if="taskStore.getTasks(navigationItem.name)">
+                                <small class="text-muted">{{ taskStore.getTasks(navigationItem.name).length }}</small>
+                            </div>
+                        </div>
+                        </router-link>
+                    </li>
+                </ul>
+            </div>
 
-            <ul class="nav nav-pills nav-fill d-flex flex-column gap-1">
-                <li class="nav-item" v-for="navigationItem in navigationItems">
-                    <router-link
-                        class="nav-link"
-                        :class="{ active: isSelected(navigationItem.name), inactive: !isSelected(navigationItem.name) }"
-                        :to="{ name: navigationItem.name }"
-                    >   
-                    <div class="d-flex flex-row gap-3 align-items-center justify-content-between">
-                        <div class="d-flex flex-row gap-3 align-items-center">
-                            <font-awesome-icon :icon="['fas', navigationItem.icon]" />
-                            <span class="">{{ navigationItem.name }}</span>
-                        </div>
-                        <div v-if="taskStore.getTasks(navigationItem.name)">
-                            <small class="text-muted">{{ taskStore.getTasks(navigationItem.name).length }}</small>
-                        </div>
-                    </div>
-                    </router-link>
-                </li>
-            </ul>
+            <div class="d-flex flex-column gap-2">
+                <NavigationPageExplorer />
+            </div>
         </div>
-
-        <NavigationPageExplorer />
 
         <NavigationSettingsDropdown />
     </div>

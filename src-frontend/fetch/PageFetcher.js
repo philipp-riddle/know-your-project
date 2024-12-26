@@ -30,8 +30,12 @@ export async function fetchUpdatePage(page) {
     return resp.data;
 }
 
-export async function fetchGetPageList(projectId) {
-    const resp = await axios.get(`${BaseService}/project-list/${projectId}`);
+export async function fetchGetPageList(projectId, includeUserPages, query, limit) {
+    includeUserPages = (includeUserPages ?? true) ? '1' : '0'; // Convert boolean to string
+    limit = limit ?? 100; // Default limit to 100
+    query = encodeURIComponent(query ?? ''); // URL encode the query to be sure the query does not break the URL
+
+    const resp = await axios.get(`${BaseService}/project-list/${projectId}?includeUserPages=${includeUserPages}&query=${query}&limit=${limit}`);
 
     return resp.data;
 }
@@ -105,6 +109,20 @@ export async function fetchUpdatePageSection(pageSectionId, pageSection) {
 export async function fetchChangePageSectionOrder(pageTabId, sectionIds) {
     const resp = await axios.put(`${BasePageSectionService}/order/${pageTabId}`, {
         idOrder: sectionIds,
+    });
+
+    return resp.data;
+}
+
+export async function fetchUploadPageSection(pageTabId, file) {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('pageTab', pageTabId);
+
+    const resp = await axios.post(`${BasePageSectionService}/upload`, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
     });
 
     return resp.data;

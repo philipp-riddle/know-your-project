@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { usePageTabStore } from './PageTabStore';
-import { fetchCreatePageSection, fetchUpdatePageSection, fetchDeletePageSection, fetchChangePageSectionOrder } from '../fetch/PageFetcher';
+import { fetchCreatePageSection, fetchUpdatePageSection, fetchDeletePageSection, fetchChangePageSectionOrder, fetchUploadPageSection } from '../fetch/PageFetcher';
 
 export const usePageSectionStore = defineStore('pageSection', () => {
     const pageSections = ref({});
@@ -9,12 +9,19 @@ export const usePageSectionStore = defineStore('pageSection', () => {
     const displayedPageSections = ref([]);
     const pageSectionsByTab = ref({});
     const pageTabStore = usePageTabStore();
-    const isDraggingPageSection = ref(null);
+    const isDraggingPageSection = ref(false);
+    const selectedPageSection = ref(null);
+
+    function getIsDraggingPageSection() {
+        return isDraggingPageSection.value;
+    }
 
     function resetStore () {
         pageSections.value = {};
         displayedPageSections.value = [];
         pageSectionsByTab.value = {};
+        isDraggingPageSection.value = false;
+        selectedPageSection.value = null;
     }
 
     // == fetch + store methods
@@ -29,6 +36,12 @@ export const usePageSectionStore = defineStore('pageSection', () => {
         // @todo if we add this line we effectively change the section the user is editing,
         // focus is lost. We need to find a way to keep the focus on the section the user is editing and merge the changes somehow
         // displayedPageSections.value = displayedPageSections.value.map((section) => isNaN(section.id) ? newSection : section);
+
+        return newSection;
+    }
+
+    async function uploadSection(pageTabId, file) {
+        const newSection = await fetchUploadPageSection(pageTabId, file);
 
         return newSection;
     }
@@ -121,11 +134,14 @@ export const usePageSectionStore = defineStore('pageSection', () => {
         resetStore,
 
         isDraggingPageSection,
+        getIsDraggingPageSection,
         pageSections,
         pageSectionsByTab,
         displayedPageSections,
+        selectedPageSection,
 
         createSection,
+        uploadSection,
         updateSection,
         deleteSection,
         reorderSections,
