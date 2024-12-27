@@ -8,9 +8,16 @@ export const useTaskStore = defineStore('task', {
         pageStore: usePageStore(),
     }),
     actions: {
-        setSelectedTask(task) {
-            this.selectedTask = task;
-            this.pageStore.addPage(task.page); // to load the page into the redux as well; is now needed for the task page
+        async setSelectedTask(task) {
+            return new Promise(async (resolve) => {
+                this.selectedTask = task;
+
+                // load the underlying task page also into the store; make sure to not use any cached version (2nd argument = true, forceRefresh)
+                await this.pageStore.setSelectedPage(task.page, true);
+
+                // resolve with null to indicate that the task was set
+                resolve(null);
+            });
         },
         getSelectedTask() {
             return this.selectedTask;

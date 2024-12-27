@@ -46,9 +46,10 @@
         const modal = new Modal(document.getElementById('taskDetailModal'));
 
         taskProvider.getTask(taskId).then((task) => {
-            taskStore.setSelectedTask(task);
-            modal.show();
-            modalShow.value = true;
+            taskStore.setSelectedTask(task).then(() => {
+                modal.show();
+                modalShow.value = true;
+            });
         });
     });
 

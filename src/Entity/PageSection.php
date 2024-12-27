@@ -146,8 +146,8 @@ class PageSection implements UserPermissionInterface, CrudEntityInterface, Order
 
     public function initialize(): static
     {
-        $this->setCreatedAt(new \DateTime());
-        $this->setUpdatedAt(new \DateTime());
+        $this->createdAt ??= new \DateTime();
+        $this->updatedAt ??= new \DateTime();
 
         return $this;
     }

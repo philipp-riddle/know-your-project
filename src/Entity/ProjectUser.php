@@ -74,7 +74,7 @@ class ProjectUser implements UserPermissionInterface, CrudEntityInterface
 
     public function initialize(): static
     {
-        $this->setCreatedAt(new \DateTime());
+        $this->createdAt ??= new \DateTime();
 
         return $this;
     }

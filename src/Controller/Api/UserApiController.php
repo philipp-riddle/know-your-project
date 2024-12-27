@@ -15,7 +15,11 @@ class UserApiController extends ApiController
     {
         $user = $this->getUser();
 
-        return $this->jsonSerialize($user);
+        return $this->jsonSerialize($user, normalizeCallbacks: [
+            'pages' => fn() => [],
+            'projectUsers' => fn() => [],
+            'tasks' => fn() => [],
+        ]);
     }
 
     #[Route('/selected-project/{project}', name: 'api_user_selectProject', methods: ['PUT'])]

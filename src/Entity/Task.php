@@ -136,7 +136,7 @@ class Task implements OrderListItemInterface, CrudEntityInterface, UserPermissio
 
     public function initialize(): static
     {
-        $this->isArchived = false;
+        $this->isArchived ??= false;
 
         return $this;
     }

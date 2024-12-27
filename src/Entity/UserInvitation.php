@@ -85,7 +85,7 @@ class UserInvitation implements CrudEntityInterface, UserPermissionInterface
 
     public function initialize(): static
     {
-        $this->createdAt = new \DateTimeImmutable();
+        $this->createdAt ??= new \DateTimeImmutable();
 
         return $this;
     }

@@ -168,9 +168,3 @@
         embeddedPage.value.page = page;
     }
 </script>
-
-<style scoped>
-    .w-100 {
-        word-break: break-word;
-    }
-</style>

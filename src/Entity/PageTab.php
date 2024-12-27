@@ -132,7 +132,7 @@ class PageTab implements UserPermissionInterface, CrudEntityInterface
 
     public function initialize(): static
     {
-        $this->createdAt = new \DateTimeImmutable();
+        $this->createdAt ??= new \DateTimeImmutable();
 
         return $this;
     }

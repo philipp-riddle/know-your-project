@@ -6,45 +6,50 @@
 			</p>
 		</div>
 
-		<div v-if="!isLoadingTasks && taskStore && taskStore.getTasks(workflowStep).length === 0">
-			<p>No tasks created so far.</p>
+		<div v-if="isLoadingTasks">
+			<p>Loading tasks...</p>
 		</div>
+		<div v-else>
+			<div v-if="taskStore.getTasks(workflowStep).length === 0">
+				<p>No tasks created so far.</p>
+			</div>
 
-		<div v-if="!isLoadingTasks && taskStore" ref="listArea" class="list-area p-0" style="min-height: 150px" :workflow-step="workflowStep.id">
-			<draggable
-				class="dragArea pb-4 m-0 d-flex gap-3 flex-column"
-				:data-workflowStep="workflowStep"
-				tag="ul"
-				:list="this.taskStore.getTasks(workflowStep)"
-				:group="{ name: 'tasks' }"
-				item-key="id"
-        		@end="onDragEnd"
-			>
-				<template #item="{ element }">
-					<div
-						class="card task-card"
-						:class="{ 'card-selected': taskStore.selectedTask?.id === element.id }"
-						:task="element.id"
-						@click="onTaskClick(element)"
-					>
-						<div class="card-body d-flex justify-content-between align-items-center">
-							<span>{{ element.name }}</span>
-							<div class="d-flex flex-row gap-2">
-								<span>{{ getTaskProgress(element) }}</span>
-								<div class="dropdown task-options">
-									<h5 class="dropdown-toggle m-0" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false" @click.stop="">
-										<font-awesome-icon :icon="['fas', 'ellipsis']" />
-									</h5>
-									<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-										<li><span class="dropdown-item" href="#" @click.stop="onTaskDeleteClick(element)">Archive Task</span></li>
-										<li><span class="dropdown-item" href="#" @click.stop="onTaskDeleteClick(element)">Delete Task</span></li>
-									</ul>
+			<div v-else ref="listArea" class="list-area p-0" style="min-height: 150px" :workflow-step="workflowStep.id">
+				<draggable
+					class="dragArea pb-4 m-0 d-flex gap-3 flex-column"
+					:data-workflowStep="workflowStep"
+					tag="ul"
+					:list="this.taskStore.tasks[workflowStep] ?? []"
+					:group="{ name: 'tasks' }"
+					item-key="id"
+					@end="onDragEnd"
+				>
+					<template #item="{ element }">
+						<div
+							class="card task-card"
+							:class="{ 'card-selected': taskStore.selectedTask?.id === element.id }"
+							:task="element.id"
+							@click="onTaskClick(element)"
+						>
+							<div class="card-body d-flex justify-content-between align-items-center">
+								<span>{{ element.name }}</span>
+								<div class="d-flex flex-row gap-2">
+									<span>{{ getTaskProgress(element) }}</span>
+									<div class="dropdown task-options">
+										<h5 class="dropdown-toggle m-0" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false" @click.stop="">
+											<font-awesome-icon :icon="['fas', 'ellipsis']" />
+										</h5>
+										<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+											<li><span class="dropdown-item" href="#" @click.stop="onTaskDeleteClick(element)">Archive Task</span></li>
+											<li><span class="dropdown-item" href="#" @click.stop="onTaskDeleteClick(element)">Delete Task</span></li>
+										</ul>
+									</div>
 								</div>
 							</div>
 						</div>
-					</div>
-				</template>
-			</draggable>
+					</template>
+				</draggable>
+			</div>
 
 			<div class="pb-4 mb-0" v-if="isAddingTask">
 				<textarea
@@ -60,7 +65,6 @@
 					:disabled="isAddingTaskRequestLoading"
 				></textarea>
 			</div>
-
 		</div>
 		<div
 			class="btn btn-dark btn-add-task d-flex align-items-center justify-content-center"
@@ -136,7 +140,7 @@
 				let checklistItemsComplete = 0;
 
 				for (const pageTab of task.page.pageTabs) {
-					for (const pageSection of pageTab.pageSections) {
+					for (const pageSection of Object.values(pageTab.pageSections ?? [])) {
 						if (pageSection.pageSectionChecklist) {
 							const pageSectionChecklistItems = pageSection.pageSectionChecklist.pageSectionChecklistItems;
 
@@ -162,12 +166,16 @@
 			},
 			async showNewTaskInput(show) {
 				this.$data.isAddingTask = show;
-
 				if (show) {
-					await nextTick(); // wait for the DOM to show the controlers
+					await nextTick(); // wait for the DOM to show the controls
 
-					this.$refs.listArea.scrollTop = this.$refs.listArea.scrollHeight;
-					this.$refs.newTaskInput.focus(); // set focus directly on the new task input
+					if (this.$refs.listArea) {
+						this.$refs.listArea.scrollTop = this.$refs.listArea.scrollHeight;
+					}
+
+					if (this.$refs.newTaskInput) {
+						this.$refs.newTaskInput.focus(); // set focus directly on the new task input
+					}
 				}
 			},
 			onTaskClick(task) {

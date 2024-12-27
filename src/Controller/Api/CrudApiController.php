@@ -39,11 +39,11 @@ abstract class CrudApiController extends ApiController
         }
     }
 
-    protected function crudGet(UserPermissionInterface $userPermissionInterface): JsonResponse
+    protected function crudGet(UserPermissionInterface $userPermissionInterface, ?array $normalizeCallbacks = null): JsonResponse
     {
         $this->checkUserAccess($userPermissionInterface);
 
-        return $this->jsonSerialize($userPermissionInterface);
+        return $this->jsonSerialize($userPermissionInterface, $normalizeCallbacks);
     }
 
     protected function crudDelete(UserPermissionInterface $userPermissionInterface): JsonResponse
@@ -109,20 +109,16 @@ abstract class CrudApiController extends ApiController
             throw new \Exception('Entity must be an instance of CrudEntityInterface');
         }
 
-        $entity->initialize();
-        $this->checkUserAccess($entity);
-
-        if ($persist) {
-            $this->em->persist($entity);
-        }
-
         if (null !== $onProcessEntity) {
             $entity = $onProcessEntity($entity, $entityForm);
             $this->checkUserAccess($entity);
+        }
 
-            if ($persist) {
-                $this->em->persist($entity);
-            }
+        // execute the initialize function after all custom processing has been done to the entity to be able to run checks if the entity is valid
+        $entity->initialize();
+
+        if ($persist) {
+            $this->em->persist($entity);
         }
 
         $this->em->flush();

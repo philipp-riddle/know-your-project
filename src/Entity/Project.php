@@ -44,12 +44,19 @@ class Project implements UserPermissionInterface
     #[ORM\OneToMany(mappedBy: 'project', targetEntity: UserInvitation::class, orphanRemoval: true)]
     private Collection $UserInvitations;
 
+    /**
+     * @var Collection<int, Tag>
+     */
+    #[ORM\OneToMany(mappedBy: 'project', targetEntity: Tag::class, orphanRemoval: true)]
+    private Collection $tags;
+
     public function __construct()
     {
         $this->tasks = new ArrayCollection();
         $this->projectUsers = new ArrayCollection();
         $this->pages = new ArrayCollection();
         $this->UserInvitations = new ArrayCollection();
+        $this->tags = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -233,6 +240,36 @@ class Project implements UserPermissionInterface
             // set the owning side to null (unless already changed)
             if ($UserInvitation->getProject() === $this) {
                 $UserInvitation->setProject(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Tag>
+     */
+    public function getTags(): Collection
+    {
+        return $this->tags;
+    }
+
+    public function addTag(Tag $tag): static
+    {
+        if (!$this->tags->contains($tag)) {
+            $this->tags->add($tag);
+            $tag->setProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTag(Tag $tag): static
+    {
+        if ($this->tags->removeElement($tag)) {
+            // set the owning side to null (unless already changed)
+            if ($tag->getProject() === $this) {
+                $tag->setProject(null);
             }
         }
 

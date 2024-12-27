@@ -40,9 +40,16 @@ class Page implements UserPermissionInterface, CrudEntityInterface
     #[ORM\OneToOne(mappedBy: 'page')]
     private ?Task $task;
 
+    /**
+     * @var Collection<int, TagPage>
+     */
+    #[ORM\OneToMany(mappedBy: 'page', targetEntity: TagPage::class, orphanRemoval: true)]
+    private Collection $tags;
+
     public function __construct()
     {
         $this->pageTabs = new ArrayCollection();
+        $this->tags = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -172,7 +179,7 @@ class Page implements UserPermissionInterface, CrudEntityInterface
 
     public function initialize(): static
     {
-        $this->createdAt = new \DateTime();
+        $this->createdAt ??= new \DateTime();
 
         return $this;
     }
@@ -188,5 +195,35 @@ class Page implements UserPermissionInterface, CrudEntityInterface
         // if (\count($this->getPageTabs()) === 0) {
         //     throw new \RuntimeException('Page must have at least one tab');
         // }
+    }
+
+    /**
+     * @return Collection<int, TagPage>
+     */
+    public function getTags(): Collection
+    {
+        return $this->tags;
+    }
+
+    public function addTag(TagPage $tag): static
+    {
+        if (!$this->tags->contains($tag)) {
+            $this->tags->add($tag);
+            $tag->setPage($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTag(TagPage $tag): static
+    {
+        if ($this->tags->removeElement($tag)) {
+            // set the owning side to null (unless already changed)
+            if ($tag->getPage() === $this) {
+                $tag->setPage(null);
+            }
+        }
+
+        return $this;
     }
 }

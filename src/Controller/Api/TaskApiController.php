@@ -2,7 +2,7 @@
 
 namespace App\Controller\Api;
 
-use App\Entity\Interface\CrudEntityInterface;
+use App\Entity\PageSection;
 use App\Entity\Task;
 use App\Form\MoveTaskForm;
 use App\Form\TaskForm;
@@ -11,6 +11,7 @@ use App\Service\Helper\ApiControllerHelperService;
 use App\Service\OrderListHandler;
 use App\Service\PageService;
 use App\Service\TaskService;
+use Doctrine\Common\Collections\Collection;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
@@ -36,7 +37,15 @@ class TaskApiController extends CrudApiController
     public function getTasks(string $workflowStepType): JsonResponse
     {
         return $this->jsonSerialize(
-            $this->taskService->getTasks($this->getUser()->getSelectedProject(), $workflowStepType)
+            $this->taskService->getTasks($this->getUser()->getSelectedProject(), $workflowStepType),
+            normalizeCallbacks: [
+                'pageTabs' => fn (Collection $pageTabs) => [$pageTabs[0] ?? []],
+                'pageSections' => function (Collection $pageSections) {
+                    // for the task serialisation we are only interested in the checklists to show the progress in the task list;
+                    // this decreases the payload size heavily.
+                    return \array_filter(\iterator_to_array($pageSections), fn(PageSection $pageSection) => $pageSection->getPageSectionChecklist() !== null);
+                },
+            ],
         );
     }
 

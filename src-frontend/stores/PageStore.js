@@ -26,13 +26,13 @@ export const usePageStore = defineStore('page', () => {
         pageTabStore.resetStore(); // this clears the tab store as well as the section store
     }
 
-    async function setSelectedPage(page) {
+    async function setSelectedPage(page, forceRefresh = false) {
         resetStore(); // clean up the store before setting a new page
         selectedPage.value = page;
 
         // if the page has no loaded page tabs we assume that the serializer skipped the tabs.
         // thus, we force a reload of the page to get the tabs and additionally select the first tab as selected.
-        if (!page.pageTabs || page.pageTabs.length === 0) {
+        if (forceRefresh || !page.pageTabs || page.pageTabs.length === 0) {
             selectedPage.value = null;
             isLoadingPage.value = true;
 
@@ -45,6 +45,7 @@ export const usePageStore = defineStore('page', () => {
                 }
 
                 isLoadingPage.value = false;
+                addPage(fetchedPage);
             });
         } else {
             addPage(selectedPage.value); // to make sure all tabs are loaded into the store
@@ -134,12 +135,12 @@ export const usePageStore = defineStore('page', () => {
     }
 
     return {
-        pages,
-        selectedPage,
         displayedPages,
         reorderDisplayedPages,
+        pages,
         isLoadingPage,
         resetStore,
+        selectedPage,
         setSelectedPage,
         getSelectedPage,
         createPage,

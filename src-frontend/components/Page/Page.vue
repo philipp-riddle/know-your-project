@@ -4,8 +4,18 @@
             <h1 class="m-0"><input class="magic-input" v-model="props.page.name" @keyup="updatePageTitle" v-tooltip="'Edit page title'" /></h1>
         </div>
     </div>
+    <div class="row">
+        <div class="col-sm-12 offset-md-1 col-md-11 col-xl-4">
+            <PageTagControl :page="page" classs="d-flex flex-row justify-content-start gap-2"/>
+        </div>
+    </div>
     <div class="mt-4">
-        <div v-if="pageTabStore.selectedTab?.id && pageTabStore.pageTabs[pageTabStore.selectedTab?.id]">
+        <div v-if="pageStore.isLoadingPage">
+            <div class="col-sm-12 offset-xl-1 col-xl-11">
+                <p>Loading...</p>
+            </div>
+        </div>
+        <div v-else-if="pageTabStore.selectedTab?.id && pageTabStore.pageTabs[pageTabStore.selectedTab?.id]">
             <PageTab :page="page" :pageTab="pageTabStore.selectedTab" />
         </div>
         <div v-else>
@@ -60,6 +70,7 @@
     import PageTab from '@/components/Page/PageTab.vue';
     import CreateButton from '@/components/Util/CreateButton.vue';
     import TextArea from '@/components/Util/TextArea.vue';
+    import PageTagControl from '@/components/Page/PageTagControl.vue';
     import { fetchCreatePageTab } from '@/fetch/PageFetcher.js';
     import { usePageStore } from '@/stores/PageStore.js';
     import { usePageTabStore } from '@/stores/PageTabStore.js';
