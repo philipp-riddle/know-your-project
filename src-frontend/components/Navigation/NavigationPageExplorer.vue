@@ -1,6 +1,6 @@
 <template>
     <div class="d-flex flex-column gap-2">
-        <div class="d-flex flex-row align-items-center justify-content-between">
+        <div class="d-flex flex-row align-items-end justify-content-between">
             <small class="text-muted p" v-tooltip="'All your project pages and notes are displayed here.'"><strong>PAGES</strong></small>
             <NavigationCreateContentMenu />
         </div>

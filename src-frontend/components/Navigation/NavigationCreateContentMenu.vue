@@ -4,9 +4,9 @@
         :shown="showPopover"
     >
         <!-- This will be the popover reference (for the events and position) -->
-        <div class="d-flex flex-row btn btn-primary nav-create-item" v-tooltip="tooltip">
+        <button type="button" class="btn btn-primary" v-tooltip="tooltip">
             <span class="white"><font-awesome-icon :icon="['fas', 'pencil']" /></span>
-        </div>
+        </button>
 
         <!-- This will be the content of the popover -->
         <template #popper>

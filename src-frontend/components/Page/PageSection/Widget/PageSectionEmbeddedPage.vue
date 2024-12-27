@@ -94,7 +94,11 @@
             return null;
         }
 
-        for (const pageSection of embeddedPage.value.page.pageTabs[0].pageSections) {
+        if (embeddedPage.value.page.pageTabs.length === 0) {
+            return ''; // if the page has no tabs we don't need to show any text / extract
+        }
+
+        for (const pageSection of embeddedPage.value.page.pageTabs[0]?.pageSections ?? []) {
             if (pageSection.pageSectionText) {
                 let text = pageSection.pageSectionText.content;
                 let originalTextLength = text.length;
@@ -125,7 +129,6 @@
             });
         }
 
-        console.log('gumo ausm embedde page');
         pageSectionStore.selectedPageSection = props.pageSection;
     });
 
@@ -149,6 +152,8 @@
         } else {
             fetchApiForResults(); // if the user deselects the page we need to load the search results again
         }
+
+        console.log('select page');
 
         embeddedPage.value.page = page;
     }

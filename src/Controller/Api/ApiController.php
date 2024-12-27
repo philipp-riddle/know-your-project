@@ -4,13 +4,10 @@ namespace App\Controller\Api;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
-use App\Serializer\EntityNormalizer;
 use App\Service\Helper\ApiControllerHelperService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
@@ -44,27 +41,35 @@ class ApiController extends AbstractController
         $this->em->flush();
     }
 
-    protected function jsonSerialize(mixed $object): JsonResponse
+    /**
+     * Serialises an object to JSON.
+     * 
+     * @param mixed $object The object(s) to serialise.
+     * @param array|null $normalizeCallbacks An array of normalisation callbacks; e.g. ['createdAt' => fn($date) => $date->format('Y-m-d H:i:s')]
+     * 
+     * @return JsonResponse The JSON response.
+     */
+    protected function jsonSerialize(mixed $object, ?array $normalizeCallbacks = null): JsonResponse
     {
-        if (\is_array($object)) {
-            return $this->jsonSerializeMany($object);
+        if (\is_array($object) || $object instanceof \Traversable) {
+            return $this->jsonSerializeMany($object, $normalizeCallbacks);
         }
     
-        return $this->json($this->normalize($object));
+        return $this->json($this->normalize($object, $normalizeCallbacks));
     }
 
-    private function jsonSerializeMany(array $objects): JsonResponse
+    protected function jsonSerializeMany(array|\Traversable $objects, ?array $normalizeCallbacks = null): JsonResponse
     {
         $normalized = [];
 
         foreach ($objects as $object) {
-            $normalized[] = $this->normalize($object);
+            $normalized[] = $this->normalize($object, $normalizeCallbacks);
         }
 
         return $this->json($normalized);
     }
 
-    private function normalize(mixed $object): array|null
+    protected function normalize(mixed $object, ?array $normalizeCallbacks = null): array|null
     {
         $maxDepthHandler = function (object $object): string {
             return $object->getId();
@@ -81,6 +86,7 @@ class ApiController extends AbstractController
             AbstractObjectNormalizer::MAX_DEPTH_HANDLER => $maxDepthHandler,
             AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER => $circularReferenceHandler,
             AbstractObjectNormalizer::IGNORED_ATTRIBUTES => ['__initializer__', '__cloner__', '__isInitialized__', 'password'],
+            AbstractNormalizer::CALLBACKS => $normalizeCallbacks ?? [],
         ]);
         $serializer = new Serializer([new DateTimeNormalizer(), $normalizer]);
 

@@ -10,7 +10,7 @@
     >
         <div class="modal-dialog modal-fullscreen">
             <div class="modal-content">
-                <div class="modal-body">
+                <div class="modal-body mt-xl-3 mt-sm-2">
                     <div v-if="taskStore.getSelectedTask()">
                         <TaskDetail :task="taskStore.getSelectedTask()" />
                     </div>
@@ -66,13 +66,21 @@
 
 <style scoped lang="sass">
     .modal-dialog {
-        padding-left: 20%;
+        padding-left: 30%;
         padding-right: 0%;
-        padding-top: 5%;
+        padding-top: 0%;
         padding-bottom: 0%;
+        
+        // on mobile we want a margin on the top
+        @media (max-width: 768px) {
+            padding-left: 0%;
+            padding-right: 0%;
+            padding-top: 10%;
+            padding-bottom: 0%;
+        }
     }
 
     .modal-content {
-        border-radius: 15px !important;
+        border-radius: 0px !important;
     }
 </style>

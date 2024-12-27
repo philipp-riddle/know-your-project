@@ -6,7 +6,6 @@ use App\Controller\Api\CrudApiController;
 use App\Entity\Page;
 use App\Entity\PageTab;
 use App\Entity\Project;
-use App\Entity\User;
 use App\Form\PageForm;
 use App\Repository\PageRepository;
 use App\Service\Helper\ApiControllerHelperService;
@@ -42,7 +41,10 @@ class PageApiController extends CrudApiController
             $request->query->get('limit'),
         );
 
-        return $this->jsonSerialize($projectPages);
+        return $this->jsonSerialize($projectPages, normalizeCallbacks: [
+            'pageTabs' => fn() => [], // do not serialize page tabs - this shrinkens the response payload size by a huge amount
+            'project' => fn() => $project->getId(), // same with the project; i.e. information we do not need here
+        ]);
     }
 
     #[Route('/{page}', name: 'api_page_get', methods: ['GET'])]

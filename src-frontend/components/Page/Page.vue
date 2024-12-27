@@ -1,16 +1,16 @@
 <template>
     <div class="row" v-if="showPageTitle">
         <div class="col-sm-12 offset-md-1 col-md-11">
-            <h1 class="m-0"><input class="magic-input" v-model="props.page.name" @keyup="updatePageTitle" v-tooltip="'Page title'" /></h1>
+            <h1 class="m-0"><input class="magic-input" v-model="props.page.name" @keyup="updatePageTitle" v-tooltip="'Edit page title'" /></h1>
         </div>
     </div>
     <div class="mt-4">
-        <div v-if="selectedTabId && pageTabStore.pageTabs[selectedTabId]">
+        <div v-if="pageTabStore.selectedTab?.id && pageTabStore.pageTabs[pageTabStore.selectedTab?.id]">
             <PageTab :page="page" :pageTab="pageTabStore.selectedTab" />
         </div>
         <div v-else>
             <div class="alert alert-danger">
-                <p>Cannot display selected tab.</p>
+                <p>Cannot display selected tab: {{ pageTabStore.selectedTab ?? 'n/a' }}</p>
             </div>
         </div>
 
@@ -37,7 +37,7 @@
                                 :text="pageTab.name"
                                 @click="switchPageTab(pageTab)"
                                 class="btn btn-sm m-0"
-                                :class="{ 'green-bold': selectedTabId === pageTab.id }"
+                                :class="{ 'green-bold': pageTabStore.selectedTab?.id === pageTab.id }"
                             />
                         </div>
 
@@ -82,7 +82,6 @@
     const pageStore = usePageStore();
     const pageTabStore = usePageTabStore();
     const pageSectionStore = usePageSectionStore();
-    const selectedTabId = ref(null);
     const debouncedTabUpdate = useDebounceFn(async (pageTab, name) => {
         pageTab.name = name;
         await pageTabStore.updateTab(pageTab);
@@ -106,7 +105,6 @@
             return;
         }
 
-        selectedTabId.value = pageTab.id;
         pageTabStore.setSelectedTab(pageTab);
     };
 

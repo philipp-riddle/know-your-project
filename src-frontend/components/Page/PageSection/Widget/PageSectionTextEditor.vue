@@ -1,5 +1,5 @@
 <template>
-    <div class="d-flex gap-3 flex-row mb-2" v-if="editor && pageSectionStore.selectedPageSection == pageSection.id">
+    <div class="d-flex gap-3 flex-row mb-2" v-if="editor && pageSectionStore.selectedPageSection == pageSection.id && !pageSectionStore.isDraggingPageSection">
         <div class="card">
             <div class="card-body p-0 d-flex flex-row gap-1">
                 <button

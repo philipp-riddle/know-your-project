@@ -1,11 +1,32 @@
 <template>
     <div v-if="taskProvider.getSelectedTask()">
-        <div class="d-flex justify-content-between align-items-center">
-            <div class="col-sm-10">
-                <h3 class="m-0"><input class="magic-input" v-model="taskProvider.getSelectedTask().name" @keyup="updateTaskContents" /></h3>
+        <div class="d-flex justify-content-between row">
+            <div class="col-sm-12 offset-xl-1 col-xl-8">
+                <h2 class="m-0" v-tooltip="'Edit task name'"><input class="magic-input" v-model="taskProvider.getSelectedTask().name" @keyup="updateTaskContents" /></h2>
                 <p class="text-muted">{{ taskProvider.getSelectedTask().stepType }}</p>
             </div>
-            <div>
+            <div class="col-sm-12 col-xl-3 d-flex justify-content-end">
+                <div class="d-flex justify-content-between">
+                    <h5
+                        v-if="!showDueDatePicker"
+                        class="m-0 me-4 no-due-date-heading"
+                        @click.stop="showDueDatePickerClick"
+                    >No due date set.</h5>
+                    <input
+                        type="datetime-local"
+                        id="meeting-time"
+                        name="meeting-time"
+                        ref="dueDatePicker"
+                        :style="{ display: showDueDatePicker ? 'block' : 'none' }"
+                        v-model="taskProvider.getSelectedTask().dueDate"
+                        :min="currentDate"
+                        :max="maxDate"
+                        @keyup="updateDueDate"
+                    />
+                    <button v-if="showDueDatePicker" class="btn btn-sm btn-danger ms-2" @click.stop="resetDueDate">
+                        <font-awesome-icon :icon="['fas', 'xmark']" />
+                    </button>
+                </div>
                 <div class="dropdown task-options">
                     <h5 class="btn btn-primary dropdown-toggle m-0" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                         <span class="me-3">Move</span> <font-awesome-icon :icon="['fas', 'arrow-right']" />
@@ -16,30 +37,6 @@
                         </li>
                     </ul>
                 </div>
-            </div>
-        </div>
-
-        <div class="d-flex gap-5 flex-row">
-            <div class="d-flex justify-content-between align-items-center">
-                <h5
-                    v-if="!showDueDatePicker"
-                    class="m-0 me-4 no-due-date-heading"
-                    @click.stop="showDueDatePickerClick"
-                >No due date set.</h5>
-                <input
-                    type="datetime-local"
-                    id="meeting-time"
-                    name="meeting-time"
-                    ref="dueDatePicker"
-                    :style="{ display: showDueDatePicker ? 'block' : 'none' }"
-                    v-model="taskProvider.getSelectedTask().dueDate"
-                    :min="currentDate"
-                    :max="maxDate"
-                    @keyup="updateDueDate"
-                    />
-                <button v-if="showDueDatePicker" class="btn btn-sm btn-danger ms-2" @click.stop="resetDueDate">
-                    <font-awesome-icon :icon="['fas', 'xmark']" />
-                </button>
             </div>
         </div>
 
