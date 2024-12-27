@@ -21,7 +21,7 @@ class PageRepository extends ServiceEntityRepository
     /**
      * @return Page[]
      */
-    public function findProjectPages(User $user, Project $project, bool $includeUserPages = true, ?string $query = null, ?int $limit = null): array
+    public function findProjectPages(User $user, Project $project, bool $includeUserPages = true, ?string $query = null, ?int $limit = null, ?int $excludeId = null): array
     {
         $qb = $this->createQueryBuilder('p')
             ->orderBy('p.user', 'DESC')
@@ -46,6 +46,12 @@ class PageRepository extends ServiceEntityRepository
         
         if (null !== $limit) {
             $qb->setMaxResults($limit);
+        }
+
+        if (null !== $excludeId) {
+            $qb
+                ->andWhere('p.id != :excludeId')
+                ->setParameter('excludeId', $excludeId);
         }
 
         return $qb

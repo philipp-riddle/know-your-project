@@ -2,7 +2,7 @@
     <div class="row">
         <div class="col-sm-12 col-lg-4 card">
             <div class="card-body p-2">
-                <div v-if="embeddedPage.page">
+                <div v-if="embeddedPage.page?.id">
                     <div class="d-flex flex-row justify-content-between align-items-center">
                         <h4 class="m-0">
                             <router-link
@@ -33,7 +33,10 @@
                     <p>{{ embeddedPageExtract }}</p>
                 </div>
                 <div v-else class="d-flex flex-column gap-2">
-                    <p class="text-muted bold m-0">SELECT PAGE TO EMBED</p>
+                    <div class="d-flex flex-row justify-content-between">
+                        <p class="text-muted bold m-0">SELECT PAGE TO EMBED</p>
+                        <button class="btn btn-sm m-0 p-0" @click="debouncedFetchApiForResults"><font-awesome-icon class="black" :icon="['fas', 'arrow-rotate-right']" /></button>
+                    </div>
                     <h5><input
                         type="text"
                         class="form-control p"
@@ -94,8 +97,15 @@
             return null;
         }
 
+        if (typeof embeddedPage.value.page != 'object') {
+            console.error('embeddedPage is not an object, found ' + typeof embeddedPage.value.page);
+            console.error(embeddedPage.value.page);
+
+            return '';
+        }
+
         if (embeddedPage.value.page.pageTabs.length === 0) {
-            return ''; // if the page has no tabs we don't need to show any text / extract
+            return ''; // if the page has no tabs we don't need to show any text / extract; could also be due to the page not being loaded yet
         }
 
         for (const pageSection of embeddedPage.value.page.pageTabs[0]?.pageSections ?? []) {
@@ -133,8 +143,8 @@
     });
 
     const fetchApiForResults = () => {
-        // load with the current project id, do NOT include user notes, pass on the value of the search input to filter the results, and limit the results to 10
-        fetchGetPageList(userStore.currentUser.selectedProject.id, false, searchInput?.value?.value ?? '', 5).then((foundPages) => {
+        // load with the current project id, do NOT include user notes, pass on the value of the search input to filter the results, limit the results to 5, and exclude the current page in the results
+        fetchGetPageList(userStore.currentUser.selectedProject.id, false, searchInput?.value?.value ?? '', 5, pageStore.selectedPage?.id ?? '').then((foundPages) => {
             searchResults.value = foundPages;
         });
     }
@@ -148,12 +158,12 @@
                 embeddedPage: {
                     page: page.id,
                 },
+            }).then((updatedSection) => {
+                embeddedPage.value = updatedSection.embeddedPage; // update the embedded page in the frontend to get the serialised page object with the tabs to generate the extract for the new embedded page
             });
         } else {
             fetchApiForResults(); // if the user deselects the page we need to load the search results again
         }
-
-        console.log('select page');
 
         embeddedPage.value.page = page;
     }

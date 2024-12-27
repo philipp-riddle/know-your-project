@@ -17,7 +17,7 @@
                 <font-awesome-icon
                     v-if="page.task"
                     :icon="['fas', 'list-check']"
-                    v-tooltip="'Task - this page belongs to a task.'"
+                    v-tooltip="'This page belongs to a task.'"
                 />
                 <input
                     v-if="pageStore.selectedPage?.id == page.id"

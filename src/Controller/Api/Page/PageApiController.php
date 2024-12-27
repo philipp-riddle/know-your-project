@@ -39,6 +39,7 @@ class PageApiController extends CrudApiController
             $request->query->get('includeUserPages', true),
             $request->query->get('query'),
             $request->query->get('limit'),
+            \intval($request->query->get('excludeId', '')),
         );
 
         return $this->jsonSerialize($projectPages, normalizeCallbacks: [

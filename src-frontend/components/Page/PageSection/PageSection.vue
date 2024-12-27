@@ -10,7 +10,8 @@
         </div>
 
         <!-- the PageSection elements all need the v-once directive! -->
-        <!-- this is important to not cause any re-renders of the object when updating the pageSection ref value - this could interrupt the user flow of typing. -->
+        <!-- this is important to not cause any re-renders of the object when creating or updating the pageSection ref value. -->
+        <!-- otherwise this could interrupt the user flow, e.g. by losing the input focus while typing. -->
         <!-- @todo we need to rethink this when we introduce real time editing as this will require background updates -->
         <PageSectionText
             v-once
@@ -48,7 +49,7 @@
             :onPageSectionSubmit="(sectionItem) => onPageSectionSubmitHandler(pageSection, sectionItem)"
         />
         <div v-else class="alert alert-danger">
-            <p>Unknown section type.</p>
+            <p>Unknown section type - cannot render.</p>
         </div>
     </div>
 </template>
