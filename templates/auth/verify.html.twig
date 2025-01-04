@@ -4,8 +4,6 @@
 
 {% block authBody %}
     <div class="d-flex flex-column gap-3">
-        <h1 class="mb-0 font-weight-normal">Verify invitation</h1>
-
         {{ form_start(form) }}
             <div class="d-flex flex-column gap-2">
                 {{ form_widget(form.email, {attr: {class: 'form-control', placeholder: 'Enter your email'}}) }}

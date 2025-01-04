@@ -6,6 +6,7 @@ use App\Controller\Api\CrudApiController;
 use App\Entity\Project;
 use App\Entity\UserInvitation;
 use App\Form\UserInvitationForm;
+use App\Repository\UserInvitationRepository;
 use App\Service\Helper\ApiControllerHelperService;
 use App\Service\MailerService;
 use App\Service\UserService;
@@ -20,6 +21,7 @@ class UserInvitationApiController extends CrudApiController
         ApiControllerHelperService $apiControllerHelperService,
         private UserService $userService,
         private MailerService $mailerService,
+        private UserInvitationRepository $userInvitationRepository,
     ) {
         parent::__construct($apiControllerHelperService);
     }
@@ -31,6 +33,14 @@ class UserInvitationApiController extends CrudApiController
             null,
             $request,
             onProcessEntity: function (UserInvitation $userInvitation) {
+                if ($this->userRepository->findOneBy(['email' => $userInvitation->getEmail()])) {
+                    throw new \Exception('User with this email already exists');
+                }
+
+                if ($this->userInvitationRepository->findOneBy(['email' => $userInvitation->getEmail()])) {
+                    throw new \Exception('User with this email was already invited');
+                }
+
                 $userInvitation->setCode(bin2hex(openssl_random_pseudo_bytes(10))); // attach random code to user invitation so that it can be used to verify the user
                 $this->mailerService->sendMail(
                     $userInvitation->getEmail(),

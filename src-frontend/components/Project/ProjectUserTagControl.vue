@@ -1,26 +1,21 @@
 <template>
     <VDropdown
-        :placement="'left'"
+        :placement="'bottom'"
     >
-        <div class="row tags-container">
-            <div class="col-sm-12 col-md-1 d-flex justify-content-center">
-                <button class="btn btn-sm m-0 p-0 text-muted d-flex flex-row gap-2" v-tooltip="'Click to add tags'">
+        <div class="tags-container d-flex flex-row align-items-center gap-2">
+            <div class="d-flex justify-content-center">
+                <button class="btn btn-sm m-0 p-0 text-muted d-flex flex-row gap-2" v-tooltip="'Click to add tags to user'">
                     <font-awesome-icon :icon="['fas', 'tags']" />
                     <span class="bold">TAGS</span>
                 </button>
             </div>
-            <div class="col-sm-12 col-md-11 col-xl-8">
-                <div class="d-flex flex-column gap-2">
-                    <div
-                        v-if="pageStore.selectedPage?.tags"
-                        v-for="tag in pageStore.selectedPage.tags"
-                        class="d-flex flex-row align-items-center gap-2"
-                    >
-                        <p class="m-0"><span class="btn btn-sm me-2" :style="{'background-color': tag.tag.color}">&nbsp;&nbsp;&nbsp;</span>{{ tag.tag.name }}</p>
-                        <PageTagUserControl
-                            :tagPage="tag"
-                        />
-                    </div>
+            <div class="d-flex flex-row flex-wrap gap-2">
+                <div v-if="projectUser.tags" v-for="tag in projectUser.tags">
+                    <p class="m-0">
+                        <span class="btn btn-sm me-2" :style="{'border-color': tag.tag.color, 'border-width': '2px'}">
+                            {{ tag.tag.name }}
+                        </span>
+                    </p>
                 </div>
             </div>
         </div>
@@ -53,17 +48,17 @@
                     <div v-if="null == availableTags">
                         <p>Loading... (no available tags)</p>
                     </div>
-                    <div v-else-if="availableTags.length === 0 && pageStore.selectedPage.tags.length === 0">
+                    <div v-else-if="availableTags.length === 0 && projectUser.tags.length === 0">
                         <p>No tags found. <span class="bold">Create one</span> to start.</p>
                     </div>
                     <ul v-else class="nav nav-pills nav-fill d-flex flex-column gap-1">
-                        <li v-if="pageStore.selectedPage" class="nav-item" v-for="tagPage in pageStore.selectedPage.tags" v-tooltip="'Click to remove this tag'">
+                        <li v-if="projectUser.tags" class="nav-item" v-for="tagProjectUser in projectUser.tags" v-tooltip="'Click to remove this tag'">
                             <button
                                 class="nav-link active d-flex flex-row gap-3 align-items-center"
-                                @click="() => handleExistingTagDelete(tagPage)"
+                                @click="() => handleExistingTagDelete(tagProjectUser)"
                             >
-                                <span class="btn btn-sm" :style="{'background-color': tagPage.tag.color}">&nbsp;&nbsp;&nbsp;</span>
-                                {{ tagPage.tag.name }}
+                                <span class="btn btn-sm" :style="{'background-color': tagProjectUser.tag.color}">&nbsp;&nbsp;&nbsp;</span>
+                                {{ tagProjectUser.tag.name }}
                             </button>
                         </li>
 
@@ -84,20 +79,22 @@
 </template>
 
 <script setup>
-    import { defineProps, ref, watch, onMounted } from 'vue';
-    import { fetchCreateTagPageFromTagId, fetchCreateTagPageFromTagName, fetchDeleteTagPage } from '@/fetch/TagFetcher.js';
-    import { usePageStore } from '@/stores/PageStore.js';
-    import { useUserStore } from '@/stores/UserStore.js';
-    import PageTagUserControl from '@/components/Page/PageControl/PageTagUserControl.vue';
+    import { defineEmits, defineProps, ref, watch, onMounted } from 'vue';
+    import { fetchCreateTagProjectUserFromTagId, fetchCreateTagProjectUserFromTagName, fetchDeleteTagProjectUser } from '@/fetch/TagFetcher.js';
+    import { useProjectStore } from '@/stores/ProjectStore.js';
 
+    const emit = defineEmits(['updateProjectUser']);
     const props = defineProps({
-        page: {
+        projectUser: {
+            type: Object,
+            required: true,
+        },
+        project: {
             type: Object,
             required: true,
         },
     });
-    const pageStore = usePageStore();
-    const userStore = useUserStore();
+    const projectStore = useProjectStore();
     const availableTags = ref(null);
     const tagInput = ref(null);
     const isTagInputButtonDisabled = ref(true);
@@ -105,11 +102,6 @@
 
     // this makes sure to reload the available tags when the component is mounted
     onMounted(async () => {
-        reloadAvailableTags();
-    });
-
-    // this makes sure to always filter the available tags when the selected page changes
-    watch (() => pageStore.selectedPage, () => {
         reloadAvailableTags();
     });
 
@@ -123,9 +115,11 @@
     const handleTagInputEnter = () => {
         isCreatingTag.value = true;
 
-        fetchCreateTagPageFromTagName(props.page.id, tagInput.value.value).then((pageTab) => {
-            pageStore.selectedPage.tags.push(pageTab);
-            userStore.currentUser.selectedProject.tags.push(pageTab.tag);
+        fetchCreateTagProjectUserFromTagName(props.projectUser.id, tagInput.value.value).then((tagProjectUser) => {
+            projectStore.selectedProject.tags.push(tagProjectUser.tag);
+            props.projectUser.tags.push(tagProjectUser);
+            emit('updateProjectUser', props.projectUser);
+
             tagInput.value.value = ''; // Clear input to allow for another tag creation
             isCreatingTag.value = false;
             tagInput.value.focus();
@@ -138,9 +132,9 @@
         isCreatingTag.value = true;
 
         try {
-            fetchCreateTagPageFromTagId(props.page.id, tag.id).then((pageTab) => {
-                pageStore.selectedPage.tags.push(pageTab);
-                isCreatingTag.value = false;
+            fetchCreateTagProjectUserFromTagId(props.projectUser.id, tag.id).then((tagProjectUser) => {
+                props.projectUser.tags.push(tagProjectUser);
+                emit('updateProjectUser', props.projectUser);
 
                 reloadAvailableTags();
             });
@@ -150,13 +144,14 @@
         }
     };
 
-     const handleExistingTagDelete = (tagPage) => {
+     const handleExistingTagDelete = (tagProjectUser) => {
         isCreatingTag.value = true;
 
         try {
-            fetchDeleteTagPage(tagPage.id).then(() => {
+            fetchDeleteTagProjectUser(tagProjectUser.id).then(() => {
                 isCreatingTag.value = false;
-                pageStore.selectedPage.tags = pageStore.selectedPage.tags.filter((tp) => tp.id !== tagPage.id);
+                props.projectUser.tags = props.projectUser.tags.filter((tpu) => tpu.id !== tagProjectUser.id);
+                emit('updateProjectUser', props.projectUser);
 
                 reloadAvailableTags();
             });
@@ -167,27 +162,18 @@
     };
 
     const reloadAvailableTags = () => {
-        if (!pageStore.selectedPage) {
-            return;
-        }
+        availableTags.value = props.project.tags;
 
-        // @todo sorting does not work here
-        pageStore.selectedPage.tags = pageStore.selectedPage.tags.sort((a, b) => b.name - a.name);
-
-        userStore.getCurrentUser().then(() => {
-            availableTags.value = userStore.currentUser?.selectedProject?.tags;
-
-            availableTags.value = availableTags.value.filter((tag) => {
-                if (tagInput.value?.value?.trim().length > 0) {
-                    if (!tag.name.toLowerCase().includes(tagInput.value.value.toLowerCase())) {
-                        return false;
-                    }
+        availableTags.value = availableTags.value.filter((tag) => {
+            if (tagInput.value?.value?.trim().length > 0) {
+                if (!tag.name.toLowerCase().includes(tagInput.value.value.toLowerCase())) {
+                    return false;
                 }
+            }
 
-                return !pageStore.selectedPage?.tags?.some((tagPage) => tagPage.tag.id === tag.id);
-            });
-            availableTags.value = availableTags.value.sort((a, b) => b.name - a.name);
+            return !props.projectUser.tags?.some((tagUser) => tagUser.tag.id === tag.id);
         });
+        availableTags.value = availableTags.value.sort((a, b) => b.name - a.name);
     };
 </script>
 

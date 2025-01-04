@@ -7,6 +7,7 @@ use App\Entity\User;
 use App\Entity\UserInvitation;
 use App\Form\VerifyUserInvitationForm;
 use App\Repository\UserInvitationRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,6 +21,7 @@ class VerifyController extends AbstractController
     public function __construct(
         private EntityManagerInterface $em,
         private UserInvitationRepository $userInvitationRepository,
+        private UserRepository $userRepository,
     ) { }
 
     #[Route(path: '/{code}', name: 'app_auth_verify')]
@@ -38,10 +40,17 @@ class VerifyController extends AbstractController
                 return $this->redirectToRoute('app_auth_verify', ['code' => $code]);
             }
 
+            if (null !== $user = $this->userRepository->findOneBy(['email' => $form->get('email')->getData()])) {
+                $this->addFlash('danger', 'User with this email already exists. Please login and accept the invitation.');
+
+                return $this->redirectToRoute('app_auth_verify', ['code' => $code]);
+            }
+
             $user = (new User())
                 ->setEmail($form->get('email')->getData())
                 ->setSelectedProject($userInvitation->getProject())
-                ->setCreatedAt(new \DateTimeImmutable());
+                ->setCreatedAt(new \DateTimeImmutable())
+                ->setVerified(true);
             $user->setPassword($passwordHasher->hashPassword($user, $form->get('password')->getData()));
             $this->em->persist($user);
 

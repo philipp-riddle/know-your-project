@@ -175,32 +175,8 @@
         white-space: nowrap;
 	}
 
-	.card {
-		border-width: 2px;
-	}
-
-	.card:hover {
-		cursor: pointer;
-		border-color: $green !important;
-		border-width: 2px;
-	}
-
 	.dragArea {
 		min-height: 150px;
 		padding: 0;
-	}
-
-	.task-options {
-		display: none;
-	}
-
-	.task-card .card-body:hover .task-options {
-		display: block;
-	}
-
-	.card-selected {
-		background-color: $green !important;
-		border-color: $green !important;
-		color: white;
 	}
 </style>

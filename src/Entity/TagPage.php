@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Repository\TagPageRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TagPageRepository::class)]
@@ -22,6 +24,17 @@ class TagPage implements UserPermissionInterface, CrudEntityInterface
     #[ORM\ManyToOne(inversedBy: 'tags')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Page $page = null;
+
+    /**
+     * @var Collection<int, TagPageUser>
+     */
+    #[ORM\OneToMany(mappedBy: 'tagPage', targetEntity: TagPageProjectUser::class, orphanRemoval: true)]
+    private Collection $users;
+
+    public function __construct()
+    {
+        $this->users = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -61,6 +74,36 @@ class TagPage implements UserPermissionInterface, CrudEntityInterface
     public function setPage(?Page $page): static
     {
         $this->page = $page;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, TagPageProjectUser>
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(TagPageProjectUser $user): static
+    {
+        if (!$this->users->contains($user)) {
+            $this->users->add($user);
+            $user->setTagPage($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(TagPageProjectUser $user): static
+    {
+        if ($this->users->removeElement($user)) {
+            // set the owning side to null (unless already changed)
+            if ($user->getTagPage() === $this) {
+                $user->setTagPage(null);
+            }
+        }
 
         return $this;
     }

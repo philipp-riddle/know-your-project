@@ -6,8 +6,8 @@
     >
         <div class="row mt-2" @click="showDueDatePopover = !showDueDatePopover">
             <div class="col-sm-12 col-md-1 d-flex justify-content-center align-items-top">
-                <button class="btn btn-sm m-0 p-0 text-muted d-flex flex-row gap-2" v-tooltip="'Click to change due date'">
-                    <font-awesome-icon :icon="['fas', 'spinner']" />
+                <button class="btn btn-sm m-0 p-0 text-muted d-flex flex-row gap-2 align-items-center" v-tooltip="'Click to change due date'">
+                    <font-awesome-icon :icon="['fas', 'fa-calendar-check']" />
                     <span class="bold">DUE DATE</span>
                 </button>
             </div>

@@ -100,8 +100,7 @@ export const useTaskStore = defineStore('task', () => {
                 //     ...tasks.value[stepType].slice(index),
                 // ];
 
-                if (task.id == selectedTask.value.id) {
-                    console.log('selected task moved');
+                if (task.id == selectedTask.value?.id) {
                     selectedTask.value = task;
                 }
 

@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Repository\ProjectUserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ProjectUserRepository::class)]
@@ -25,6 +27,17 @@ class ProjectUser implements UserPermissionInterface, CrudEntityInterface
 
     #[ORM\Column]
     private ?\DateTime $createdAt = null;
+
+    /**
+     * @var Collection<int, TagProjectUser>
+     */
+    #[ORM\OneToMany(mappedBy: 'projectUser', targetEntity: TagProjectUser::class, orphanRemoval: true)]
+    private Collection $tags;
+
+    public function __construct()
+    {
+        $this->tags = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -75,6 +88,36 @@ class ProjectUser implements UserPermissionInterface, CrudEntityInterface
     public function initialize(): static
     {
         $this->createdAt ??= new \DateTime();
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, TagProjectUser>
+     */
+    public function getTags(): Collection
+    {
+        return $this->tags;
+    }
+
+    public function addTag(TagProjectUser $tag): static
+    {
+        if (!$this->tags->contains($tag)) {
+            $this->tags->add($tag);
+            $tag->setProjectUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTag(TagProjectUser $tag): static
+    {
+        if ($this->tags->removeElement($tag)) {
+            // set the owning side to null (unless already changed)
+            if ($tag->getProjectUser() === $this) {
+                $tag->setProjectUser(null);
+            }
+        }
 
         return $this;
     }

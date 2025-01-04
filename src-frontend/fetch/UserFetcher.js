@@ -22,3 +22,9 @@ export async function fetchCreateUserProjectInvitation(projectId, email) {
 
     return resp.data;
 }
+
+export async function fetchDeleteUserProjectInvitation(invitationId) {
+    const resp = await axios.delete(`${BaseService}/invitation/${invitationId}`);
+
+    return resp.data;
+}

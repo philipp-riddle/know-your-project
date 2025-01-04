@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { fetchGetCurrentUser, fetchUserProjectInvititations, fetchCreateUserProjectInvitation } from '@/fetch/UserFetcher';
+import { fetchGetCurrentUser, fetchUserProjectInvititations, fetchCreateUserProjectInvitation, fetchDeleteUserProjectInvitation } from '@/fetch/UserFetcher';
 import { ref } from 'vue';
 
 export const useUserStore = defineStore('user', () => {
@@ -50,11 +50,21 @@ export const useUserStore = defineStore('user', () => {
         });
     }
 
+    async function deleteUserProjectInvitation(invitationId) {
+        return new Promise((resolve) => {
+            fetchDeleteUserProjectInvitation(invitationId).then(() => {
+                userProjectInvitations.value = userProjectInvitations.value.filter((invitation) => invitation.id !== invitationId);
+                resolve();
+            });
+        });
+    }
+
     return {
         currentUser,
         getCurrentUser,
         userProjectInvitations,
         getUserProjectInvitations,
         createUserProjectInvitation,
+        deleteUserProjectInvitation
     };
 });

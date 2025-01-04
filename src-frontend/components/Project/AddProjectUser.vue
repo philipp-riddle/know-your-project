@@ -5,7 +5,9 @@
         class="d-flex flex-row align-items-center gap-3"
     >
         <!-- This will be the popover reference (for the events and position) -->
-        <button class="btn btn-sm p-0 m-0 h2"><strong class="h2 m-0 p-0">+</strong></button>
+        <button class="btn btn-lg p-0 m-0" v-tooltip="'Invite a user to your project'">
+            <strong class="m-0 p-0">+</strong>
+        </button>
 
         <!-- This will be the content of the popover -->
         <template #popper>
@@ -17,7 +19,7 @@
                             type="email"
                             class="form-control"
                             v-model="addProjectUserEmail"
-                            placeholder="Who do you want to invite?"
+                            placeholder="e.g. chris@company.io"
                             @keyup.enter="onSubmitEmail()"
                             @keyup="invitedHint = null"
                         />
@@ -33,7 +35,7 @@
                     </div>
                 </div>
                 <div v-if="invitedHint">
-                    <small class="text-success">Invited {{ invitedHint }}. Want to invite anybody else?</small>
+                    <p class="m-0 text-success">Invited {{ invitedHint }}. Want to invite anybody else?</p>
                 </div>
             </div>
         </template>

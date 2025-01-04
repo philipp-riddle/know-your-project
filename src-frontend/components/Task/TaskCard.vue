@@ -21,14 +21,14 @@
                         }"
                         v-tooltip="dueDateTooltip"
                     >
-                        <font-awesome-icon icon="fa-solid fa-calendar-alt" />
+                        <font-awesome-icon icon="fa-solid fa-calendar-check" />
                         <span>{{ dateFormatter.formatDateDistance(task.dueDate) }}</span>
                     </div>
                 </div>
             </div>
             <div class="d-flex flex-row gap-2">
                 <span>{{ getTaskProgress(task) }}</span>
-                <div class="dropdown task-options">
+                <div class="dropdown card-options">
                     <h5 class="dropdown-toggle m-0" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false" @click.stop="">
                         <font-awesome-icon :icon="['fas', 'ellipsis']" />
                     </h5>
@@ -98,9 +98,22 @@
     });
 </script>
 
-<style scoped>
-    .task-card {
-        cursor: pointer;
-        backgroundColor: #f8f9fa;
-    }
+<style scoped lang="scss">
+	@import '@/styles/colors.scss';
+
+	.card {
+		border-width: 2px;
+	}
+
+	.card:hover {
+		cursor: pointer;
+		border-color: $green !important;
+		border-width: 2px;
+	}
+
+	.card-selected {
+		background-color: $green !important;
+		border-color: $green !important;
+		color: white;
+	}
 </style>
