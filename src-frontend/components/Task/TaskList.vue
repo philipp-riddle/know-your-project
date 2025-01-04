@@ -25,35 +25,7 @@
 					@end="onDragEnd"
 				>
 					<template #item="{ element }">
-						<div
-							class="card task-card"
-							:class="{ 'card-selected': taskStore.selectedTask?.id === element.id }"
-							:task="element.id"
-							@click="onTaskClick(element)"
-						>
-							<div class="card-body d-flex justify-content-between">
-								<div class="d-flex flex-column gap-2">
-									<span>{{ element.name }}</span>
-									<div class="d-flex flex-row gap-1">
-										<small v-for="tagPage in element.page.tags">
-											<span class="btn btn-sm me-2" :style="{'background-color': tagPage.tag.color}" v-tooltip="'Tag: '+tagPage.tag.name">&nbsp;&nbsp;&nbsp;</span>
-										</small>
-									</div>
-								</div>
-								<div class="d-flex flex-row gap-2">
-									<span>{{ getTaskProgress(element) }}</span>
-									<div class="dropdown task-options">
-										<h5 class="dropdown-toggle m-0" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false" @click.stop="">
-											<font-awesome-icon :icon="['fas', 'ellipsis']" />
-										</h5>
-										<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-											<li><span class="dropdown-item" href="#" @click.stop="onTaskDeleteClick(element)">Archive Task</span></li>
-											<li><span class="dropdown-item" href="#" @click.stop="onTaskDeleteClick(element)">Delete Task</span></li>
-										</ul>
-									</div>
-								</div>
-							</div>
-						</div>
+						<TaskCard :task="element" @click="onTaskClick(element)" />
 					</template>
 				</draggable>
 			</div>
@@ -112,13 +84,10 @@
 				type: Function,
 				required: false,
 			},
-			onTaskDelete: {
-				type: Function,
-				required: false,
-			}
 		},
 		components: {
-			draggable
+			draggable,
+			TaskCard,
 		},
 		name: "nested-draggable",
 		mounted() {
@@ -142,27 +111,6 @@
 			};
 		},
 		methods: {
-			getTaskProgress(task) {
-				let checklistItemsTotal = 0;
-				let checklistItemsComplete = 0;
-
-				for (const pageTab of task.page.pageTabs) {
-					for (const pageSection of Object.values(pageTab.pageSections ?? [])) {
-						if (pageSection.pageSectionChecklist) {
-							const pageSectionChecklistItems = pageSection.pageSectionChecklist.pageSectionChecklistItems;
-
-							checklistItemsTotal += pageSectionChecklistItems.length;
-							checklistItemsComplete += pageSectionChecklistItems.filter((item) => item.complete).length;
-						}
-					}
-				}
-
-				if (checklistItemsTotal === 0) {
-					return '';
-				}
-
-				return checklistItemsComplete + '/' + checklistItemsTotal;
-			},
 			onDragEnd(event) {
 				this.onTaskDrag(event); // pass it to the parent TaskBoard
 			},
@@ -211,13 +159,6 @@
 					this.isAddingTaskRequestLoading = false;
 					await nextTick();
 					this.$refs.newTaskInput?.focus(); // set focus back on the new task input
-				});
-			},
-			async onTaskDeleteClick(task) {
-				this.taskProvider.deleteTask(task).then((deletedTask) => {
-					if (this.onTaskDelete) {
-						this.onTaskDelete(task);
-					}
 				});
 			},
 		},

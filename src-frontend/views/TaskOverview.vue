@@ -56,7 +56,7 @@
 
         taskProvider.getTask(taskId).then((task) => {
             if (movedTaskToOtherList) {
-                taskProvider.moveTask(task, targetWorkflowStep, taskOrderIndex);
+                taskStore.moveTask(task, targetWorkflowStep, taskOrderIndex);
             } else {
                 const taskIdOrder = [];
 

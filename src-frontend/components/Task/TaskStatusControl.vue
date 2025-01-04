@@ -4,13 +4,13 @@
     >
         <div class="row tags-container">
             <div class="col-sm-12 col-md-1 d-flex justify-content-center">
-                <button class="btn btn-sm m-0 p-0 text-muted d-flex flex-row gap-2" v-tooltip="'Click to change task status'">
+                <button class="btn btn-sm m-0 p-0 text-muted d-flex flex-row gap-2" v-tooltip="'Click to change status'">
                     <font-awesome-icon :icon="['fas', 'spinner']" />
                     <span class="bold">STATUS</span>
                 </button>
             </div>
             <div class="col-sm-12 col-md-11 col-xl-8">
-                <p class="m-0 text-muted">{{ taskProvider.getSelectedTask().stepType }}</p>
+                <p class="m-0 text-muted">{{ taskStore.selectedTask.stepType }}</p>
             </div>
         </div>
 
@@ -35,18 +35,16 @@
 <script setup>
     import { defineProps, ref, computed } from 'vue';
     import { useTaskProvider } from '@/providers/TaskProvider.js';
+    import { useTaskStore } from '@/stores/TaskStore.js';
 
     const props = defineProps({
-        page: {
-            type: Object,
-            required: true,
-        },
         onTaskMove: {
             type: Function,
             required: false,
         },
     });
 
+    const taskStore = useTaskStore();
     const taskProvider = useTaskProvider();
     const possibleMoveChoices = computed(() => {
         return [
@@ -58,7 +56,7 @@
     });
 
     const onTaskMoveClick = (workflowStep) => {
-        taskProvider.moveTask(taskProvider.getSelectedTask(), workflowStep, 0).then((movedTask) => {
+        taskStore.moveTask(taskStore.selectedTask, workflowStep, 0).then((movedTask) => {
             if (props.onTaskMove) {
                 props.onTaskMove(movedTask);
             }

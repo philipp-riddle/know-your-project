@@ -3,7 +3,7 @@
         <div class="col-sm-1">
             <div class="section-options d-flex flex-row gap-3" v-if="pageSection.id != null">
                 <PageSectionInfo :pageSection="pageSection" />
-                <button class="btn" v-tooltip="'Rearrange order'">
+                <button class="btn" v-tooltip="'Drag to rearrange order'">
                     <span class="black"><font-awesome-icon :icon="['fas', 'grip-vertical']" /></span>
                 </button>
             </div>

@@ -115,24 +115,6 @@
 					}
 
 					resolve(pageSection);
-					// if (pageSection.id) {
-					// 	const pageSectionSubmitObject = {
-					// 		id: pageSection.id,
-					// 		...updatedPageSectionItem,
-					// 	};
-
-					// 	this.pageSectionStore.updateSection(pageSectionSubmitObject).then((updatedSection) => {
-					// 		resolve(updatedSection);
-					// 	});
-					// } else {
-					// 	const pageSectionSubmitObject = {
-					// 		id: pageSection.id,
-					// 		...pageSection,
-					// 	};
-					// 	this.pageSectionStore.createSection(this.pageTab.id, pageSectionSubmitObject).then((createdSection) => {
-					// 		resolve(createdSection);
-					// 	});
-					// }
 				});
 			},
 			onPageSectionDelete(pageSection) {
@@ -142,41 +124,6 @@
 					}
 				});
 			},
-			// onTaskClick(task) {
-			// 	if (task === this.taskProvider.getSelectedTask()) { // nothing to do here - the task is already selected
-			// 		return;
-			// 	}
-
-			// 	this.taskProvider.setSelectedTask(task);
-			// 	this.onTaskSelect(task);
-			// },
-			// async onTaskCreateClick(event) {
-			// 	if (this.newTaskName.length < 3) {
-			// 		return;
-			// 	}
-
-			// 	this.isAddingTaskRequestLoading = true;
-
-			// 	this.taskProvider.createTask(this.workflowStep, this.newTaskName).then(async (createdTask) => {
-			// 		this.newTaskName = '';
-
-			// 		if (this.onTaskCreate) {
-			// 			this.onTaskCreate(createdTask);
-			// 		}
-
-			// 		this.$data.isAddingTask = true;
-			// 		this.isAddingTaskRequestLoading = false;
-			// 		await nextTick();
-			// 		this.$refs.newTaskInput?.focus(); // set focus back on the new task input
-			// 	});
-			// },
-			// async onTaskDeleteClick(task) {
-			// 	this.taskProvider.deleteTask(task).then((deletedTask) => {
-			// 		if (this.onTaskDelete) {
-			// 			this.onTaskDelete(task);
-			// 		}
-			// 	});
-			// },
 		},
 	};
 </script>

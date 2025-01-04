@@ -67,32 +67,6 @@ export const usePageSectionChecklistItemStore = defineStore('pageSectionChecklis
         return checklistItem;
     }
 
-    // function addChecklistItem(pageSectionId, checklistItem) {
-    //     const section = pageSectionStore.pageSections[pageSectionId] ?? null;
-
-    //     if (!section) {
-    //         console.error('Cannot add checklist item to non-existent section with id:', pageSectionId);
-    //         return;
-    //     }
-
-    //     pageSectionStore.pageSections[pageSectionId].pageSectionChecklist.pageSectionChecklistItems.push(checklistItem);
-
-    //     return checklistItem;
-    // }
-
-    // function removeChecklistItem(pageSectionId, checklistItem) {
-    //     const section = pageSectionStore.pageSections[pageSectionId] ?? null;
-
-    //     if (!section) {
-    //         console.error('Cannot delete checklist item from non-existent section with id:', pageSectionId);
-    //         return;
-    //     }
-
-    //     pageSectionStore.pageSections[pageSectionId].pageSectionChecklist.pageSectionChecklistItems = pageSectionStore.pageSections[pageSectionId].pageSectionChecklist.pageSectionChecklistItems.filter(item => item.id !== checklistItem.id);
-
-    //     return checklistItem;
-    // }
-
     return {
         createChecklistItem,
         updateChecklistItem,
