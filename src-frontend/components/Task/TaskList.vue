@@ -14,7 +14,7 @@
 				<p>No tasks created so far.</p>
 			</div>
 
-			<div v-else ref="listArea" class="list-area p-0" style="min-height: 150px" :workflow-step="workflowStep.id">
+			<div ref="listArea" class="list-area p-0" style="min-height: 150px" :workflow-step="workflowStep.id">
 				<draggable
 					class="dragArea pb-4 m-0 d-flex gap-3 flex-column"
 					:data-workflowStep="workflowStep"
@@ -31,8 +31,15 @@
 							:task="element.id"
 							@click="onTaskClick(element)"
 						>
-							<div class="card-body d-flex justify-content-between align-items-center">
-								<span>{{ element.name }}</span>
+							<div class="card-body d-flex justify-content-between">
+								<div class="d-flex flex-column gap-2">
+									<span>{{ element.name }}</span>
+									<div class="d-flex flex-row gap-1">
+										<small v-for="tagPage in element.page.tags">
+											<span class="btn btn-sm me-2" :style="{'background-color': tagPage.tag.color}" v-tooltip="'Tag: '+tagPage.tag.name">&nbsp;&nbsp;&nbsp;</span>
+										</small>
+									</div>
+								</div>
 								<div class="d-flex flex-row gap-2">
 									<span>{{ getTaskProgress(element) }}</span>
 									<div class="dropdown task-options">

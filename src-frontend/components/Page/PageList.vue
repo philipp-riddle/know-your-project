@@ -19,16 +19,8 @@
                     :icon="['fas', 'list-check']"
                     v-tooltip="'This page belongs to a task.'"
                 />
-                <input
-                    v-if="pageStore.selectedPage?.id == page.id"
-                    type="text"
-                    class="magic-input white"
-                    :value="page.name"
-                    @keyup="onPageTitleUpdate(page, $event)"
-                >
                 <router-link
-                    v-else
-                    class="nav-link p-2"
+                    class="nav-link p-1"
                     :to="{ name: 'Page', params: { id: page.id } }"
                     :class="{'active': pageStore.selectedPage?.id == page.id, 'inactive': pageStore.selectedPage?.id != page.id}"
                     @click="pageStore.setSelectedPage(page)"

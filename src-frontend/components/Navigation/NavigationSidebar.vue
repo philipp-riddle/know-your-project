@@ -25,7 +25,7 @@
                 </ul>
             </div>
 
-            <div class="d-flex flex-column gap-2">
+            <div class="d-flex flex-column gap-2 page-explorer">
                 <NavigationPageExplorer />
             </div>
         </div>
@@ -62,6 +62,11 @@
 </script>
 
 <style scoped lang="sass">
+    .navigation-sidebar {
+        overflow-x: hidden;
+        overflow-y: scroll;
+    }
+
     .btn-dark .nav-link {
         color: white !important;
     }

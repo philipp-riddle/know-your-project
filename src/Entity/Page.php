@@ -198,11 +198,15 @@ class Page implements UserPermissionInterface, CrudEntityInterface
     }
 
     /**
-     * @return Collection<int, TagPage>
+     * @return TagPage[]
      */
-    public function getTags(): Collection
+    public function getTags(): array
     {
-        return $this->tags;
+        // order tags by name, ascending
+        $tags = $this->tags->toArray();
+        \usort($tags, fn(TagPage $a, TagPage $b) => $a->getTag()->getName() <=> $b->getTag()->getName());
+
+        return $tags;
     }
 
     public function addTag(TagPage $tag): static

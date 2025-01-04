@@ -89,3 +89,24 @@
         }
     }
 }
+
+/* === POPOVERS & HOVER MENUS ============================================================= */
+
+.v-popper--theme-dropdown {
+    .v-popper__wrapper {
+        /* Through this styling the background gets blurred and is transparent to a degree, that gives it a see-through effect */
+        .v-popper__inner {
+            border-radius: 15px !important;
+            background-color: $light-gray-60 !important;
+            box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1) !important;
+            backdrop-filter: blur(10px) !important;
+
+            border-width: 0.15rem;
+            border-color: $dark-gray;
+        }
+    }
+
+    .v-popper__arrow-outer {
+        border-color: $dark-gray !important;
+    }
+}

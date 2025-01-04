@@ -10,27 +10,25 @@
 
         <!-- This will be the content of the popover -->
         <template #popper>
-            <div class="m-4">
-                <div class="d-flex flex-column justify-content-center">
-                    <ul class="nav nav-pills nav-fill d-flex flex-column gap-1">
-                        <li class="nav-item inactive" v-for="createMode in createModes">
-                            <a
-                                class="nav-link d-flex flex-row align-items-center gap-3"
-                                href="#/notes"
-                                :to="{ name: createMode.name }"
-                                @click.stop="onCreateClick($event, createMode.mode)"
-                            >
-                                <font-awesome-icon :icon="['fas', createMode.icon]" />   
-                                <div class="d-flex flex-column">
-                                    Create {{ createMode.mode }}
-                                    <div v-if="createMode.description">
-                                        <small class="text-muted">{{ createMode.description }}</small>
-                                    </div>
+            <div class="p-2 d-flex flex-column justify-content-center">
+                <ul class="nav nav-pills nav-fill d-flex flex-column gap-1">
+                    <li class="nav-item" v-for="createMode in createModes">
+                        <a
+                            class="nav-link inactive d-flex flex-row align-items-center gap-3"
+                            href="#/notes"
+                            :to="{ name: createMode.name }"
+                            @click.stop="onCreateClick($event, createMode.mode)"
+                        >
+                            <font-awesome-icon :icon="['fas', createMode.icon]" />   
+                            <div class="d-flex flex-column">
+                                Create {{ createMode.mode }}
+                                <div v-if="createMode.description">
+                                    <p class="text-muted m-0">{{ createMode.description }}</p>
                                 </div>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
             </div>
         </template>
     </VMenu>

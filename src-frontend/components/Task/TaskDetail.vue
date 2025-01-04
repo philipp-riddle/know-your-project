@@ -2,8 +2,7 @@
     <div v-if="taskProvider.getSelectedTask()">
         <div class="d-flex justify-content-between row">
             <div class="col-sm-12 offset-xl-1 col-xl-8">
-                <h2 class="m-0" v-tooltip="'Edit task name'"><input class="magic-input" v-model="taskProvider.getSelectedTask().name" @keyup="updateTaskContents" /></h2>
-                <p class="text-muted">{{ taskProvider.getSelectedTask().stepType }}</p>
+                <h2 class="mb-3" v-tooltip="'Edit task name'"><input class="magic-input" v-model="taskProvider.getSelectedTask().name" @keyup="updateTaskContents" /></h2>
             </div>
             <div class="col-sm-12 col-xl-3 d-flex justify-content-end">
                 <div class="d-flex justify-content-between">
@@ -27,20 +26,12 @@
                         <font-awesome-icon :icon="['fas', 'xmark']" />
                     </button>
                 </div>
-                <div class="dropdown task-options">
-                    <h5 class="btn btn-primary dropdown-toggle m-0" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                        <span class="me-3">Move</span> <font-awesome-icon :icon="['fas', 'arrow-right']" />
-                    </h5>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1" ref="dropdownMenu">
-                        <li v-for="moveChoice in possibleMoveChoices" :key="moveChoice">
-                            <span class="dropdown-item" href="#" @click.stop="onTaskMoveClick(moveChoice)">{{ moveChoice }}</span>
-                        </li>
-                    </ul>
-                </div>
             </div>
         </div>
 
-        <div class="mt-4 mb-3">
+        <TaskStatusControl v-if="taskProvider.getSelectedTask()" :page="taskProvider.getSelectedTask().page" :onTaskMove="onTaskMove" />
+
+        <div class="mb-3">
             <Page :page="taskProvider.getSelectedTask().page" />
         </div>
     </div>
@@ -54,6 +45,7 @@
     import { useTaskProvider } from '@/providers/TaskProvider.js';
     import Page from '@/components/Page/Page.vue';
     import TextArea from '@/components/Util/TextArea.vue';
+    import TaskStatusControl from '@/components/Task/TaskStatusControl.vue';
 
     const taskStore = useTaskStore();
     const taskProvider = useTaskProvider();
@@ -77,14 +69,6 @@
     // max date should be 10 years from now
     const maxDate = computed (() => {
         return new Date(new Date().setFullYear(new Date().getFullYear() + 10)).toISOString().slice(0, 10);
-    });
-    const possibleMoveChoices = computed(() => {
-        return [
-            'Discover',
-            'Define',
-            'Develop',
-            'Deliver',
-        ].filter((workflowStep) => workflowStep !== taskProvider.getSelectedTask().stepType);
     });
 
     onMounted(() => {

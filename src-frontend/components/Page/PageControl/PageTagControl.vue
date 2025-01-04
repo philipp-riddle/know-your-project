@@ -1,10 +1,22 @@
 <template>
     <VDropdown
-        :distance="-3"
-        :skidding="-5"
-        :placement="'bottom-start'"
+        :placement="'left'"
     >
-        <button class="btn btn-sm m-0 p-0 text-muted" v-tooltip="'Click to add tags'">TAGS</button>
+        <div class="row tags-container">
+            <div class="col-sm-12 col-md-1 d-flex justify-content-center">
+                <button class="btn btn-sm m-0 p-0 text-muted d-flex flex-row gap-2" v-tooltip="'Click to add tags'">
+                    <font-awesome-icon :icon="['fas', 'tags']" />
+                    <span class="bold">TAGS</span>
+                </button>
+            </div>
+            <div class="col-sm-12 col-md-11 col-xl-8">
+                <div class="d-flex flex-column gap-2">
+                    <div v-if="pageStore.selectedPage?.tags" v-for="tag in pageStore.selectedPage.tags">
+                        <p class="m-0"><span class="btn btn-sm me-2" :style="{'background-color': tag.tag.color}">&nbsp;&nbsp;&nbsp;</span>{{ tag.tag.name }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <template #popper>
             <div class="p-2 d-flex flex-column gap-2">
@@ -13,7 +25,9 @@
                         type="text"
                         class="form-control"
                         placeholder="Search or create..."
+                        tabIndex="1"
                         ref="tagInput"
+                        style="z-index: 1000 !important;"
                         :disabled="isCreatingTag"
                         @change="handleTagInputChange"
                         @keyup.enter.stop="handleTagInputEnter"
@@ -30,13 +44,13 @@
 
                 <div class="d-flex flex-column justify-content-center">
                     <div v-if="null == availableTags">
-                        <p>Loading...</p>
+                        <p>Loading... (no available tags)</p>
                     </div>
                     <div v-else-if="availableTags.length === 0 && pageStore.selectedPage.tags.length === 0">
                         <p>No tags found. <span class="bold">Create one</span> to start.</p>
                     </div>
                     <ul v-else class="nav nav-pills nav-fill d-flex flex-column gap-1">
-                        <li v-if="pageStore.selectedPage" class="nav-item" v-for="tagPage in pageStore.selectedPage.tags">
+                        <li v-if="pageStore.selectedPage" class="nav-item" v-for="tagPage in pageStore.selectedPage.tags" v-tooltip="'Click to remove this tag'">
                             <button
                                 class="nav-link active d-flex flex-row gap-3 align-items-center"
                                 @click="() => handleExistingTagDelete(tagPage)"
@@ -46,7 +60,7 @@
                             </button>
                         </li>
 
-                        <li class="nav-item" v-for="tag in availableTags" :key="tag.id">
+                        <li class="nav-item" v-for="tag in availableTags" :key="tag.id" v-tooltip="'Click to add this tag'">
                             <button
                                 class="nav-link inactive d-flex flex-row gap-3 align-items-center"
                                 @click="() => handleExistingTagAdd(tag)"
@@ -63,7 +77,7 @@
 </template>
 
 <script setup>
-    import { defineProps, ref, onMounted, nextTick } from 'vue';
+    import { defineProps, ref, watch, onMounted } from 'vue';
     import { fetchCreateTagPageFromTagId, fetchCreateTagPageFromTagName, fetchDeleteTagPage } from '@/fetch/TagFetcher.js';
     import { usePageStore } from '@/stores/PageStore.js';
     import { useUserStore } from '@/stores/UserStore.js';
@@ -80,6 +94,16 @@
     const tagInput = ref(null);
     const isTagInputButtonDisabled = ref(true);
     const isCreatingTag = ref(false);
+
+    // this makes sure to reload the available tags when the component is mounted
+    onMounted(async () => {
+        reloadAvailableTags();
+    });
+
+    // this makes sure to always filter the available tags when the selected page changes
+    watch (() => pageStore.selectedPage, () => {
+        reloadAvailableTags();
+    });
 
     const handleTagInputChange = () => {
         const tagInputValue = tagInput.value?.value;
@@ -134,17 +158,19 @@
         }
     };
 
-    onMounted(() => {
-        reloadAvailableTags();
-    });
-
     const reloadAvailableTags = () => {
+        if (!pageStore.selectedPage) {
+            return;
+        }
+
+        // @todo sorting does not work here
+        pageStore.selectedPage.tags = pageStore.selectedPage.tags.sort((a, b) => b.name - a.name);
+
         userStore.getCurrentUser().then(() => {
             availableTags.value = userStore.currentUser?.selectedProject?.tags;
 
             availableTags.value = availableTags.value.filter((tag) => {
                 if (tagInput.value?.value?.trim().length > 0) {
-                    console.log(tag.name.toLowerCase(), tagInput.value.value.toLowerCase());
                     if (!tag.name.toLowerCase().includes(tagInput.value.value.toLowerCase())) {
                         return false;
                     }
@@ -152,6 +178,13 @@
 
                 return !pageStore.selectedPage?.tags?.some((tagPage) => tagPage.tag.id === tag.id);
             });
+            availableTags.value = availableTags.value.sort((a, b) => b.name - a.name);
         });
     };
 </script>
+
+<style scoped>
+    .tags-container {
+        cursor: pointer;
+    }
+</style>

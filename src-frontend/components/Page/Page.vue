@@ -4,12 +4,10 @@
             <h1 class="m-0"><input class="magic-input" v-model="props.page.name" @keyup="updatePageTitle" v-tooltip="'Edit page title'" /></h1>
         </div>
     </div>
-    <div class="row">
-        <div class="col-sm-12 offset-md-1 col-md-11 col-xl-4">
-            <PageTagControl :page="page" classs="d-flex flex-row justify-content-start gap-2"/>
-        </div>
-    </div>
-    <div class="mt-4">
+    
+    <PageTagControl class="mt-3" :page="page" />
+
+    <div class="mt-5">
         <div v-if="pageStore.isLoadingPage">
             <div class="col-sm-12 offset-xl-1 col-xl-11">
                 <p>Loading...</p>
@@ -26,7 +24,7 @@
 
         <div class="col-sm-12 col-md-2">
             <div class="mb-3 d-flex flex-row justify-content-end align-items-center">
-                <CreateButton :onClick="() => onPageCreateTab(page)" :tooltip="'Create new tab'" />
+                <!-- <CreateButton :onClick="() => onPageCreateTab(page)" :tooltip="'Create new tab'" /> -->
             </div>
             <div class="d-flex flex-column gap-2" v-if="page.pageTabs.length > 1">
                 <div v-for="pageTab in pageTabStore.pageTabsByPage[page.id]">
@@ -70,7 +68,7 @@
     import PageTab from '@/components/Page/PageTab.vue';
     import CreateButton from '@/components/Util/CreateButton.vue';
     import TextArea from '@/components/Util/TextArea.vue';
-    import PageTagControl from '@/components/Page/PageTagControl.vue';
+    import PageTagControl from '@/components/Page/PageControl/PageTagControl.vue';
     import { fetchCreatePageTab } from '@/fetch/PageFetcher.js';
     import { usePageStore } from '@/stores/PageStore.js';
     import { usePageTabStore } from '@/stores/PageTabStore.js';
