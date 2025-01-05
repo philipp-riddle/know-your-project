@@ -33,9 +33,15 @@ export const usePageSectionStore = defineStore('pageSection', () => {
             return;
         }
 
-        // @todo if we add this line we effectively change the section the user is editing,
-        // focus is lost. We need to find a way to keep the focus on the section the user is editing and merge the changes somehow
-        // displayedPageSections.value = displayedPageSections.value.map((section) => isNaN(section.id) ? newSection : section);
+        // now we need to swap out the new section with the old one in displayedPageSections
+        for (const sectionKey of Object.keys(displayedPageSections.value)) {
+            const section = displayedPageSections.value[sectionKey];
+
+            if (isNaN(section.id)) { // if the section id is NaN, it means it's a new section that hasn't been saved to the server yet; we can replace it with the new section
+                displayedPageSections.value[sectionKey] = newSection;
+                break;
+            }
+        }
 
         return newSection;
     }

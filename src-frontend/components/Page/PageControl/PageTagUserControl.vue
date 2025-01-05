@@ -4,9 +4,32 @@
         :shown="showPageTagUserControl"
         :triggers="[]"
     >
-        <button class="btn btn-sm" v-tooltip="'Click to add user to this tag'" @click.stop="showPageTagUserControl = !showPageTagUserControl">
+        <button
+            class="btn btn-sm"
+            v-tooltip="'Click to add users to this tag'"
+            @click.stop="showPageTagUserControl = !showPageTagUserControl"
+            v-if="tagPage.users.length == 0"
+        >
             <font-awesome-icon :icon="['fas', 'user-plus']" />
         </button>
+        <div
+            v-else
+            @click.stop="showPageTagUserControl = !showPageTagUserControl"
+            v-tooltip="'Click to manage users in this tag'"
+            class="d-flex flex-row gap-2"
+        >
+            <span
+                class="btn btn-sm"
+                :class="{
+                    'btn-dark': tagPageUser.projectUser.user.id == userStore.currentUser.id,
+                    'text-muted': tagPageUser.projectUser.user.id != userStore.currentUser.id
+                }"
+                v-for="tagPageUser in tagPage.users"
+                :key="tagPageUser.id"
+            >
+                {{ tagPageUser.projectUser.user.email }}
+            </span>
+        </div>
 
         <template #popper>
             <div class="p-2 d-flex flex-column gap-2">
@@ -68,6 +91,7 @@
 <script setup>
     import { defineProps, ref, watch, computed, onMounted } from 'vue';
     import { fetchCreateTagPageProjectUserFromTagId, fetchDeleteTagPageProjectUser } from '@/fetch/TagFetcher.js';
+    import { useUserStore } from '@/stores/UserStore.js';
     import { usePageStore } from '@/stores/PageStore.js';
     import { useProjectStore } from '@/stores/ProjectStore.js';
 
@@ -77,6 +101,7 @@
             required: true,
         },
     });
+    const userStore = useUserStore();
     const pageStore = usePageStore();
     const projectStore = useProjectStore();
     const showPageTagUserControl = ref(false);
