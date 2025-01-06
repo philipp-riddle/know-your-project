@@ -10,6 +10,7 @@ use App\Repository\UserInvitationRepository;
 use App\Service\Helper\ApiControllerHelperService;
 use App\Service\MailerService;
 use App\Service\UserService;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
@@ -34,19 +35,23 @@ class UserInvitationApiController extends CrudApiController
             $request,
             onProcessEntity: function (UserInvitation $userInvitation) {
                 if ($this->userRepository->findOneBy(['email' => $userInvitation->getEmail()])) {
-                    throw new \Exception('User with this email already exists');
+                    throw new BadRequestException('User with this email already exists');
                 }
 
                 if ($this->userInvitationRepository->findOneBy(['email' => $userInvitation->getEmail()])) {
-                    throw new \Exception('User with this email was already invited');
+                    throw new BadRequestException('User with this email was already invited');
                 }
 
                 $userInvitation->setCode(bin2hex(openssl_random_pseudo_bytes(10))); // attach random code to user invitation so that it can be used to verify the user
-                $this->mailerService->sendMail(
-                    $userInvitation->getEmail(),
-                    'You were invited to Know Your Project',
-                    'Hi there! <br>You were invited to join Know Your Project. <br><br>Please click on the following link to register: <a href="http://127.0.0.1:8080/auth/verify/'.$userInvitation->getCode().'">Register</a>'
-                );
+
+                // do not send email in test environment
+                if ($_ENV['APP_ENV'] !== 'test') {
+                    $this->mailerService->sendMail(
+                        $userInvitation->getEmail(),
+                        'You were invited to Know Your Project',
+                        'Hi there! <br>You were invited to join Know Your Project. <br><br>Please click on the following link to register: <a href="http://127.0.0.1:8080/auth/verify/'.$userInvitation->getCode().'">Register</a>'
+                    );
+                }
 
                 return $userInvitation;
             },
@@ -60,7 +65,7 @@ class UserInvitationApiController extends CrudApiController
     }
 
     #[Route('/project/list/{project}', name: 'api_user_invitation_project_list', methods: ['GET'])]
-    public function projectInvitiationList(Project $project)
+    public function projectInvitationList(Project $project)
     {
         $this->checkUserAccess($project);
 

@@ -3,14 +3,16 @@
 namespace App\Entity;
 
 use App\Entity\Interface\CrudEntityInterface;
+use App\Entity\Interface\CrudEntityValidationInterface;
 use App\Entity\Interface\OrderListItemInterface;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Repository\PageSectionRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 #[ORM\Entity(repositoryClass: PageSectionRepository::class)]
-class PageSection implements UserPermissionInterface, CrudEntityInterface, OrderListItemInterface
+class PageSection implements UserPermissionInterface, CrudEntityInterface, OrderListItemInterface, CrudEntityValidationInterface
 {
     public const TYPE_COMMENT = 'comment';
     public const TYPE_CHECKLIST = 'checklist';
@@ -139,9 +141,28 @@ class PageSection implements UserPermissionInterface, CrudEntityInterface, Order
         return $this;
     }
 
-    public function hasUserAccess(User $user): bool
+    public function hasUserAccess(User $user, bool $checkSubTypes = true): bool
     {
-        return $this->pageTab->hasUserAccess($user);
+        if (!$this->pageTab->hasUserAccess($user)) {
+            return false;
+        }
+
+
+        if ($checkSubTypes) {
+            if ($this->pageSectionText !== null && !$this->pageSectionText->hasUserAccess($user)) {
+                return false;
+            }
+
+            if ($this->pageSectionChecklist !== null && !$this->pageSectionChecklist->hasUserAccess($user)) {
+                return false;
+            }
+
+            if ($this->embeddedPage !== null && !$this->embeddedPage->hasUserAccess($user)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public function initialize(): static
@@ -150,6 +171,40 @@ class PageSection implements UserPermissionInterface, CrudEntityInterface, Order
         $this->updatedAt ??= new \DateTime();
 
         return $this;
+    }
+
+    public function validate(): void
+    {
+        if ($this->pageSectionText === null && $this->pageSectionChecklist === null && $this->pageSectionURL === null && $this->pageSectionUpload === null && $this->embeddedPage === null) {
+            throw new BadRequestHttpException('A page section must have a content type');
+        }
+
+        $pageSectionTypesNotNull = 0;
+
+        if ($this->pageSectionText !== null) {
+            $pageSectionTypesNotNull++;
+        }
+
+        if ($this->pageSectionChecklist !== null) {
+            $pageSectionTypesNotNull++;
+        }
+
+        if ($this->pageSectionURL !== null) {
+            $pageSectionTypesNotNull++;
+        }
+
+        if ($this->pageSectionUpload !== null) {
+            $pageSectionTypesNotNull++;
+        }
+
+        if ($this->embeddedPage !== null) {
+            $pageSectionTypesNotNull++;
+            $this->embeddedPage->validate();
+        }
+
+        if ($pageSectionTypesNotNull > 1) {
+            throw new BadRequestHttpException('A page section must have only one content type');
+        }
     }
 
     public function getOrderIndex(): ?int

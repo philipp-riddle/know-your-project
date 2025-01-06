@@ -16,14 +16,6 @@ class ProjectApiController extends CrudApiController
         return $this->crudGet($project);
     }
 
-    #[Route('', name: 'api_project_create', methods: ['POST'])]
-    public function createProject(Project $project): JsonResponse
-    {
-        $this->persistAndFlush($project);
-
-        return $this->jsonSerialize($project);
-    }
-
     public function getEntityClass(): string
     {
         return Project::class;
@@ -31,6 +23,6 @@ class ProjectApiController extends CrudApiController
 
     public function getFormClass(): string
     {
-        throw new \Exception('Not implemented (@todo)');
+        throw new \RuntimeException('Not implemented');
     }
 }

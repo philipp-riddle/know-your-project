@@ -4,7 +4,7 @@ namespace App\Controller\Api\Project;
 
 use App\Controller\Api\CrudApiController;
 use App\Entity\ProjectUser;
-use App\Form\CreateProjectUserForm;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -14,7 +14,20 @@ class ProjectUserApiController extends CrudApiController
     #[Route('/{projectUser}', name: 'api_project_user_delete', methods: ['DELETE'])]
     public function delete(ProjectUser $projectUser): JsonResponse
     {
-        return $this->crudDelete($projectUser);
+        return $this->crudDelete(
+            $projectUser,
+            onProcessEntity: function (ProjectUser $projectUser) {
+                if ($projectUser->getUser() === $this->getUser()) {
+                    throw new BadRequestException('You cannot delete yourself from the project');
+                }
+            }
+        );
+    }
+
+    #[Route('/{projectUser}', name: 'api_project_user_get', methods: ['GET'])]
+    public function get(ProjectUser $projectUser): JsonResponse
+    {
+        return $this->crudGet($projectUser);
     }
 
     public function getEntityClass(): string
@@ -24,6 +37,6 @@ class ProjectUserApiController extends CrudApiController
 
     public function getFormClass(): string
     {
-        return CreateProjectUserForm::class;
+        throw new \RuntimeException('Not implemented');
     }
 }

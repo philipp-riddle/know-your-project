@@ -95,6 +95,6 @@ class PageSectionChecklist implements UserPermissionInterface
 
     public function hasUserAccess(User $user): bool
     {
-        return $this->getPageSection()->hasUserAccess($user);
+        return $this->getPageSection()->hasUserAccess($user, checkSubTypes: false);
     }
 }

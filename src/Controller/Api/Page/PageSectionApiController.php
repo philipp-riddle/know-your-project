@@ -10,6 +10,7 @@ use App\Form\PageSectionForm;
 use App\Form\PageSectionUploadForm;
 use App\Service\OrderListHandler;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
@@ -43,6 +44,10 @@ class PageSectionApiController extends CrudApiController
             $request,
             $orderListHandler,
             itemsToOrder: function (PageSection $pageSection) {
+                if (null === $pageSection->getPageTab()) {
+                    throw new BadRequestException('Section is not connected to a page tab.');
+                }
+
                 return $pageSection->getPageTab()->getPageSections();
             },
             onProcessEntity: function (PageSection $pageSection) {
@@ -53,10 +58,6 @@ class PageSectionApiController extends CrudApiController
                     foreach ($pageSection->getPageSectionChecklist()->getPageSectionChecklistItems() as $item) {
                         $this->em->persist($item);
                     }
-                }
-
-                if (null !== $pageSection->getPageSectionURL()) {
-                    var_dump(\get_meta_tags($pageSection->getPageSectionURL()->getUrl()));
                 }
 
                 return $pageSection;

@@ -3,15 +3,24 @@
 namespace App\Entity;
 
 use App\Entity\Interface\CrudEntityInterface;
+use App\Entity\Interface\CrudEntityValidationInterface;
 use App\Entity\Interface\OrderListItemInterface;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Repository\TaskRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
-class Task implements OrderListItemInterface, CrudEntityInterface, UserPermissionInterface
+class Task implements OrderListItemInterface, CrudEntityInterface, UserPermissionInterface, CrudEntityValidationInterface
 {
+    public const STEP_TYPES = [
+        'Discover',
+        'Define',
+        'Develop',
+        'Deliver',
+    ];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -139,5 +148,12 @@ class Task implements OrderListItemInterface, CrudEntityInterface, UserPermissio
         $this->isArchived ??= false;
 
         return $this;
+    }
+
+    public function validate(): void
+    {
+        if (!\in_array($this->stepType, self::STEP_TYPES, true)) {
+            throw new BadRequestHttpException('Invalid step type');
+        }
     }
 }

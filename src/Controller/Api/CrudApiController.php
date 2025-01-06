@@ -4,13 +4,14 @@ namespace App\Controller\Api;
 
 use App\Controller\Api\ApiController;
 use App\Entity\Interface\CrudEntityInterface;
+use App\Entity\Interface\CrudEntityValidationInterface;
 use App\Entity\Interface\OrderListItemInterface;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Service\OrderListHandler;
 use Doctrine\ORM\EntityRepository;
-use Symfony\Component\HttpFoundation\File\Exception\AccessDeniedException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
  * This controller serves as a base for all CRUD (Create, Read, Update, Delete) controllers.
@@ -46,9 +47,13 @@ abstract class CrudApiController extends ApiController
         return $this->jsonSerialize($userPermissionInterface, $normalizeCallbacks);
     }
 
-    protected function crudDelete(UserPermissionInterface $userPermissionInterface): JsonResponse
+    protected function crudDelete(UserPermissionInterface $userPermissionInterface, ?callable $onProcessEntity = null): JsonResponse
     {
         $this->checkUserAccess($userPermissionInterface);
+
+        if (null !== $onProcessEntity) {
+            $onProcessEntity($userPermissionInterface);
+        }
 
         $this->em->remove($userPermissionInterface);
         $this->em->flush();
@@ -111,11 +116,17 @@ abstract class CrudApiController extends ApiController
 
         if (null !== $onProcessEntity) {
             $entity = $onProcessEntity($entity, $entityForm);
-            $this->checkUserAccess($entity);
         }
 
-        // execute the initialize function after all custom processing has been done to the entity to be able to run checks if the entity is valid
+        // initialize the entity after the form and the processing has been applied - e.g. createdAt dates
         $entity->initialize();
+        $this->checkUserAccess($entity); // check if the user has access to the entity after all fields have been initialized
+
+        // entities can implement the CrudEntityValidationInterface to validate their data before being persisted;
+        // this is useful for entities that have complex validation rules that cannot be expressed in the form.
+        if ($entity instanceof CrudEntityValidationInterface) {
+            $entity->validate();
+        }
 
         if ($persist) {
             $this->em->persist($entity);
@@ -183,7 +194,7 @@ abstract class CrudApiController extends ApiController
                 }
 
                 if (!($entity instanceof OrderListItemInterface)) {
-                    throw new \Exception('Processed entity must be an instance of OrderListItemInterface');
+                    throw new \Exception(\sprintf('Processed entity must be an instance of OrderListItemInterface (found: %s)', \get_class($entity)));
                 }
 
                 $entityItemsToOrder = $itemsToOrder($entity);

@@ -114,6 +114,7 @@ class TaskApiController extends CrudApiController
                     ], 400);
                 }
 
+                $task->setOrderIndex($newTask->getOrderIndex());
                 $this->taskService->addTaskToWorkflowStep($task, $newStepType);
 
                 return $task;

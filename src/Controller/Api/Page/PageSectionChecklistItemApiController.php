@@ -33,10 +33,7 @@ class PageSectionChecklistItemApiController extends CrudApiController
     #[Route('', name: 'api_page_section_checklist_item_create', methods: ['POST'])]
     public function create(Request $request): JsonResponse
     {
-        return $this->crudUpdateOrCreate(
-            null,
-            $request
-        );
+        return $this->crudUpdateOrCreate(null, $request);
     }
 
     public function getEntityClass(): string

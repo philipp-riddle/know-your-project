@@ -1,23 +1,23 @@
 <?php
 
-namespace App\Tests\Service;
+namespace App\Tests\Unit\Service;
 
-use App\Entity\WorkflowStep;
+use App\Entity\Task;
 use App\Service\OrderListHandler;
 use App\Tests\Unit\Service\OrderListItem;
-use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class OrderListHandlerTest extends TestCase
 {
     public function testAdd_noExplicitOrderIndex()
     {
         $items = [
-            (new WorkflowStep())->setOrderIndex(1)->setName('name 1'), // distraction: index starts at 1; refresh will move it back to 0
-            (new WorkflowStep())->setOrderIndex(2)->setName('name 1'),
-            (new WorkflowStep())->setOrderIndex(3)->setName('name 1'),
+            (new Task())->setOrderIndex(1)->setName('name 1'), // distraction: index starts at 1; refresh will move it back to 0
+            (new Task())->setOrderIndex(2)->setName('name 1'),
+            (new Task())->setOrderIndex(3)->setName('name 1'),
         ];
-        $itemToAdd = (new WorkflowStep())->setName('name 4');
+        $itemToAdd = (new Task())->setName('name 4');
         
         (new OrderListHandler())->add($itemToAdd, $items);
 
@@ -31,11 +31,11 @@ class OrderListHandlerTest extends TestCase
     public function testAdd_explicitOrderIndex()
     {
         $items = [
-            (new WorkflowStep())->setOrderIndex(0)->setName('name 1'),
-            (new WorkflowStep())->setOrderIndex(1)->setName('name 1'),
-            (new WorkflowStep())->setOrderIndex(2)->setName('name 1'),
+            (new Task())->setOrderIndex(0)->setName('name 1'),
+            (new Task())->setOrderIndex(1)->setName('name 1'),
+            (new Task())->setOrderIndex(2)->setName('name 1'),
         ];
-        $itemToAdd = (new WorkflowStep())
+        $itemToAdd = (new Task())
             ->setOrderIndex(1) // this way we need to shift
             ->setName('name 4');
         
@@ -71,7 +71,19 @@ class OrderListHandlerTest extends TestCase
         ];
         $idOrder = [3, 2];
         
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(BadRequestHttpException::class);
+        (new OrderListHandler())->applyIdOrder($items, $idOrder);
+    }
+
+    public function testApplyIdOrder_repeatingIdsInOrder()
+    {
+        $items = [
+            new OrderListItem(1, 0),
+            new OrderListItem(2, 1),
+        ];
+        $idOrder = [2, 2];
+        
+        $this->expectException(BadRequestHttpException::class);
         (new OrderListHandler())->applyIdOrder($items, $idOrder);
     }
 
@@ -82,7 +94,7 @@ class OrderListHandlerTest extends TestCase
         ];
         $idOrder = [['array_not_valid']];
         
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(BadRequestHttpException::class);
         (new OrderListHandler())->applyIdOrder($items, $idOrder);
     }
 }
