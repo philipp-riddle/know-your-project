@@ -115,6 +115,15 @@
         }
 
         pageTabStore.setSelectedTab(pageTab);
+
+        // if the user switches to a tab with no sections we automatically add a text field for the user to start with
+        if (pageTab.pageSections.length === 0) {
+            pageSectionStore.displayedPageSections.push({
+                pageSectionText: {
+                    content: '',
+                },
+            })
+        }
     };
 
     const onPageCreateTab = async (page) => {

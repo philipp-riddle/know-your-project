@@ -87,11 +87,11 @@ export const useTaskStore = defineStore('task', () => {
     function moveTask(originalTask, stepType, index) {
         return new Promise((resolve) => {
             fetchMoveTask(originalTask, stepType, index).then((task) => {
-                tasks.value[originalTask.stepType].splice(tasks.value[originalTask.stepType].findIndex((t) => t.id === originalTask.id), 1);
-
                 if (!tasks.value[stepType]) {
                     return; // if the tasks are not loaded yet the loading will do the rest
                 }
+
+                // tasks.value[originalTask.stepType].splice(tasks.value[originalTask.stepType].findIndex((t) => t.id === originalTask.id), 1);
 
                 // @todo if we do this the task is in the list twice. :(
                 // tasks.value[stepType] = [

@@ -29,7 +29,7 @@
     import { useTaskStore } from '@/stores/TaskStore.js';
 
     import { Modal } from "bootstrap";
-    import { onMounted, ref, nextTick } from "vue";
+    import { onMounted, onUnmounted, ref, nextTick } from "vue";
     import { useRoute, useRouter } from 'vue-router';
 
     const taskProvider = useTaskProvider();
@@ -51,6 +51,14 @@
                 modalShow.value = true;
             });
         });
+    });
+
+    /**
+     * When unmounting the component, we want to make sure the modal backdrop is removed.
+     * This is necessary because the modal backdrop is not part of the Vue component tree and therefore not automatically removed.
+     */
+    onUnmounted(() => {
+        document.getElementsByClassName('modal-backdrop')[0].remove();
     });
 
     const onCloseModal = () => {
