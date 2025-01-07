@@ -25,6 +25,15 @@ export const usePageTabStore = defineStore('pageTab', () => {
         pageSectionStore.displayedPageSections = pageTab.pageSections;
         // then order the displayed page sections by their order index
         pageSectionStore.displayedPageSections = pageSectionStore.displayedPageSections.sort((a, b) => a.orderIndex - b.orderIndex);
+        
+        // if the user switches to a tab with no sections we automatically add a text field for the user to start with
+        if (pageSectionStore.displayedPageSections.length === 0) {
+            pageSectionStore.displayedPageSections.push({
+                pageSectionText: {
+                    content: '',
+                },
+            });
+        }
     }
 
     async function getTab(pageTabId) {
@@ -47,7 +56,7 @@ export const usePageTabStore = defineStore('pageTab', () => {
         }
 
         const addedTab =  addTab(pageId, newTab);
-        pageStore.pages[pageId].pageTabs.push(pageTab);
+        pageStore.displayedPages[pageId].pageTabs.push(pageTab);
 
         return addedTab;
     }
@@ -63,7 +72,7 @@ export const usePageTabStore = defineStore('pageTab', () => {
     }
 
     async function addTab(pageId, pageTab) {
-        const page = pageStore.pages[pageId] ?? null;
+        const page = pageStore.displayedPages[pageId] ?? null;
 
         if (!page) {
             console.error('Cannot add tab to non-existent page with id:', pageId);

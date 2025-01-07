@@ -32,6 +32,12 @@ export async function fetchDeleteTagPage(tagPageId) {
     return resp.data;
 }
 
+export async function fetchGetTagPageList(tagId) {
+    const resp = await axios.get(`${BaseTagPageService}/list/${tagId}`);
+
+    return resp.data;
+}
+
 // ==== TagPageProjectUser API FUNCTIONS
 
 const BaseTagPageProjectUserService = BaseTagPageService + "/project-user";

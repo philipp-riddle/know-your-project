@@ -13,13 +13,15 @@
                 {{ form_widget(registrationForm.email, {
                     attr: {
                         placeholder: 'Email',
-                        class: 'form-control'
+                        class: 'form-control',
+                        autocomplete: 'username'
                     }
                 }) }}
                 {{ form_widget(registrationForm.plainPassword, {
                     attr: {
                         placeholder: 'Password',
-                        class: 'form-control'
+                        class: 'form-control',
+                        autocomplete: 'password'
                     }
                 }) }}
                 <p class="p-0 m-0">Already signed up? <a href="{{ path('app_login') }}">Login</a></p>

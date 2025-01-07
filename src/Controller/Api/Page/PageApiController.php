@@ -6,6 +6,7 @@ use App\Controller\Api\CrudApiController;
 use App\Entity\Page;
 use App\Entity\PageTab;
 use App\Entity\Project;
+use App\Entity\Tag;
 use App\Entity\User;
 use App\Form\PageForm;
 use App\Repository\PageRepository;
@@ -34,6 +35,14 @@ class PageApiController extends CrudApiController
     public function projectList(Project $project, Request $request): JsonResponse
     {
         $this->checkUserAccess($project);
+        $tags = null;
+
+        if ($request->query->get('tags') === '[]') {
+            $tags = [];
+        } else if ($request->query->get('tags') !== '') {
+            $tags = \explode(',', $request->query->get('tags'));
+        }
+
         $projectPages = $this->pageRepository->findProjectPages(
             $this->getUser(),
             $project,
@@ -41,6 +50,7 @@ class PageApiController extends CrudApiController
             $request->query->get('query'),
             $request->query->get('limit'),
             \intval($request->query->get('excludeId', '')),
+            $tags,
         );
 
         return $this->jsonSerialize($projectPages, normalizeCallbacks: [

@@ -101,7 +101,6 @@ class TaskApiController extends CrudApiController
             $task,
             $request,
             formClass: MoveTaskForm::class,
-            persist: false,
             onProcessEntity: function (Task $newTask) use ($task) {
                 $newStepType = $newTask->getStepType();
 

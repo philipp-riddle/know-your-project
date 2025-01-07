@@ -123,9 +123,8 @@
     const handleTagInputEnter = () => {
         isCreatingTag.value = true;
 
-        fetchCreateTagPageFromTagName(props.page.id, tagInput.value.value).then((pageTab) => {
-            pageStore.selectedPage.tags.push(pageTab);
-            userStore.currentUser.selectedProject.tags.push(pageTab.tag);
+        pageStore.addTagToPageByName(props.page, tagInput.value.value).then((pageTag) => {
+            userStore.currentUser.selectedProject.tags.push(pageTag.tag);
             tagInput.value.value = ''; // Clear input to allow for another tag creation
             isCreatingTag.value = false;
             tagInput.value.focus();
@@ -138,10 +137,8 @@
         isCreatingTag.value = true;
 
         try {
-            fetchCreateTagPageFromTagId(props.page.id, tag.id).then((pageTab) => {
-                pageStore.selectedPage.tags.push(pageTab);
+            pageStore.addTagToPageById(props.page, tag.id).then((pageTag) => {
                 isCreatingTag.value = false;
-
                 reloadAvailableTags();
             });
         } catch (e) {
@@ -154,10 +151,8 @@
         isCreatingTag.value = true;
 
         try {
-            fetchDeleteTagPage(tagPage.id).then(() => {
+            pageStore.removeTagFromPage(props.page, tagPage).then(() => {
                 isCreatingTag.value = false;
-                pageStore.selectedPage.tags = pageStore.selectedPage.tags.filter((tp) => tp.id !== tagPage.id);
-
                 reloadAvailableTags();
             });
         } catch (e) {

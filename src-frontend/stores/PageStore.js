@@ -1,14 +1,24 @@
 import { defineStore } from 'pinia';
 import { usePageTabStore  } from './PageTabStore';
+import { useProjectStore } from './ProjectStore';
 import { ref } from 'vue';
 import { fetchCreatePage, fetchDeletePage, fetchUpdatePage, fetchGetPage, fetchGetPageList } from '@/fetch/PageFetcher';
+import { fetchCreateTagPageFromTagName, fetchCreateTagPageFromTagId, fetchDeleteTagPage } from '@/fetch/TagFetcher';
 
 export const usePageStore = defineStore('page', () => {
     const pages = ref({});
     const selectedPage = ref(null);
     const pageTabStore = usePageTabStore();
-    const displayedPages = ref([]);
-    const isLoadingPage = ref(false); // used to prevent loading a page multiple times in different places, Page view gets blocked while this boolean is true
+    const projectStore = useProjectStore();
+
+    // all displayed pages live here. they are saved with their ID as key to make it easier to retrieve and remove them from the list
+    const displayedPages = ref({});
+
+    // used to keep track of the tags that are displayed on the page; this lets us filter the pages by tags and easily remove all pages with a tag
+    const displayedPageTags = ref({});
+
+    // used to prevent loading a page multiple times in different places, Page view gets blocked while this boolean is true
+    const isLoadingPage = ref(false);
 
     function reorderDisplayedPages() {
         displayedPages.value = Object.values(displayedPages.value).sort((a, b) => {
@@ -37,7 +47,7 @@ export const usePageStore = defineStore('page', () => {
             isLoadingPage.value = true;
 
             getPage(page.id, true).then((fetchedPage) => {
-                pages.value[fetchedPage.id] = fetchedPage;
+                displayedPages.value[fetchedPage.id] = fetchedPage;
                 selectedPage.value = fetchedPage;
 
                 if (fetchedPage.pageTabs.length > 0) {
@@ -49,6 +59,7 @@ export const usePageStore = defineStore('page', () => {
             });
         } else {
             addPage(selectedPage.value); // to make sure all tabs are loaded into the store
+            pageTabStore.setSelectedTab(page.pageTabs[0]);
         }
     }
 
@@ -60,13 +71,21 @@ export const usePageStore = defineStore('page', () => {
         return new Promise((resolve) => {
             fetchCreatePage(page).then((newPage) => {
                 addPage(newPage);
+
+                if (!displayedPageTags.value[-1]) {
+                    displayedPageTags.value[-1] = [];
+                }
+            
+                displayedPageTags.value[-1].push(newPage.id); // make sure the page is displayed in the uncategorized section
+
                 resolve(newPage);
             });
         });
     }
 
     function addPage(page) {
-        pages.value[page.id] = page;
+        // we have one store where we keep all page IDs - this prevents the store from storing multiple instances of the same page object
+        displayedPages.value[page.id] = page;
 
         page.pageTabs.forEach((tab) => {
             pageTabStore.addTab(page.id, tab);
@@ -97,14 +116,124 @@ export const usePageStore = defineStore('page', () => {
         });
     }
 
-    function getPageList(projectId) {
+    function getPageList(projectId, tags) {
         return new Promise((resolve) => {
-            fetchGetPageList(projectId).then((pageList) => {
-                pageList.forEach((page) => {
-                    addPage(page);
-                });
+            fetchGetPageList(projectId, null, null, null, null, tags).then((pageList) => {
+                addPagesAndTagsToStore(pageList, tags);
 
                 resolve(pageList);
+            });
+        });
+    }
+
+    /**
+     * When we get a list of pages from the server, we must add them to the store and also add the tags to the store.
+     * This can get quite tricky as we have to deal with uncategorized pages, uninitialized tags, and pages that are already displayed.
+     */
+    function addPagesAndTagsToStore(pages, tags) {
+        if (tags) {
+            for (const tag of tags) {
+                // this makes sure that the tag nav is ready and initialized, even if we add new ones later and the tag had no pages before
+                if (!displayedPageTags.value[tag]) {
+                    displayedPageTags.value[tag] = [];
+                }
+            }
+        }
+
+        for (const page of pages) {
+            addPage(page, tags);
+
+            if (tags && tags.length === 0) {
+                // if no tags are given, we display all uncategorized pages.
+                // to make them appear and behave like all the other tags we use -1 as the key
+                if (!displayedPageTags.value[-1]) {
+                    displayedPageTags.value[-1] = [];
+                }
+    
+                if (!displayedPageTags.value[-1].includes(page.id)) {
+                    displayedPageTags.value[-1].push(page.id);
+                }
+            } else if (tags) {
+                for (const tagPage of page.tags) {
+                    const tag = tagPage.tag;
+    
+                    // this prevents the tag from being displayed if it is not in the list of tags we want to display
+                    // or if it is already displayed on the page
+                    if (!tags.includes(tag.id) || displayedPageTags.value[tag.id]?.includes(page.id)) {
+                        continue;
+                    }
+    
+                    if (!displayedPageTags.value[tag.id]) {
+                        displayedPageTags.value[tag.id] = [];
+                    }
+    
+                    displayedPageTags.value[tag.id].push(page.id);
+                }
+            }
+        }
+    }
+
+    function addTagToPageByName(page, tagName) {
+        return new Promise((resolve) => {
+            fetchCreateTagPageFromTagName(page.id, tagName).then((pageTag) => {
+                selectedPage.value.tags.push(pageTag);
+                
+                if (displayedPageTags.value[-1]?.includes(page.id)) {
+                    displayedPageTags.value[-1] = displayedPageTags.value[-1].filter((p) => p !== page.id);
+                }
+                
+                // if the tag is indeed displayed on the page, we add the tag to the displayed tags in the nav
+                if (displayedPageTags.value[pageTag.tag.id]) {
+                    displayedPageTags.value[pageTag.tag.id].push(page.id);   
+                }
+
+                projectStore.selectedProject?.tags.push(pageTag.tag);
+
+                resolve(pageTag);
+            });
+        });
+    }
+
+    function addTagToPageById(page, tagId) {
+        return new Promise((resolve) => {
+            fetchCreateTagPageFromTagId(page.id, tagId).then((pageTag) => {
+                selectedPage.value.tags.push(pageTag);
+
+                if (displayedPageTags.value[-1]?.includes(page.id)) {
+                    displayedPageTags.value[-1] = displayedPageTags.value[-1].filter((p) => p !== page.id);
+                }
+    
+                // if the tag is indeed displayed on the page, we add the tag to the displayed tags in the nav
+                if (displayedPageTags.value[pageTag.tag.id]) {
+                    displayedPageTags.value[pageTag.tag.id].push(page.id);
+                }
+    
+                resolve(pageTag);
+            });
+        });
+    }
+
+    function removeTagFromPage(page, tagPage) {
+        return new Promise((resolve) => {
+            fetchDeleteTagPage(tagPage.id).then(() => {
+                selectedPage.value.tags = selectedPage.value.tags.filter((tp) => tp.id !== tagPage.id);
+
+                // if the navigation is loaded for this tag we must remove the tagged page
+                if (displayedPageTags.value[tagPage.tag.id]) {
+                    // first, filter the page from the tag
+                    displayedPageTags.value[tagPage.tag.id] = displayedPageTags.value[tagPage.tag.id].filter((p) => p !== page.id);
+
+                    // if the seleceted page now has no tags, we must add it to the uncategorized pages
+                    if (selectedPage.value.tags.length === 0) {
+                        if (!displayedPageTags.value[-1]) {
+                            displayedPageTags.value[-1] = [];
+                        }
+
+                        displayedPageTags.value[-1].push(page.id);
+                    }
+                }
+
+                resolve();
             });
         });
     }
@@ -136,6 +265,7 @@ export const usePageStore = defineStore('page', () => {
 
     return {
         displayedPages,
+        displayedPageTags,
         reorderDisplayedPages,
         pages,
         isLoadingPage,
@@ -148,6 +278,9 @@ export const usePageStore = defineStore('page', () => {
         updatePage,
         getPage,
         getPageList,
+        addTagToPageByName,
+        addTagToPageById,
+        removeTagFromPage,
         deletePage,
         removePage,
     };

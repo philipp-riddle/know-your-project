@@ -5,6 +5,7 @@ namespace App\Controller\Api;
 use App\Controller\Api\ApiController;
 use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\CrudEntityValidationInterface;
+use App\Entity\Interface\OrderListInterface;
 use App\Entity\Interface\OrderListItemInterface;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Service\OrderListHandler;
@@ -61,7 +62,7 @@ abstract class CrudApiController extends ApiController
         return $this->json(['success' => true]);
     }
 
-    protected function crudUpdateOrCreate(?UserPermissionInterface $userPermissionInterface, Request $request, ?callable $onProcessEntity = null, ?string $formClass = null, bool $persist = true, bool $returnEntity = false): JsonResponse
+    protected function crudUpdateOrCreate(?UserPermissionInterface $userPermissionInterface, Request $request, ?callable $onProcessEntity = null, ?string $formClass = null): JsonResponse
     {
         if (null !== $userPermissionInterface) {
             $this->checkUserAccess($userPermissionInterface);
@@ -128,19 +129,34 @@ abstract class CrudApiController extends ApiController
             $entity->validate();
         }
 
-        if ($persist) {
-            $this->em->persist($entity);
-        }
-
+        $this->em->persist($entity);
         $this->em->flush();
 
-        return $returnEntity ? $entity : $this->jsonSerialize($entity);
+        return $this->jsonSerialize($entity);
     }
 
     protected function crudList(array $filters, ?array $orderBy = null): JsonResponse
     {
-        $orderBy ??= ['id' => 'ASC'];
-        $entities = $this->getRepository()->findBy($filters, $orderBy, limit: 100); // @todo limit of 100 for now - we can add pagination later
+        // check if the user has access to all entities in the list by iterating over all filters and checking if they implement UserPermissionInterface
+        foreach ($filters as $filter) {
+            if ($filter instanceof UserPermissionInterface) {
+                $this->checkUserAccess($filter);
+            }
+        }
+
+        // when no order by is given we determine the order clause by the given entity class and its implemented interfaces.
+        if (null === $orderBy) {
+            // check if the class implements an interface
+            $reflectionClass = new \ReflectionClass($this->getEntityClass());
+
+            if ($reflectionClass->implementsInterface(OrderListInterface::class)) {
+                $orderBy = ['orderIndex' => 'ASC']; // if the entity implements OrderListInterface, we order by the order index
+            } else {
+                $orderBy = ['id' => 'ASC']; // for entities which cannot be ordered by the user we order by the ID
+            }
+        }
+
+        $entities = $this->getRepository()->findBy($filters, $orderBy, limit: 100); // limit of 100 for now - we can add pagination later
 
         return $this->jsonSerialize($entities);
     }

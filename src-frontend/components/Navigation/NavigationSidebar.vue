@@ -26,7 +26,7 @@
             </div>
 
             <div class="d-flex flex-column gap-2 page-explorer">
-                <NavigationPageExplorer />
+                <PageExplorer />
             </div>
         </div>
 
@@ -39,7 +39,7 @@
     import { useRoute } from 'vue-router';
     import NavigationTop from '@/components/Navigation/NavigationTop.vue';
     import NavigationCreateContentMenu from '@/components/Navigation/NavigationCreateContentMenu.vue';
-    import NavigationPageExplorer from '@/components/Navigation/NavigationPageExplorer.vue';
+    import PageExplorer from '@/components/Page/Explorer/PageExplorer.vue';
     import NavigationSettingsDropdown from '@/components/Navigation/NavigationSettingsDropdown.vue';
     import { useTaskStore } from '@/stores/TaskStore.js';
 

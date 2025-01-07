@@ -67,8 +67,6 @@ class UserInvitationApiController extends CrudApiController
     #[Route('/project/list/{project}', name: 'api_user_invitation_project_list', methods: ['GET'])]
     public function projectInvitationList(Project $project)
     {
-        $this->checkUserAccess($project);
-
         return $this->crudList(['project' => $project]);
     }
 

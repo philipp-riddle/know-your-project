@@ -30,14 +30,21 @@ export async function fetchUpdatePage(page) {
     return resp.data;
 }
 
-export async function fetchGetPageList(projectId, includeUserPages, query, limit, excludeId) {
+export async function fetchGetPageList(projectId, includeUserPages, query, limit, excludeId, tags) {
     includeUserPages = (includeUserPages ?? true) ? '1' : '0'; // Convert boolean to string
     limit = limit ?? 100; // Default limit to 100
     excludeId = excludeId ?? ''; // Default excludeId to empty string
+
+    if (tags && tags.length === 0) {
+        tags = '[]'; // Convert empty array to stringified empty array
+    } else {
+        tags = tags ? tags.join(',') : ''; // Convert tags to comma separated string if given
+    }
+
     query = encodeURIComponent(query ?? ''); // URL encode the query to be sure the query does not break the URL
 
     // @todo maybe switch to the JS URL Builder here; this is a bit messy
-    const resp = await axios.get(`${BaseService}/project-list/${projectId}?includeUserPages=${includeUserPages}&query=${query}&limit=${limit}&excludeId=${excludeId}`);
+    const resp = await axios.get(`${BaseService}/project-list/${projectId}?includeUserPages=${includeUserPages}&query=${query}&limit=${limit}&excludeId=${excludeId}&tags=${tags}`);
 
     return resp.data;
 }

@@ -94,7 +94,6 @@
         }
 
         pageStore.createPage(pageObject).then((page) => {
-            pageStore.displayedPages.push(page);
             pageStore.setSelectedPage(page).then(() => {
                 router.push({ name: 'Page', params: {id: page.id}});
             });
