@@ -24,7 +24,7 @@
 </template>
 
 <script setup>
-    import { defineProps, ref, computed, onMounted } from 'vue';
+    import { ref, computed, onMounted } from 'vue';
     import { usePageSectionStore } from '@/stores/PageSectionStore.js';
 
     const props = defineProps({

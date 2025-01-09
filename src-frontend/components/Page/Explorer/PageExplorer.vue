@@ -8,6 +8,7 @@
         <!-- for the uncategorized pages -->
         <PageList />
 
+        <!-- display all tags in the project, let the user expand and collapse the tagged pages -->
         <ul class="nav nav-pills nav-fill d-flex flex-column gap-2 p-0 m-0">
             <li
                 v-for="tag in projectStore.selectedProject?.tags"

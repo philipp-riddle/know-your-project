@@ -10,7 +10,7 @@
 			<p>Loading tasks...</p>
 		</div>
 		<div v-else>
-			<div v-if="taskStore.getTasks(workflowStep).length === 0">
+			<div v-if="taskStore.tasks[workflowStep]?.length === 0">
 				<p>No tasks created so far.</p>
 			</div>
 
@@ -61,9 +61,9 @@
 	import Vue from 'vue';
 	import { ref, onMounted, nextTick, computed } from "vue";
 	import { createTask } from "@/fetch/TaskFetcher.js";
-	import { useTaskProvider } from "@/providers/TaskProvider.js";
 	import TaskCard from '@/components/Task/TaskCard.vue';
 	import { useTaskStore } from '@/stores/TaskStore.js';
+	import { usePageStore } from '@/stores/PageStore.js';
 	import { useRouter } from 'vue-router';
 
 	export default {
@@ -92,7 +92,7 @@
 		name: "nested-draggable",
 		mounted() {
 			this.taskStore = useTaskStore();
-			this.taskProvider = useTaskProvider();
+			this.pageStore = usePageStore();
 			this.router = useRouter();
 			this.loadTasks(this.workflowStep);
 		},
@@ -102,7 +102,7 @@
 				isAddingTaskRequestLoading: false,
 				newTaskName: '',
 				taskStore: null,
-				taskProvider: null,
+				pageStore: null,
 				router: null,
 				isLoadingTasks: true,
 
@@ -115,7 +115,7 @@
 				this.onTaskDrag(event); // pass it to the parent TaskBoard
 			},
 			loadTasks() {
-				this.taskProvider.getTasks(this.workflowStep).then((data) => {
+				this.taskStore.getTasks(this.workflowStep).then((data) => {
 					this.isLoadingTasks = false;
 				});
 			},
@@ -134,11 +134,7 @@
 				}
 			},
 			onTaskClick(task) {
-				if (task === this.taskProvider.getSelectedTask()) { // nothing to do here - the task is already selected
-					return;
-				}
-
-				this.taskProvider.setSelectedTask(task);
+				this.taskStore.setSelectedTask(task);
 				this.onTaskSelect(task);
 			},
 			async onTaskCreateClick(event) {
@@ -148,7 +144,7 @@
 
 				this.isAddingTaskRequestLoading = true;
 
-				this.taskProvider.createTask(this.workflowStep, this.newTaskName).then(async (createdTask) => {
+				this.taskStore.createTask(this.workflowStep, this.newTaskName).then(async (createdTask) => {
 					this.newTaskName = '';
 
 					if (this.onTaskCreate) {

@@ -29,7 +29,6 @@
 </template>
 
 <script setup>
-    import { useTaskProvider } from '@/providers/TaskProvider.js';
     import { onMounted, ref } from 'vue';
     import PageSectionChecklist from '@/components/Page/PageSection/Widget/PageSectionChecklist.vue';
     import PageSectionText from '@/components/Page/PageSection/Widget/PageSectionText.vue';

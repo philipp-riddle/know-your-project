@@ -89,7 +89,7 @@
 </template>
 
 <script setup>
-    import { defineProps, ref, watch, computed, onMounted } from 'vue';
+    import { ref, watch, computed, onMounted } from 'vue';
     import { fetchCreateTagPageProjectUserFromTagId, fetchDeleteTagPageProjectUser } from '@/fetch/TagFetcher.js';
     import { useUserStore } from '@/stores/UserStore.js';
     import { usePageStore } from '@/stores/PageStore.js';

@@ -13,7 +13,6 @@
 
 <script setup>
     // this text area is expandable and can disappear when not in focus
-    import { useTaskProvider } from '@/providers/TaskProvider.js';
     import { onMounted, ref, computed } from 'vue';
     import { useDebounceFn } from '@vueuse/core';
 

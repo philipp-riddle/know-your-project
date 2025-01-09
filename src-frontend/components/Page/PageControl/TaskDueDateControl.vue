@@ -4,14 +4,14 @@
         :triggers="[]"
         :shown="showDueDatePopover"
     >
-        <div class="row mt-2" @click="showDueDatePopover = !showDueDatePopover">
-            <div class="col-sm-12 col-md-1 d-flex justify-content-center align-items-top">
+        <div class="row" @click="showDueDatePopover = !showDueDatePopover">
+            <div class="col-sm-12 col-md-3 col-xl-2 d-flex justify-content-center align-items-top">
                 <button class="btn btn-sm m-0 p-0 text-muted d-flex flex-row gap-2 align-items-center" v-tooltip="'Click to change due date'">
                     <font-awesome-icon :icon="['fas', 'fa-calendar-check']" />
                     <span class="bold">DUE DATE</span>
                 </button>
             </div>
-            <div class="col-sm-12 col-md-11 col-xl-8">
+            <div class="col-sm-12 col-md-9 col-xl-10 col-xl-8">
                 <div v-if="isDue" class="alert alert-danger p-2 d-flex flex-row gap-3 align-items-center" v-tooltip="'This task is overdue!'">
                     <span class="bold">Overdue</span>
                     <p class="m-0 text-muted">{{ displayedDueDate }}</p>
@@ -46,7 +46,7 @@
                 </div>
                 <button
                     class="btn btn-sm btn-danger"
-                    v-if="taskStore.selectedTask.dueDate"
+                    v-if="pageStore.selectedPage.task.dueDate"
                     @click="resetDueDate"
                 >
                     X
@@ -57,25 +57,27 @@
 </template>
 
 <script setup>
-    import { defineProps, ref, computed } from 'vue';
+    import { ref, computed } from 'vue';
     import { useDebounceFn } from '@vueuse/core';
     import { useTaskStore } from '@/stores/TaskStore.js';
+    import { usePageStore } from '@/stores/PageStore.js';
     import { useDateFormatter } from '@/composables/DateFormatter.js';
 
     const dateFormatter = useDateFormatter();
+    const pageStore = usePageStore();
     const taskStore = useTaskStore();
     const showDueDatePopover = ref(false);
     const dateInput = ref(null);
     const timeInput = ref(null);
 
     const displayedDueDate = computed(() => {
-        if (taskStore.selectedTask?.dueDate) {
-            let dateParts = taskStore.selectedTask.dueDate.split('T');
+        if (pageStore.selectedPage.task?.dueDate) {
+            let dateParts = pageStore.selectedPage.task.dueDate.split('T');
             const date = dateParts[0];
             const time = dateParts[1].slice(0, 5);
 
-            const formattedDate = dateFormatter.formatDate(taskStore.selectedTask.dueDate);
-            const formattedDateDistance = dateFormatter.formatDateDistance(taskStore.selectedTask.dueDate);
+            const formattedDate = dateFormatter.formatDate(pageStore.selectedPage.task.dueDate);
+            const formattedDateDistance = dateFormatter.formatDateDistance(pageStore.selectedPage.task.dueDate);
 
             return `${formattedDateDistance} (${formattedDate} ${time})`;
         }
@@ -84,15 +86,15 @@
     });
 
     const currentDate = computed(() => {
-        return taskStore.selectedTask.dueDate ? taskStore.selectedTask.dueDate.split('T')[0] : null;
+        return pageStore.selectedPage.task.dueDate ? pageStore.selectedPage.task.dueDate.split('T')[0] : null;
     });
     const currentTime = computed(() => {
-        return taskStore.selectedTask.dueDate ? taskStore.selectedTask.dueDate.split('T')[1].slice(0, 5) : null;
+        return pageStore.selectedPage.task.dueDate ? pageStore.selectedPage.task.dueDate.split('T')[1].slice(0, 5) : null;
     });
 
     const isDue = computed(() => {
-        if (taskStore.selectedTask?.dueDate) {
-            return new Date(taskStore.selectedTask.dueDate) < new Date();
+        if (pageStore.selectedPage.task?.dueDate) {
+            return new Date(pageStore.selectedPage.task.dueDate) < new Date();
         }
 
         return false;
@@ -101,15 +103,17 @@
      * A due date is soon if it's in the next 24 hours
      */
     const isDueSoon = computed(() => {
-        if (taskStore.selectedTask?.dueDate) {
-            return new Date(taskStore.selectedTask.dueDate) < new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
+        if (pageStore.selectedPage.task?.dueDate) {
+            return new Date(pageStore.selectedPage.task.dueDate) < new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
         }
 
         return false;
     });
 
     const debouncedTaskUpdate = useDebounceFn(() => {
-        taskStore.updateTask(taskStore.selectedTask);
+        taskStore.updateTask(pageStore.selectedPage.task).then((updatedTask) => {
+            pageStore.selectedPage.task = updatedTask;
+        });
     }, 200);
 
     const updateDueDate = async () => {
@@ -117,13 +121,13 @@
         const time = timeInput.value.value === '' ? '00:00' : timeInput.value.value;
         const dueDate = date + 'T' + time;
 
-        taskStore.selectedTask.dueDate = dueDate;
+        pageStore.selectedPage.task.dueDate = dueDate;
 
         await debouncedTaskUpdate();
     };
     
     const resetDueDate = async () => {
-        taskStore.selectedTask.dueDate = null;
+        pageStore.selectedPage.task.dueDate = null;
         dateInput.value.value = null;
         timeInput.value.value = null;
 

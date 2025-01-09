@@ -129,7 +129,7 @@
     import Paragraph from '@tiptap/extension-paragraph';
     import Heading from '@tiptap/extension-heading';
     import Link from '@tiptap/extension-link';
-    import { defineProps, ref, computed, watch } from 'vue';
+    import { ref, computed, watch } from 'vue';
     import { usePageSectionStore } from '@/stores/PageSectionStore.js';
 
     const props = defineProps({

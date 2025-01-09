@@ -16,8 +16,8 @@
                                 <font-awesome-icon :icon="['fas', navigationItem.icon]" />
                                 <span class="">{{ navigationItem.name }}</span>
                             </div>
-                            <div v-if="taskStore.getTasks(navigationItem.name)">
-                                <small class="text-muted">{{ taskStore.getTasks(navigationItem.name).length }}</small>
+                            <div v-if="taskStore.tasks[navigationItem.name]">
+                                <small class="text-muted">{{ taskStore.tasks[navigationItem.name].length }}</small>
                             </div>
                         </div>
                         </router-link>
@@ -35,7 +35,6 @@
 </template>
 
 <script setup>
-    import { reactive, computed, ref, onMounted } from 'vue';
     import { useRoute } from 'vue-router';
     import NavigationTop from '@/components/Navigation/NavigationTop.vue';
     import NavigationCreateContentMenu from '@/components/Navigation/NavigationCreateContentMenu.vue';
@@ -60,34 +59,3 @@
         return currentRoute.name?.includes(navigationItem) ?? false;
     };
 </script>
-
-<style scoped lang="sass">
-    .navigation-sidebar {
-        overflow-x: hidden;
-        overflow-y: scroll;
-    }
-
-    .btn-dark .nav-link {
-        color: white !important;
-    }
-
-    .btn-outline-dark {
-        .nav-link {
-            color: black !important;
-
-            &:hover {
-                color: white !important;
-            }
-        }
-
-        &:hover {
-            background-color: #212529;
-            color: white;
-        }
-    }
-
-    .nav-link.inactive {
-        background-color: #f8f9fa;
-        color: black;
-    }
-</style>

@@ -3,13 +3,13 @@
         :placement="'left'"
     >
         <div class="row tags-container">
-            <div class="col-sm-12 col-md-1 d-flex justify-content-center">
+            <div class="col-sm-12 col-md-3 col-xl-2 d-flex justify-content-center">
                 <button class="btn btn-sm m-0 p-0 text-muted d-flex flex-row gap-2" v-tooltip="'Click to add tags'">
                     <font-awesome-icon :icon="['fas', 'tags']" />
                     <span class="bold">TAGS</span>
                 </button>
             </div>
-            <div class="col-sm-12 col-md-11 col-xl-8">
+            <div class="col-sm-12 col-md-9 col-xl-10">
                 <div class="d-flex flex-column gap-2">
                     <div
                         v-if="pageStore.selectedPage?.tags"
@@ -84,7 +84,7 @@
 </template>
 
 <script setup>
-    import { defineProps, ref, watch, onMounted } from 'vue';
+    import { ref, watch, onMounted } from 'vue';
     import { fetchCreateTagPageFromTagId, fetchCreateTagPageFromTagName, fetchDeleteTagPage } from '@/fetch/TagFetcher.js';
     import { usePageStore } from '@/stores/PageStore.js';
     import { useUserStore } from '@/stores/UserStore.js';

@@ -35,7 +35,7 @@
 </template>
 
 <script setup>
-    import { defineProps, ref, computed, onMounted } from 'vue';
+    import {  ref, computed, onMounted } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
     import { usePageStore } from '@/stores/PageStore.js';
     import { useUserStore } from '@/stores/UserStore.js';

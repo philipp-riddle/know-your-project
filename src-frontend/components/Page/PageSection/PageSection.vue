@@ -1,6 +1,6 @@
 <template>
     <div class="page-section row" :page-section="pageSection.id">
-        <div class="col-sm-1">
+        <div class="col-sm-12 col-md-9 col-xl-2">
             <div class="section-options d-flex flex-row gap-3" v-if="pageSection.id != null">
                 <PageSectionInfo :pageSection="pageSection" />
                 <button class="btn" v-tooltip="'Drag to rearrange order'">
@@ -9,47 +9,44 @@
             </div>
         </div>
 
-        <!-- the PageSection elements all need the v-once directive! -->
-        <!-- this is important to not cause any re-renders of the object when creating or updating the pageSection ref value. -->
-        <!-- otherwise this could interrupt the user flow, e.g. by losing the input focus while typing. -->
-        <!-- @todo we need to rethink this when we introduce real time editing as this will require background updates -->
-        <PageSectionText
-            v-once
-            v-if="pageSection.pageSectionText != null"
-            class="col-sm-11"
-            :pageSection="pageSection"
-            :onPageSectionSubmit="(sectionItem) => onPageSectionSubmitHandler(pageSection, sectionItem)"
-        />
-        <PageSectionChecklist
-            v-once
-            v-else-if="pageSection.pageSectionChecklist != null"
-            class="col-sm-11"
-            :pageSection="pageSection"
-            :onPageSectionSubmit="(sectionItem) => onPageSectionSubmitHandler(pageSection, sectionItem)"
-        />
-        <PageSectionURL
-            v-once
-            v-else-if="pageSection.pageSectionURL != null"
-            class="col-sm-11"
-            :pageSection="pageSection"
-            :onPageSectionSubmit="(sectionItem) => onPageSectionSubmitHandler(pageSection, sectionItem)"
-        />
-        <PageSectionUpload
-            v-once
-            v-else-if="pageSection.pageSectionUpload != null"
-            class="col-sm-11"
-            :pageSection="pageSection"
-            :onPageSectionSubmit="(sectionItem) => onPageSectionSubmitHandler(pageSection, sectionItem)"
-        />
-        <PageSectionEmbeddedPage
-            v-once
-            v-else-if="pageSection.embeddedPage != null"
-            class="col-sm-11"
-            :pageSection="pageSection"
-            :onPageSectionSubmit="(sectionItem) => onPageSectionSubmitHandler(pageSection, sectionItem)"
-        />
-        <div v-else class="alert alert-danger">
-            <p>Unknown section type - cannot render.</p>
+        <div class="col-sm-12 col-md-9 col-xl-10">
+            <!-- the PageSection elements all need the v-once directive! -->
+            <!-- this is important to not cause any re-renders of the object when creating or updating the pageSection ref value. -->
+            <!-- otherwise this could interrupt the user flow, e.g. by losing the input focus while typing. -->
+            <!-- @todo we need to rethink this when we introduce real time editing as this will require background updates -->
+            <PageSectionText
+                v-once
+                v-if="pageSection.pageSectionText != null"
+                :pageSection="pageSection"
+                :onPageSectionSubmit="(sectionItem) => onPageSectionSubmitHandler(pageSection, sectionItem)"
+            />
+            <PageSectionChecklist
+                v-once
+                v-else-if="pageSection.pageSectionChecklist != null"
+                :pageSection="pageSection"
+                :onPageSectionSubmit="(sectionItem) => onPageSectionSubmitHandler(pageSection, sectionItem)"
+            />
+            <PageSectionURL
+                v-once
+                v-else-if="pageSection.pageSectionURL != null"
+                :pageSection="pageSection"
+                :onPageSectionSubmit="(sectionItem) => onPageSectionSubmitHandler(pageSection, sectionItem)"
+            />
+            <PageSectionUpload
+                v-once
+                v-else-if="pageSection.pageSectionUpload != null"
+                :pageSection="pageSection"
+                :onPageSectionSubmit="(sectionItem) => onPageSectionSubmitHandler(pageSection, sectionItem)"
+            />
+            <PageSectionEmbeddedPage
+                v-once
+                v-else-if="pageSection.embeddedPage != null"
+                :pageSection="pageSection"
+                :onPageSectionSubmit="(sectionItem) => onPageSectionSubmitHandler(pageSection, sectionItem)"
+            />
+            <div v-else class="alert alert-danger">
+                <p>Unknown section type - cannot render.</p>
+            </div>
         </div>
     </div>
 </template>
@@ -62,7 +59,7 @@
     import PageSectionUpload from '@/components/Page/PageSection/Widget/PageSectionUpload.vue';
     import PageSectionText from '@/components/Page/PageSection/Widget/PageSectionText.vue';
     import PageSectionURL from '@/components/Page/PageSection/Widget/PageSectionURL.vue';
-    import { defineProps, ref, onMounted } from 'vue';
+    import { ref, onMounted } from 'vue';
     import { useDebounceFn } from '@vueuse/core';
 
     const props = defineProps({

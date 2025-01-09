@@ -2,13 +2,9 @@
     <div class="d-grid flex-column gap-4">
         <PageSectionDraggable :page="page" :pageTab="pageTab" :onPageSectionSubmit="onPageSectionSubmit" />
 
-        <div>
-            <div class="row">
-                <div class="col-sm-1">
-                    <PageSectionCreateButton />
-                </div>
-                <div class="col-sm-11">
-                </div>
+        <div class="row">
+            <div class="col-sm-12 col-md-3 col-xl-2">
+                <PageSectionCreateButton />
             </div>
         </div>
     </div>
@@ -19,7 +15,7 @@
     import PageSectionCreateButton from '@/components/Page/PageSection/PageSectionCreateButton.vue';
     import PageSectionDraggable from '@/components/Page/PageSection/PageSectionDraggable.vue';
     import { usePageSectionStore } from '@/stores/PageSectionStore.js';
-    import { defineProps, ref } from 'vue';
+    import { ref } from 'vue';
 
     const props = defineProps({
         page: {

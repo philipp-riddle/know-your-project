@@ -37,6 +37,11 @@ export const usePageStore = defineStore('page', () => {
     }
 
     async function setSelectedPage(page, forceRefresh = false) {
+        if (!page) {
+            console.error('No page given to set as selected page');
+            return;
+        }
+
         resetStore(); // clean up the store before setting a new page
         selectedPage.value = page;
 
@@ -131,7 +136,7 @@ export const usePageStore = defineStore('page', () => {
      * This can get quite tricky as we have to deal with uncategorized pages, uninitialized tags, and pages that are already displayed.
      */
     function addPagesAndTagsToStore(pages, tags) {
-        if (tags) {
+        if (tags && tags.length > 0) {
             for (const tag of tags) {
                 // this makes sure that the tag nav is ready and initialized, even if we add new ones later and the tag had no pages before
                 if (!displayedPageTags.value[tag]) {
@@ -238,28 +243,42 @@ export const usePageStore = defineStore('page', () => {
         });
     }
 
-    function deletePage(pageId) {
+    function deletePage(page) {
         return new Promise((resolve) => {
-            fetchDeletePage(pageId).then(() => {
-                if (selectedPage.value && selectedPage.value.id === pageId) {
+            fetchDeletePage(page.id).then(() => {
+                if (selectedPage.value && selectedPage.value.id === page.id) {
                     selectedPage.value = null;
                 }
 
-                removePage(pageId);
+                removePage(page);
 
                 resolve();
             });
         });
     }
 
-    function removePage(pageId) {
+    function removePage(page) {
         // also filter it from the displayed pages
-        if (displayedPages.value) {
-            displayedPages.value = displayedPages.value.filter((p) => p.id !== pageId);
+        if (displayedPages.value?.length > 0) {
+            displayedPages.value = displayedPages.value.filter((p) => p.id !== page.id);
         }
 
-        if (pages.value[pageId]) {
-            delete pages.value[pageId];
+        // if the page has tags filter the page out of the navigation for the tags
+        if (page.tags?.length > 0) {
+            for (const tagPage of page.tags) {
+                const tag = tagPage.tag;
+
+                if (displayedPageTags.value[tag.id]) {
+                    displayedPageTags.value[tag.id] = displayedPageTags.value[tag.id].filter((p) => p !== page.id);
+                }
+            }
+        } else if (displayedPageTags.value[-1]) {
+            // if the page has no tags filter out the page from the uncategorized pages
+            displayedPageTags.value[-1] = displayedPageTags.value[-1].filter((p) => p !== page.id);
+        }
+
+        if (pages.value[page.id]) {
+            delete pages.value[page.id];
         }
     }
 
@@ -278,6 +297,7 @@ export const usePageStore = defineStore('page', () => {
         updatePage,
         getPage,
         getPageList,
+        addPagesAndTagsToStore,
         addTagToPageByName,
         addTagToPageById,
         removeTagFromPage,

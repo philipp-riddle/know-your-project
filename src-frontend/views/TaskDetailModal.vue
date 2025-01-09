@@ -10,9 +10,9 @@
     >
         <div class="modal-dialog modal-fullscreen">
             <div class="modal-content">
-                <div class="modal-body mt-xl-3 mt-sm-2">
-                    <div v-if="taskStore.getSelectedTask()">
-                        <TaskDetail :task="taskStore.getSelectedTask()" />
+                <div class="modal-body mt-xl-3 mt-sm-2 p-3">
+                    <div v-if="pageStore.selectedPage">
+                        <TaskDetail :page="pageStore.selectedPage" :task="pageStore.selectedPage.task" />
                     </div>
                     <div v-else>
                         <p>nichts geladen?</p>
@@ -25,15 +25,15 @@
 
 <script setup>
     import TaskDetail from '@/components/Task/TaskDetail.vue';
-    import { useTaskProvider } from '@/providers/TaskProvider.js';
     import { useTaskStore } from '@/stores/TaskStore.js';
+    import { usePageStore } from '@/stores/PageStore.js';
 
     import { Modal } from "bootstrap";
     import { onMounted, onUnmounted, ref, nextTick } from "vue";
     import { useRoute, useRouter } from 'vue-router';
 
-    const taskProvider = useTaskProvider();
     const taskStore = useTaskStore();
+    const pageStore = usePageStore();
     const route = useRoute();
     const router = useRouter();
     const taskId = route.params.id;
@@ -45,8 +45,9 @@
         nextTick();
         const modal = new Modal(document.getElementById('taskDetailModal'));
 
-        taskProvider.getTask(taskId).then((task) => {
-            taskStore.setSelectedTask(task).then(() => {
+        taskStore.getTask(taskId).then((task) => {
+            // on mount set the selected page and force it to fetch it from the server to get all the required serialised contents
+            pageStore.setSelectedPage(task.page, true).then(() => {
                 modal.show();
                 modalShow.value = true;
             });
@@ -58,7 +59,8 @@
      * This is necessary because the modal backdrop is not part of the Vue component tree and therefore not automatically removed.
      */
     onUnmounted(() => {
-        document.getElementsByClassName('modal-backdrop')[0].remove();
+        document.getElementsByClassName('modal-backdrop')[0]?.remove();
+        pageStore.resetStore(); // reset the store to prevent any data leakage from the previously opened task page
     });
 
     const onCloseModal = () => {
@@ -68,14 +70,13 @@
             return;
         }
 
-        taskProvider.resetSelectedTask();
         router.push({ name: 'Tasks' });
     };
 </script>
 
 <style scoped lang="sass">
     .modal-dialog {
-        padding-left: 30%;
+        padding-left: 50%;
         padding-right: 0%;
         padding-top: 0%;
         padding-bottom: 0%;

@@ -1,15 +1,24 @@
 <template>
-    <div class="row" v-if="showPageTitle">
-        <div class="col-sm-12 offset-md-1 col-md-11">
+    <div class="row">
+        <div class="col-sm-12 offset-md-3 offset-lg-2 col-md-9 col-lg-10">
             <h1 class="m-0"><input class="magic-input" v-model="props.page.name" @keyup="updatePageTitle" v-tooltip="'Edit page title'" /></h1>
         </div>
     </div>
-    
-    <PageTagControl class="mt-3" :page="page" />
 
-    <div class="mt-5">
+    <div class="d-flex flex-column gap-2 mt-4 mb-3">
+        <TaskStatusControl v-if="page.task != null" :task="page.task" />
+        <TaskDueDateControl v-if="page.task != null" :task="page.task" />
+        <PageTagControl :page="page" />
+    </div>
+
+    <div>
+        <div class="d-flex flex-row align-items-center gap-4 mb-3">
+            <p class="bold m-0">CONTENT</p>
+            <hr class="w-100">
+        </div>
+
         <div v-if="pageStore.isLoadingPage">
-            <div class="col-sm-12 offset-xl-1 col-xl-11">
+            <div class="col-sm-12 offset-md-3 col-md-9 offset-xl-2 col-xl-10">
                 <p>Loading...</p>
             </div>
         </div>
@@ -68,12 +77,14 @@
     import PageTab from '@/components/Page/PageTab.vue';
     import CreateButton from '@/components/Util/CreateButton.vue';
     import TextArea from '@/components/Util/TextArea.vue';
+    import TaskStatusControl from '@/components/Page/PageControl/TaskStatusControl.vue';
+    import TaskDueDateControl from '@/components/Page/PageControl/TaskDueDateControl.vue';
     import PageTagControl from '@/components/Page/PageControl/PageTagControl.vue';
     import { fetchCreatePageTab } from '@/fetch/PageFetcher.js';
     import { usePageStore } from '@/stores/PageStore.js';
     import { usePageTabStore } from '@/stores/PageTabStore.js';
     import { usePageSectionStore } from '@/stores/PageSectionStore.js';
-    import { defineProps, ref, onMounted, watch } from 'vue';
+    import { ref, onMounted, watch } from 'vue';
     import { useRoute } from 'vue-router';
     import { useDebounceFn } from '@vueuse/core';
 
@@ -81,11 +92,6 @@
         page: {
             type: Object,
             required: true,
-        },
-        showPageTitle: {
-            type: Boolean,
-            required: false,
-            default: false,
         },
     });
     const pageStore = usePageStore();

@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
-import { usePageTabStore } from './PageTabStore';
+import { ref, watch } from 'vue';
+import { usePageStore } from '@/stores/PageStore';
+import { usePageTabStore } from '@/stores/PageTabStore';
 import { fetchCreatePageSection, fetchUpdatePageSection, fetchDeletePageSection, fetchChangePageSectionOrder, fetchUploadPageSection } from '../fetch/PageFetcher';
 
 export const usePageSectionStore = defineStore('pageSection', () => {
@@ -8,9 +9,18 @@ export const usePageSectionStore = defineStore('pageSection', () => {
 
     const displayedPageSections = ref([]);
     const pageSectionsByTab = ref({});
+    const pageStore = usePageStore();
     const pageTabStore = usePageTabStore();
     const isDraggingPageSection = ref(false);
     const selectedPageSection = ref(null);
+
+    watch(() => displayedPageSections.value, (sections) => {
+        // after updating the displayed sections we sync with the displayed page to sync this store with the PageStore.
+        // only sync the sections with a valid ID (i.e. those that have been saved to the server).
+        if (sections && pageStore.selectedPage?.pageTabs[0]?.pageSections) {
+            pageStore.selectedPage.pageTabs[0].pageSections = sections.filter((s) => !isNaN(s.id));
+        }
+    }, { deep: true });
 
     function getIsDraggingPageSection() {
         return isDraggingPageSection.value;

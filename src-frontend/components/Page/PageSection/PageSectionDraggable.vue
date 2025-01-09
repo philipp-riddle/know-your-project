@@ -14,7 +14,7 @@
 					<div
 						:class="{ 'card': pageSectionStore.isDraggingPageSection }"
 					>
-						<PageSection :index="1" :page="page" :pageSection="element" :onPageSectionSubmit="onPageSectionDraggableSubmit" :onPageSectionDelete="onPageSectionDelete" />
+						<PageSection :page="page" :pageSection="element" :onPageSectionSubmit="onPageSectionDraggableSubmit" :onPageSectionDelete="onPageSectionDelete" />
 					</div>
 				</template>
 			</draggable>
@@ -72,7 +72,6 @@
 				isAddingTask: false,
 				isAddingTaskRequestLoading: false,
 				newTaskName: '',
-				taskProvider: null,
 				pageSectionStore: null,
 				router: null,
 			};

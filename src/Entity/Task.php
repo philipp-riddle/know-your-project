@@ -37,9 +37,6 @@ class Task implements OrderListItemInterface, CrudEntityInterface, UserPermissio
     #[ORM\Column]
     private ?bool $isArchived = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $name = null;
-
     #[ORM\Column]
     private ?int $orderIndex = null;
 
@@ -86,18 +83,6 @@ class Task implements OrderListItemInterface, CrudEntityInterface, UserPermissio
     public function setIsArchived(bool $isArchived): static
     {
         $this->isArchived = $isArchived;
-
-        return $this;
-    }
-
-    public function getName(): ?string
-    {
-        return $this->name;
-    }
-
-    public function setName(string $name): static
-    {
-        $this->name = $name;
 
         return $this;
     }

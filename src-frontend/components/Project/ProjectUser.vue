@@ -33,7 +33,7 @@
 </template>
 
 <script setup>
-    import { defineEmits, defineProps, computed } from 'vue';
+    import { computed } from 'vue';
     import ProjectUserTagControl from '@/components/Project/ProjectUserTagControl.vue';
     import { useUserStore } from '@/stores/UserStore.js';
     import { useProjectStore } from '@/stores/ProjectStore.js';

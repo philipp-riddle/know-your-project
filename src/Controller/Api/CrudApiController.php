@@ -10,6 +10,7 @@ use App\Entity\Interface\OrderListItemInterface;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Service\OrderListHandler;
 use Doctrine\ORM\EntityRepository;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
@@ -204,9 +205,9 @@ abstract class CrudApiController extends ApiController
         return $this->crudUpdateOrCreate(
             $userPermissionInterface,
             $request,
-            onProcessEntity: function(UserPermissionInterface $entity) use ($orderListHandler, $itemsToOrder, $onProcessEntity) {
+            onProcessEntity: function(UserPermissionInterface $entity, FormInterface $form) use ($orderListHandler, $itemsToOrder, $onProcessEntity) {
                 if (null !== $onProcessEntity) {
-                    $entity = $onProcessEntity($entity);
+                    $entity = $onProcessEntity($entity, $form);
                 }
 
                 if (!($entity instanceof OrderListItemInterface)) {

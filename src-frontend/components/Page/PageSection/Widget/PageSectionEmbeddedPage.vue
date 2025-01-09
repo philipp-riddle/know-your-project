@@ -73,7 +73,7 @@
     import { useUserStore } from '@/stores/UserStore.js';
     import { usePageStore } from '@/stores/PageStore.js';
     import { usePageSectionStore } from '@/stores/PageSectionStore.js';
-    import { computed, defineProps, ref, onMounted } from 'vue';
+    import { computed, ref, onMounted } from 'vue';
     import { useDebounceFn } from '@vueuse/core';
 
     const props = defineProps({

@@ -18,7 +18,7 @@
         </div>
     </div>
 
-    <div v-if="taskStore.getTasks('Discover') && taskStore.getTasks('Define') && taskStore.getTasks('Develop') && taskStore.getTasks('Deliver')">
+    <div v-if="taskStore.tasks['Discover'] && taskStore.tasks['Define'] && taskStore.tasks['Develop'] && taskStore.tasks['Deliver']">
         <router-view></router-view>
     </div>
 </template>
@@ -26,23 +26,16 @@
 <script setup>
     import TaskList from '@/components/Task/TaskList.vue';
     import TaskDetailModal from '@/views/TaskDetailModal.vue';
-    import { changeOrder, moveTask } from '@/fetch/TaskFetcher.js';
     import { useTaskStore } from '@/stores/TaskStore.js';
-    import { useTaskProvider } from '@/providers/TaskProvider.js';
 
-    import { onMounted, ref } from 'vue';
+    import { ref } from 'vue';
     import { useRouter } from 'vue-router';
 
     const taskStore = useTaskStore();
-    const taskProvider = useTaskProvider();
     const router = useRouter();
     const discoverTasks = ref(null);
     const developTasks = ref(null);
     const deliverTasks = ref(null);
-
-    onMounted(() => {
-        taskProvider.resetSelectedTask();
-    });
 
     const onTaskSelect = (task) => {
         router.push({ name: 'TasksDetail', params: {id: task.id}}); // @todo rework with modal route
@@ -54,9 +47,9 @@
         const taskOrderIndex = event.newIndex;
         const targetWorkflowStep = event.to.getAttribute('data-workflowStep');
 
-        taskProvider.getTask(taskId).then((task) => {
+        taskStore.getTask(taskId).then((task) => {
             if (movedTaskToOtherList) {
-                taskStore.moveTask(task, targetWorkflowStep, taskOrderIndex);
+                taskStore.moveTask(task, targetWorkflowStep, taskOrderIndex, true);
             } else {
                 const taskIdOrder = [];
 
@@ -64,7 +57,7 @@
                     taskIdOrder.push(parseInt(event.to.children[i].getAttribute('task')));
                 }
 
-                taskProvider.changeOrder(targetWorkflowStep, taskIdOrder);
+                taskStore.changeTaskOrder(targetWorkflowStep, taskIdOrder);
             }
         });
     };

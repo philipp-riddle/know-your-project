@@ -12,6 +12,7 @@ use App\Service\OrderListHandler;
 use App\Service\PageService;
 use App\Service\TaskService;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
@@ -59,11 +60,11 @@ class TaskApiController extends CrudApiController
             itemsToOrder: function (Task $task) use ($workflowStepType) {
                 return $this->taskService->getTasks($task->getProject(), $workflowStepType);
             },
-            onProcessEntity: function (Task $task) use ($workflowStepType, $pageService) {
+            onProcessEntity: function (Task $task, FormInterface $form) use ($workflowStepType, $pageService) {
                 $task
                     ->setProject($this->getUser()->getSelectedProject())
                     ->setStepType($workflowStepType)
-                    ->setPage($pageService->createDefaultPage($task));
+                    ->setPage($pageService->createDefaultPage($task, $form->get('name')->getData()));
 
                 return $task;
             },

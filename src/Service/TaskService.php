@@ -19,10 +19,6 @@ class TaskService
         $task->setStepType($workflowStepType);
         $tasks = $this->getTasks($task->getProject(), $workflowStepType);
         $this->orderListHandler->add($task, $tasks);
-
-        if (null === $task->getPage()) {
-            $task->setPage($this->pageService->createDefaultPage($task));
-        }
     }
 
     public function changeTaskOrder(Project $project, string $workflowStepType, array $idOrder): array

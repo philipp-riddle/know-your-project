@@ -6,6 +6,12 @@
     border-radius: 2rem;
 }
 
+/* === DIVIDERS ============================================================= */
+
+hr {
+    margin: 0;
+}
+
 /* === CARDS ============================================================= */
 
 .card {
@@ -60,13 +66,11 @@
     text-align: left !important;
     border-radius: 2rem !important;
     cursor: pointer;
-    padding: 0.3rem 1rem !important;
 
     &.active {
         color: white !important;
         background-color: $dark-gray !important;
         border-width: 0px !important;
-        padding: 0.3rem 1rem !important;
 
         &.nav-directory-link {
             color: black !important;

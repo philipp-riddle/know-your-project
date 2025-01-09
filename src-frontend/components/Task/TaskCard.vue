@@ -1,12 +1,12 @@
 <template>
     <div
         class="card task-card"
-        :class="{ 'card-selected': taskStore.selectedTask?.id === task.id }"
+        :class="{ 'card-selected': pageStore.selectedPage?.task?.id === task.id }"
         :task="task.id"
     >
         <div class="card-body d-flex justify-content-between">
             <div class="d-flex flex-column gap-2">
-                <span>{{ task.name }}</span>
+                <span>{{ task.page.name }}</span>
                 <div class="d-flex flex-row gap-1 align-items-center">
                     <small v-for="tagPage in task.page.tags">
                         <span class="btn btn-sm me-2" :style="{'background-color': tagPage.tag.color}" v-tooltip="'Tag: '+tagPage.tag.name">&nbsp;&nbsp;&nbsp;</span>
@@ -43,9 +43,10 @@
 </template>
 
 <script setup>
-    import { defineProps, computed } from 'vue';
+    import { computed } from 'vue';
     import { useDateFormatter } from '@/composables/DateFormatter.js';
     import { useTaskStore } from '@/stores/TaskStore.js';
+    import { usePageStore } from '@/stores/PageStore.js';
 
     const props = defineProps({
         task: {
@@ -55,12 +56,13 @@
     });
     const dateFormatter = useDateFormatter();
     const taskStore = useTaskStore();
+    const pageStore = usePageStore();
 
     const getTaskProgress = (task) => {
         let checklistItemsTotal = 0;
         let checklistItemsComplete = 0;
 
-        for (const pageTab of task.page.pageTabs) {
+        for (const pageTab of task.page.pageTabs ?? []) {
             for (const pageSection of Object.values(pageTab.pageSections ?? [])) {
                 if (pageSection.pageSectionChecklist) {
                     const pageSectionChecklistItems = pageSection.pageSectionChecklist.pageSectionChecklistItems;

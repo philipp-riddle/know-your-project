@@ -43,7 +43,7 @@
 </template>
 
 <script setup>
-    import { defineProps, ref, computed } from 'vue';
+    import { ref, computed } from 'vue';
     import { useProjectStore } from '@/stores/ProjectStore.js';
     import { useUserStore } from '@/stores/UserStore.js';
 

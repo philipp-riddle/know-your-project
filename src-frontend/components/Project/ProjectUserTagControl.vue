@@ -79,7 +79,7 @@
 </template>
 
 <script setup>
-    import { defineEmits, defineProps, ref, watch, onMounted } from 'vue';
+    import { ref, watch, onMounted } from 'vue';
     import { fetchCreateTagProjectUserFromTagId, fetchCreateTagProjectUserFromTagName, fetchDeleteTagProjectUser } from '@/fetch/TagFetcher.js';
     import { useProjectStore } from '@/stores/ProjectStore.js';
 

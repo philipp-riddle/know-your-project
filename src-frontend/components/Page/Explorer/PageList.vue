@@ -16,7 +16,7 @@
     </ul>
 </template>
 <script setup>
-    import { defineProps, computed, ref, onMounted, onUnmounted } from 'vue';
+    import { computed, ref, onMounted, onUnmounted } from 'vue';
     import PageListItem from '@/components/Page/Explorer/PageListItem.vue';
     import { usePageStore } from '@/stores/PageStore.js';
     import { useUserStore } from '@/stores/UserStore.js';
@@ -54,7 +54,7 @@
     });
 
     const onPageDelete = async (page) => {
-        await pageStore.deletePage(page.id);
+        await pageStore.deletePage(page);
     };
 
 </script>

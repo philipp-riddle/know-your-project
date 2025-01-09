@@ -29,7 +29,6 @@
 
     <div class="nav-item-options" v-if="!page.task">
         <div class="d-flex flex-row align-items-center gap-2">
-            <NavigationCreateContentMenu />
             <DeletionButton label="page" :onConfirm="() => onPageDelete(page)" />
         </div>
     </div>

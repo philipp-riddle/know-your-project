@@ -4,7 +4,7 @@
             <p>Loading....</p>
         </div>
         <div v-else-if="pageStore.selectedPage">
-            <Page :page="pageStore.selectedPage" :showPageTitle="true" />
+            <Page :page="pageStore.selectedPage" />
         </div>
         <div v-else>
             <p>Could not load given page.</p>

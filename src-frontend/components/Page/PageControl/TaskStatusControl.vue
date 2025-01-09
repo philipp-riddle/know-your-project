@@ -2,15 +2,15 @@
     <VDropdown
         :placement="'left'"
     >
-        <div class="row tags-container">
-            <div class="col-sm-12 col-md-1 d-flex justify-content-center">
+        <div class="row" v-if="pageStore.selectedPage">
+            <div class="col-sm-12 col-md-3 col-xl-2 d-flex justify-content-center">
                 <button class="btn btn-sm m-0 p-0 text-muted d-flex flex-row gap-2" v-tooltip="'Click to change status'">
                     <font-awesome-icon :icon="['fas', 'spinner']" />
                     <span class="bold">STATUS</span>
                 </button>
             </div>
-            <div class="col-sm-12 col-md-11 col-xl-8">
-                <p class="m-0 text-muted">{{ taskStore.selectedTask.stepType }}</p>
+            <div class="col-sm-12 col-md-9 col-xl-10">
+                <p class="m-0 text-muted">{{ pageStore.selectedPage.task.stepType }}</p>
             </div>
         </div>
 
@@ -20,7 +20,7 @@
                     <li class="nav-item" v-for="moveChoice in possibleMoveChoices">
                         <button
                             class="nav-link d-flex flex-row gap-3 align-items-center"
-                            :class="{ 'active': taskProvider.getSelectedTask().stepType === moveChoice, 'inactive': taskProvider.getSelectedTask().stepType !== moveChoice }"
+                            :class="{ 'active': pageStore.selectedPage.task.stepType === moveChoice, 'inactive': pageStore.selectedPage.task.stepType !== moveChoice }"
                             @click.stop="onTaskMoveClick(moveChoice)"
                         >
                             {{ moveChoice }}
@@ -33,19 +33,12 @@
 </template>
 
 <script setup>
-    import { defineProps, ref, computed } from 'vue';
-    import { useTaskProvider } from '@/providers/TaskProvider.js';
+    import { ref, computed } from 'vue';
+    import { usePageStore } from '@/stores/PageStore.js';
     import { useTaskStore } from '@/stores/TaskStore.js';
 
-    const props = defineProps({
-        onTaskMove: {
-            type: Function,
-            required: false,
-        },
-    });
-
     const taskStore = useTaskStore();
-    const taskProvider = useTaskProvider();
+    const pageStore = usePageStore();
     const possibleMoveChoices = computed(() => {
         return [
             'Discover',
@@ -56,10 +49,8 @@
     });
 
     const onTaskMoveClick = (workflowStep) => {
-        taskStore.moveTask(taskStore.selectedTask, workflowStep, 0).then((movedTask) => {
-            if (props.onTaskMove) {
-                props.onTaskMove(movedTask);
-            }
+        taskStore.moveTask(pageStore.selectedPage.task, workflowStep, 0, false).then((movedTask) => {
+            pageStore.selectedPage.task = movedTask;
         });
     };
 

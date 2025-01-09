@@ -19,8 +19,13 @@ class TaskForm extends AbstractType
         $isCreatingTask = $data?->getId() === null;
 
         $builder
-            ->add('name')
-            ->add('stepType', TextType::class)
+            ->add('name', TextType::class, [
+                'mapped' => false,
+                'required' => true,
+            ])
+            ->add('stepType', TextType::class, [
+                'required' => true,
+            ])
         ;
         
         if (!$isCreatingTask) {
