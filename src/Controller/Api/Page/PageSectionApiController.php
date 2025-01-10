@@ -3,12 +3,16 @@
 namespace App\Controller\Api\Page;
 
 use App\Controller\Api\CrudApiController;
+use App\Entity\Interface\UserPermissionInterface;
 use App\Entity\PageSection;
 use App\Entity\PageSectionUpload;
 use App\Entity\PageTab;
 use App\Form\PageSectionForm;
 use App\Form\PageSectionUploadForm;
+use App\Service\Helper\ApiControllerHelperService;
 use App\Service\OrderListHandler;
+use App\Service\Search\Entity\EntityVectorEmbeddingInterface;
+use App\Service\Search\RecommendationEngine;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -18,6 +22,38 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/api/page/section')]
 class PageSectionApiController extends CrudApiController
 {
+    public function __construct(
+        ApiControllerHelperService $apiControllerHelperService,
+        private RecommendationEngine $recommendationEngine,
+    ) {
+        parent::__construct($apiControllerHelperService);
+    }
+
+    /**
+     * When creating or updating a page section we want to recommend similar pages to the user.
+     * 
+     * @param PageSection $entity
+     */
+    protected function getAdditionalDataToSerialize(UserPermissionInterface $entity): array
+    {
+        if (!($entity instanceof EntityVectorEmbeddingInterface)) {
+            throw new \RuntimeException('The entity must implement the EntityVectorEmbeddingInterface to generate recommendations. Class: '.\get_class($entity));
+        }
+
+        return [
+            // generate recommendations using the whole project as context
+            'recommendations' => $this->recommendationEngine->recommendSimilarContent(
+                $this->getUser(),
+                baseEntity: $entity,
+                queryEntity: $entity->getPageTab()->getPage()->getProject(),
+                excludeEntity: $entity->getPageTab()->getPage(),
+            ),
+        ];
+    }
+
+    // === ROUTES ========
+    // ====================
+    
     #[Route('/{pageSection}', name: 'api_page_section_get', methods: ['GET'])]
     public function get(PageSection $pageSection): JsonResponse
     {

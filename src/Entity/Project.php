@@ -4,12 +4,13 @@ namespace App\Entity;
 
 use App\Entity\Interface\UserPermissionInterface;
 use App\Repository\ProjectRepository;
+use App\Service\Search\Entity\CachedEntityVectorEmbedding;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ProjectRepository::class)]
-class Project implements UserPermissionInterface
+class Project extends CachedEntityVectorEmbedding implements UserPermissionInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -274,5 +275,18 @@ class Project implements UserPermissionInterface
         }
 
         return $this;
+    }
+
+    public function getTextForEmbedding(): string
+    {
+        return \sprintf('Project "%s"', $this->getName());
+    }
+
+    public function getMetaAttributes(): array
+    {
+        return [
+            'project' => $this->getId(),
+            'user' => $this->getOwner()->getId(),
+        ];
     }
 }

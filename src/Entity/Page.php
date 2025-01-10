@@ -4,9 +4,9 @@ namespace App\Entity;
 
 use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\CrudEntityValidationInterface;
-use App\Entity\Interface\EntityVectorEmbeddingInterface;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Repository\PageRepository;
+use App\Service\Search\Entity\CachedEntityVectorEmbedding;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PageRepository::class)]
 #[ORM\HasLifecycleCallbacks]
-class Page implements UserPermissionInterface, CrudEntityInterface, CrudEntityValidationInterface, EntityVectorEmbeddingInterface
+class Page extends CachedEntityVectorEmbedding implements UserPermissionInterface, CrudEntityInterface, CrudEntityValidationInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -219,8 +219,8 @@ class Page implements UserPermissionInterface, CrudEntityInterface, CrudEntityVa
     public function getMetaAttributes(): array
     {
         $attributes = [
+            ...$this->getProject()->getMetaAttributes(), // inherit project meta attributes
             'page' => $this->getId(),
-            'project' => $this->getProject()->getId(),
             'tags' => \array_map(fn(TagPage $tag) => $tag->getTag()->getId(), $this->getTags()),
         ];
 

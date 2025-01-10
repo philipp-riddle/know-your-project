@@ -4,16 +4,16 @@ namespace App\Entity;
 
 use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\CrudEntityValidationInterface;
-use App\Entity\Interface\EntityVectorEmbeddingInterface;
 use App\Entity\Interface\OrderListItemInterface;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Repository\PageSectionRepository;
+use App\Service\Search\Entity\CachedEntityVectorEmbedding;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 #[ORM\Entity(repositoryClass: PageSectionRepository::class)]
-class PageSection implements UserPermissionInterface, CrudEntityInterface, OrderListItemInterface, CrudEntityValidationInterface, EntityVectorEmbeddingInterface
+class PageSection extends CachedEntityVectorEmbedding implements UserPermissionInterface, CrudEntityInterface, OrderListItemInterface, CrudEntityValidationInterface
 {
     public const TYPE_COMMENT = 'comment';
     public const TYPE_CHECKLIST = 'checklist';

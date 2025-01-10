@@ -4,16 +4,16 @@ namespace App\Entity;
 
 use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\CrudEntityValidationInterface;
-use App\Entity\Interface\EntityVectorEmbeddingInterface;
 use App\Entity\Interface\OrderListItemInterface;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Repository\TaskRepository;
+use App\Service\Search\Entity\CachedEntityVectorEmbedding;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
-class Task implements OrderListItemInterface, CrudEntityInterface, UserPermissionInterface, CrudEntityValidationInterface, EntityVectorEmbeddingInterface
+class Task extends CachedEntityVectorEmbedding implements OrderListItemInterface, CrudEntityInterface, UserPermissionInterface, CrudEntityValidationInterface
 {
     public const STEP_TYPES = [
         'Discover',

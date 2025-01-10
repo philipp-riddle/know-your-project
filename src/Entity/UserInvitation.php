@@ -7,6 +7,7 @@ use App\Entity\Interface\UserPermissionInterface;
 use App\Repository\UserInvitationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Ignore;
 
 #[ORM\Entity(repositoryClass: UserInvitationRepository::class)]
 class UserInvitation implements CrudEntityInterface, UserPermissionInterface
@@ -23,6 +24,8 @@ class UserInvitation implements CrudEntityInterface, UserPermissionInterface
     #[ORM\Column(length: 255, nullable: false)]
     private ?string $email = null;
 
+    // @todo this ignore does not work
+    #[Ignore]
     #[ORM\Column(length: 255)]
     private ?string $code = null;
 

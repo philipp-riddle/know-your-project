@@ -25,6 +25,11 @@ use Symfony\Component\HttpFoundation\Request;
  */
 abstract class CrudApiController extends ApiController
 {
+    /**
+     * The maximum page size for list operations.
+     * 
+     * @var int
+     */
     public const PAGE_SIZE_MAX = 100;
 
     /**
@@ -37,6 +42,14 @@ abstract class CrudApiController extends ApiController
      */
     abstract public function getFormClass(): string;
 
+    /**
+     * Standard CRUD operation to get an entity.
+     * 
+     * @param UserPermissionInterface $userPermissionInterface The entity to get; must implement UserPermissionInterface
+     * @param array|null $normalizeCallbacks An array of normalisation callbacks; e.g. ['createdAt' => fn($date) => $date->format('Y-m-d H:i:s')]
+     * 
+     * @return JsonResponse JSON response containing the entity
+     */
     protected function crudGet(UserPermissionInterface $userPermissionInterface, ?array $normalizeCallbacks = null): JsonResponse
     {
         $this->checkUserAccess($userPermissionInterface);
@@ -44,6 +57,12 @@ abstract class CrudApiController extends ApiController
         return $this->jsonSerialize($userPermissionInterface, $normalizeCallbacks);
     }
 
+    /**
+     * Standard CRUD operation to delete an entity.
+     * 
+     * @param UserPermissionInterface|CrudEntityInterface $userPermissionInterface The entity to delete; must implement both UserPermissionInterface and CrudEntityInterface
+     * @param callable|null $onProcessEntity A callback that processes the entity before it's deleted; optional, pass null if not needed
+     */
     protected function crudDelete(UserPermissionInterface|CrudEntityInterface $userPermissionInterface, ?callable $onProcessEntity = null): JsonResponse
     {
         if (!($userPermissionInterface instanceof CrudEntityInterface) || !($userPermissionInterface instanceof UserPermissionInterface)) {
@@ -56,7 +75,7 @@ abstract class CrudApiController extends ApiController
             $onProcessEntity($userPermissionInterface);
         }
 
-        // save the entity ID as it will be removed after the EM flush; we need this in the event.
+        // save the entity ID as it will be removed after the EM flush; the ID will later be passed on to the event
         $entityId = $userPermissionInterface->getId();
         $this->em->remove($userPermissionInterface);
         $this->em->flush();
@@ -67,7 +86,18 @@ abstract class CrudApiController extends ApiController
         return $this->json(['success' => true]);
     }
 
-    protected function crudUpdateOrCreate(UserPermissionInterface|CrudEntityInterface|null $userPermissionInterface, Request $request, ?callable $onProcessEntity = null, ?string $formClass = null): JsonResponse
+    /**
+     * Standard CRUD operation to update or create an entity.
+     * 
+     * @param UserPermissionInterface|CrudEntityInterface|null $userPermissionInterface The entity to update or null to create a new entity; if it's passed it must implement both UserPermissionInterface and CrudEntityInterface
+     * @param Request $request The request object
+     * @param callable|null $onProcessEntity A callback that processes the entity before it's persisted; optional, pass null if not needed. gets called with the entity and the form (to retrieve form data which cannot be directly mapped to the entity)
+     * @param callable|null $afterProcessEntity A callback that processes the entity after it's persisted; optional, pass null if not needed. gets called with the updated entity and the original entity
+     * @param string|null $formClass The form class to use; if null, the form class is determined by the getFormClass method
+     * 
+     * @return JsonResponse JSON response containing the updated or created entity
+     */
+    protected function crudUpdateOrCreate(UserPermissionInterface|CrudEntityInterface|null $userPermissionInterface, Request $request, ?callable $onProcessEntity = null, ?callable $afterProcessEntity = null, ?string $formClass = null): JsonResponse
     {
         if (null !== $userPermissionInterface) {
             $this->checkUserAccess($userPermissionInterface);
@@ -154,9 +184,36 @@ abstract class CrudApiController extends ApiController
         // flush after the event has been dispatched to ensure that all changes made in event subscribers are saved to the database 
         $this->em->flush();
 
-        return $this->jsonSerialize($entity);
+        if (null !== $afterProcessEntity) {
+            $entity = $afterProcessEntity($entity, $originalEntity);
+        }
+
+        // additional data to serialize and return in the JSON response.
+        $additionalData = $this->getAdditionalDataToSerialize($entity);
+
+        return $this->jsonSerialize($entity, additionalData: $additionalData);
     }
 
+    /**
+     * Returns additional data to serialize after the entity has been persisted.
+     * 
+     * @param UserPermissionInterface $entity The entity that has been persisted
+     * @param UserPermissionInterface|null $originalEntity The original entity before it was updated; null if the entity was created
+     * 
+     * @return array An array of additional data to return in the JSON response
+     */
+    protected function getAdditionalDataToSerialize(UserPermissionInterface $entity): array
+    {
+        // override this method in child classes to add additional processing after the entity has been persisted
+        return [];
+    }
+
+    /**
+     * Standard CRUD operation to list entities.
+     * 
+     * @param array $filters An array of filters to apply to the list. Each filter is checked if it implements UserPermissionInterface to ensure the user has access to the returned results.
+     * @param array|null $orderBy An array of order by clauses; if null, the order by is determined by the entity class and its implemented interfaces
+     */
     protected function crudList(array $filters, ?array $orderBy = null): JsonResponse
     {
         // check if the user has access to all entities in the list by iterating over all filters and checking if they implement UserPermissionInterface
@@ -183,6 +240,15 @@ abstract class CrudApiController extends ApiController
         return $this->jsonSerialize($entities);
     }
 
+    /**
+     * Standard CRUD operation to change the order of a list of entities.
+     * 
+     * @param Request $request The request object
+     * @param OrderListHandler $orderListHandler The OrderListHandler service; used to apply the new order to the list
+     * @param array $itemsToOrder An array of items to order; each item must implement UserPermissionInterface
+     * 
+     * @return JsonResponse JSON response containing the updated list of items
+     */
     protected function crudChangeOrder(Request $request, OrderListHandler $orderListHandler, array $itemsToOrder): JsonResponse
     {
         $content = $request->toArray();

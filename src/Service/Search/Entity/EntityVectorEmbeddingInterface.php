@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Entity\Interface;
+namespace App\Service\Search\Entity;
+
+use Qdrant\Models\Filter\Filter;
 
 /**
- * Any entity which needs to be embedded into the vector database (e.g. for search purposes) needs to implement this interface.
+ * Any entity which is embedded into the vector database (for search and data analysis purposes) needs to implement this interface.
  */
 interface EntityVectorEmbeddingInterface
 {
@@ -24,4 +26,15 @@ interface EntityVectorEmbeddingInterface
      * @return array The meta attributes, format ['attribute' => value, ...]
      */
     public function getMetaAttributes(): array;
+
+    /**
+     * Process the vector embedding returned by the vector database.
+     * The entity can choose to either cache it in-memory or could even store it in the database.
+     */
+    public function processVectorEmbedding(array $vectorEmbedding): self;
+
+    /**
+     * Returns the filter instance for the vector database to search for this entity.
+     */
+    public function getFilter(): Filter;
 }

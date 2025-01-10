@@ -2,12 +2,12 @@
 
 namespace App\EventSubscriber;
 
-use App\Entity\Interface\EntityVectorEmbeddingInterface;
+use App\Service\Search\Entity\EntityVectorEmbeddingInterface;
 use App\Event\CreateCrudEntityEvent;
 use App\Event\DeleteCrudEntityEvent;
 use App\Event\UpdateCrudEntityEvent;
 use App\Service\Helper\TestEnvironment;
-use App\Service\Search\VectorEmbeddingService;
+use App\Service\Search\EntityVectorEmbeddingService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -17,7 +17,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class EntityVectorEmbeddingSubscriber implements EventSubscriberInterface
 {
     public function __construct(
-        private VectorEmbeddingService $vectorEmbeddingService,
+        private EntityVectorEmbeddingService $EntityVectorEmbeddingService,
     ) { }
 
     public function onModifyCrudEntityEvent(CreateCrudEntityEvent|UpdateCrudEntityEvent $event): void
@@ -40,7 +40,7 @@ class EntityVectorEmbeddingSubscriber implements EventSubscriberInterface
                 // }
             }
 
-            $this->vectorEmbeddingService->handleEmbeddingUpdate($entity);
+            $this->EntityVectorEmbeddingService->updateEmbeddedEntity($entity);
         }
     }
 
@@ -50,7 +50,7 @@ class EntityVectorEmbeddingSubscriber implements EventSubscriberInterface
 
         // only handle entities if they the EntityVectorEmbeddingInterface and we are not in a test environment
         if ($entity instanceof EntityVectorEmbeddingInterface && !TestEnvironment::isActive()) {
-            $this->vectorEmbeddingService->handleEmbeddingDeletion($entity, $event->getEntityId());
+            $this->EntityVectorEmbeddingService->deleteEmbeddedEntity($entity, $event->getEntityId());
         }
     }
 

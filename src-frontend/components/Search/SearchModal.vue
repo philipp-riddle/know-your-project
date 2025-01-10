@@ -32,7 +32,7 @@
                     </div>
                     <div
                         v-else-if="searchStore.searchResults != null"
-                        class="search-results d-flex flex-column gap-2 mt-3"
+                        class="search-results d-flex flex-column gap-3 mt-3"
                     >
                         <div v-if="searchStore.searchResults.length > 0" v-for="result in searchStore.searchResults" :key="result.id">
                             <SearchResult
@@ -55,8 +55,7 @@
 
 <script setup>
     import { Modal } from "bootstrap";
-    import { computed, onMounted, ref, watch, nextTick } from "vue";
-    import { useRoute, useRouter } from 'vue-router';
+    import { ref, watch, nextTick } from "vue";
     import { useDebounceFn } from '@vueuse/core';
     import SearchResult from '@/components/Search/SearchResult.vue';
     import { useSearchStore } from '@/stores/SearchStore.js';
@@ -65,10 +64,9 @@
 
     const searchStore = useSearchStore();
     const projectStore = useProjectStore();
-    const route = useRoute();
-    const router = useRouter();
     const searchModal = ref(null);
     const searchInput = ref(null);
+    const oldSearchTerm = ref('');
 
     // watch for changes in the search store and if the user is searching;
     // if yes show the modal
@@ -78,8 +76,8 @@
         }
     });
 
-    // first, we make the modal required.
-    // then we listen for the escape key and close the modal if it is pressed. This gives us more control about the actions and what happens with the data
+    // imporant: the search modal required, i.e. the user cannot escape / click out of it by default.
+    // Here we listen for the escape key and close the modal if it is pressed. This gives us more control about the actions and what happens with the modal and its data.
     onKeyStroke('Escape', (e) => {
         e.preventDefault();
         hideModal();
@@ -116,8 +114,14 @@
     };
 
     const search = () => {
+        const searchTerm = searchInput.value.value;
+
+        if (searchTerm === oldSearchTerm.value) {
+            return;
+        }
+
         searchStore.isLoading = true;
-        debouncedSearch(projectStore.selectedProject, searchInput.value.value);
+        debouncedSearch(projectStore.selectedProject, searchTerm);
     }
 
     const debouncedSearch = useDebounceFn((project, searchTerm) => {
