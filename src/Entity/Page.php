@@ -213,7 +213,7 @@ class Page implements UserPermissionInterface, CrudEntityInterface, CrudEntityVa
 
     public function getTextForEmbedding(): string
     {
-        return \sprintf('Page (%d): %s', $this->getId(), $this->getName());
+        return $this->getName();
     }
 
     public function getMetaAttributes(): array

@@ -144,11 +144,21 @@ hr {
 
     input {
         border-radius: 2rem !important;
-        background-color: $white-60 !important;
-        box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1) !important;
-        backdrop-filter: blur(10px) !important;
+        background-color: white !important;
+        box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.6) !important;
         min-height: 4rem;
         font-size: 1.25em; // this is the equivalent of a h5 tag
         padding-left: 2.5rem;
     }
+
+    .card {
+        background-color: $white-60 !important;
+        border-radius: 2rem !important;
+        box-shadow: 0 0 10px 0 rgba(186, 183, 183, 0.1) !important;
+        backdrop-filter: blur(10px) !important;
+    }
+}
+
+modal-backdrop.show {
+    opacity: 0.1 !important;
 }

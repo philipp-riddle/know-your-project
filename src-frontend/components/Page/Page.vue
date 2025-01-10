@@ -19,7 +19,9 @@
 
         <div v-if="pageStore.isLoadingPage">
             <div class="col-sm-12 offset-md-3 col-md-9 offset-xl-2 col-xl-10">
-                <p>Loading...</p>
+                <div class="spinner-border mt-3" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
             </div>
         </div>
         <div v-else-if="pageTabStore.selectedTab?.id && pageTabStore.pageTabs[pageTabStore.selectedTab?.id]">

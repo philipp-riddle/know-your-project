@@ -1,7 +1,9 @@
 <template>
     <div class="p-5">
         <div v-if="pageStore.isLoadingPage">
-            <p>Loading....</p>
+            <div class="spinner-border mt-3" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
         </div>
         <div v-else-if="pageStore.selectedPage">
             <Page :page="pageStore.selectedPage" />

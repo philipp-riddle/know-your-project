@@ -21,6 +21,13 @@ export const usePageTabStore = defineStore('pageTab', () => {
     async function setSelectedTab(pageTab) {
         selectedTab.value = pageTab;
 
+        console.log('set selected tab', pageTab);
+
+        if (!pageStore.selectedPage) {
+            console.error('Cannot set selected tab without a selected page');
+            return;
+        }
+
         // first, write the displayed page sections to the store
         pageSectionStore.displayedPageSections = pageTab.pageSections;
         // then order the displayed page sections by their order index

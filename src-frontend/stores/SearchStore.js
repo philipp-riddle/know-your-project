@@ -22,6 +22,11 @@ export const useSearchStore = defineStore('search', () => {
         });
     };
 
+    const resetStore = () => {
+        isSearching.value = false;
+        isLoading.value = false;
+    }
+
     return {
         isSearching,
         isLoading,
@@ -29,5 +34,6 @@ export const useSearchStore = defineStore('search', () => {
 
         toggleIsSearching,
         search,
+        resetStore,
     }
 });

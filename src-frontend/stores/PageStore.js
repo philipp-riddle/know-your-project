@@ -37,35 +37,60 @@ export const usePageStore = defineStore('page', () => {
     }
 
     async function setSelectedPage(page, forceRefresh = false) {
-        if (!page) {
-            console.error('No page given to set as selected page');
-            return;
-        }
+        return new Promise((resolve) => {
+            if (!page) {
+                resolve(null);
+                console.error('No page given to set as selected page');
+                return;
+            }
+    
+            resetStore(); // clean up the store before setting a new page
+            selectedPage.value = page;
+            let refresh = false;
 
-        resetStore(); // clean up the store before setting a new page
-        selectedPage.value = page;
+            // if forceRefresh is set to true we must reload the page from the server in any case
+            if (forceRefresh) {
+                refresh = true;
 
-        // if the page has no loaded page tabs we assume that the serializer skipped the tabs.
-        // thus, we force a reload of the page to get the tabs and additionally select the first tab as selected.
-        if (forceRefresh || !page.pageTabs || page.pageTabs.length === 0) {
-            selectedPage.value = null;
-            isLoadingPage.value = true;
+            // if the page has no loaded page tabs we assume that the serializer skipped the tabs.
+            // thus, we force a reload of the page to get the tabs and additionally select the first tab as selected.
+            } else if (!page.pageTabs || !Array.isArray(page.pageTabs) || page.pageTabs.length === 0) {
+                refresh = true;
 
-            getPage(page.id, true).then((fetchedPage) => {
-                displayedPages.value[fetchedPage.id] = fetchedPage;
-                selectedPage.value = fetchedPage;
-
-                if (fetchedPage.pageTabs.length > 0) {
-                    pageTabStore.setSelectedTab(fetchedPage.pageTabs[0]);
+            // If the page tabs are loaded we must check if they are arrays or objects.
+            // If they are not, we must refresh the page. E.g. if the serialiser returned only numbers as the circular reference handler clicked in.
+            } else {
+                for (const pageTab in page.pageTabs) {
+                    if (!Array.isArray(pageTab) && typeof pageTab !== 'object') {
+                        refresh = true; // contains page tabs which are not arrays/objects, thus we must refresh
+                    }
                 }
+            }
 
-                isLoadingPage.value = false;
-                addPage(fetchedPage);
-            });
-        } else {
-            addPage(selectedPage.value); // to make sure all tabs are loaded into the store
-            pageTabStore.setSelectedTab(page.pageTabs[0]);
-        }
+            console.log('refresh', refresh);
+
+            if (refresh) {
+                selectedPage.value = null;
+                isLoadingPage.value = true;
+    
+                getPage(page.id, true).then((fetchedPage) => {
+                    displayedPages.value[fetchedPage.id] = fetchedPage;
+                    selectedPage.value = fetchedPage;
+    
+                    if (fetchedPage.pageTabs.length > 0) {
+                        pageTabStore.setSelectedTab(fetchedPage.pageTabs[0]);
+                    }
+    
+                    isLoadingPage.value = false;
+                    addPage(fetchedPage);
+                    resolve(fetchedPage);
+                });
+            } else {
+                addPage(selectedPage.value); // to make sure all tabs are loaded into the store
+                pageTabStore.setSelectedTab(page.pageTabs[0]);
+                resolve(selectedPage.value);
+            }
+        });
     }
 
     function getSelectedPage() {

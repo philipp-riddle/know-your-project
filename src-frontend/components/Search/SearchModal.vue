@@ -3,9 +3,11 @@
         class="modal fade search-modal"
         id="searchModal"
         tabindex="-1"
+        data-bs-backdrop="static"
+        data-bs-keyboard="false"
         aria-hidden="true"
         ref="searchModal"
-        @blur="hideSearch"
+        @click="checkIfUserClickedOutside"
     >
         <div class="modal-dialog modal-fullscreen">
             <div class="modal-content">
@@ -16,7 +18,7 @@
                         class="form-control"
                         ref="searchInput"
                         @keyup.enter="search"
-                        @keyup.esc="hideSearch"
+                        @keyup.esc="hideModal"
                         @keyup="search"
                     >
 
@@ -33,10 +35,16 @@
                         class="search-results d-flex flex-column gap-2 mt-3"
                     >
                         <div v-if="searchStore.searchResults.length > 0" v-for="result in searchStore.searchResults" :key="result.id">
-                            <SearchResult :result="result" />
+                            <SearchResult
+                                :result="result"
+                                :searchTerm="searchInput.value"
+                                @searchResultClick="hideModal"
+                            />
                         </div>
-                        <div v-else class="alert alert-info mt-3" role="alert">
-                            <p>No results found.</p>
+                        <div v-else class="card mt-3" role="alert">
+                            <div class="card-body p-4">
+                                <p class="m-0">No results found.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -53,6 +61,7 @@
     import SearchResult from '@/components/Search/SearchResult.vue';
     import { useSearchStore } from '@/stores/SearchStore.js';
     import { useProjectStore } from '@/stores/ProjectStore.js';
+    import { onKeyStroke } from '@vueuse/core';
 
     const searchStore = useSearchStore();
     const projectStore = useProjectStore();
@@ -61,32 +70,49 @@
     const searchModal = ref(null);
     const searchInput = ref(null);
 
+    // watch for changes in the search store and if the user is searching;
+    // if yes show the modal
     watch(() => searchStore.isSearching, (newValue) => {
-        console.log('watch', searchStore.isSearching);
         if (newValue) {
             showModal();
-        } else {
-            hideModal();
         }
+    });
+
+    // first, we make the modal required.
+    // then we listen for the escape key and close the modal if it is pressed. This gives us more control about the actions and what happens with the data
+    onKeyStroke('Escape', (e) => {
+        e.preventDefault();
+        hideModal();
     });
 
     const showModal = async () => {
         const modal = new Modal(document.getElementById('searchModal'));
         modal.show();
 
-        await nextTick();
-        searchInput.value.focus(); // @todo does not work somehow
+        // @todo somehow does not wokr
+        nextTick().then(() => {
+            searchInput.value.focus();
+        });
     };
 
     const hideModal = () => {
-        console.log('hide modal');
-        const modal = new Modal(document.getElementById('searchModal'));
-        modal.hide();
+        const searchModal = document.getElementById('searchModal');
+
+        // remove show class from modal and remove modal backdrop
+        searchModal.classList.remove('show');
+        searchModal.style.display = 'none';
+        document.getElementsByClassName('modal-backdrop')[0]?.remove();
+
+        // reset the search store to make it ready for the next search;
+        // we keep the search results and the search term though in case the user wants to try another search result.
+        searchStore.resetStore();
     };
 
-    const hideSearch = () => {
-        hideModal();
-        searchStore.isSearching = false;
+    const checkIfUserClickedOutside = (e) => {
+        // when the user clicks on the modal itself, we hide the modal as this is outside of the search dialogue
+        if (e.target.classList.contains('modal')) {
+            hideModal();
+        }
     };
 
     const search = () => {
@@ -103,7 +129,7 @@
     .modal-dialog {
         padding-left: 30%;
         padding-right: 30%;
-        padding-top: 5%;
+        padding-top: 2%;
         padding-bottom: 0%;
         
         // on mobile we want a margin on the top

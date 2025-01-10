@@ -51,7 +51,9 @@
 
                 <div class="d-flex flex-column justify-content-center">
                     <div v-if="null == availableTags">
-                        <p>Loading... (no available tags)</p>
+                        <div class="spinner-border mt-3" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
                     </div>
                     <div v-else-if="availableTags.length === 0 && pageStore.selectedPage.tags.length === 0">
                         <p>No tags found. <span class="bold">Create one</span> to start.</p>
