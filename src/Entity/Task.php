@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\CrudEntityValidationInterface;
+use App\Entity\Interface\EntityVectorEmbeddingInterface;
 use App\Entity\Interface\OrderListItemInterface;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Repository\TaskRepository;
@@ -12,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
-class Task implements OrderListItemInterface, CrudEntityInterface, UserPermissionInterface, CrudEntityValidationInterface
+class Task implements OrderListItemInterface, CrudEntityInterface, UserPermissionInterface, CrudEntityValidationInterface, EntityVectorEmbeddingInterface
 {
     public const STEP_TYPES = [
         'Discover',
@@ -140,5 +141,28 @@ class Task implements OrderListItemInterface, CrudEntityInterface, UserPermissio
         if (!\in_array($this->stepType, self::STEP_TYPES, true)) {
             throw new BadRequestHttpException('Invalid step type');
         }
+    }
+
+    public function getTextForEmbedding(): string
+    {
+        $lines = [
+            \sprintf('Task (%d): %s', $this->getId(), $this->getStepType()),
+            'Order Index: ' . $this->getOrderIndex(),
+        ];
+
+        if ($this->getDueDate() !== null) {
+            $lines[] = \sprintf('Due: %s', $this->getDueDate()->format('Y-m-d'));
+        }
+
+        if ($this->isArchived) {
+            $lines[] = 'Archived';
+        }
+
+        return \implode("\n", $lines);
+    }
+
+    public function getMetaAttributes(): array
+    {
+        return $this->getPage()->getMetaAttributes();
     }
 }

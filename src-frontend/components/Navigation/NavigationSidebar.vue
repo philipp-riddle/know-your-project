@@ -14,13 +14,25 @@
                         <div class="d-flex flex-row gap-3 align-items-center justify-content-between">
                             <div class="d-flex flex-row gap-3 align-items-center">
                                 <font-awesome-icon :icon="['fas', navigationItem.icon]" />
-                                <span class="">{{ navigationItem.name }}</span>
+                                <span>{{ navigationItem.name }}</span>
                             </div>
                             <div v-if="taskStore.tasks[navigationItem.name]">
                                 <small class="text-muted">{{ taskStore.tasks[navigationItem.name].length }}</small>
                             </div>
                         </div>
                         </router-link>
+                    </li>
+                    <li class="nav-item">
+                        <div
+                            class="nav-link"
+                            :class="{active: searchStore.isSearching, inactive: !searchStore.isSearching}"
+                            @click="searchStore.toggleIsSearching"
+                        >
+                            <div class="d-flex flex-row gap-3 align-items-center">
+                                <font-awesome-icon :icon="['fas', 'search']" />
+                                <span>Search</span>
+                            </div>
+                        </div>
                     </li>
                 </ul>
             </div>
@@ -41,6 +53,7 @@
     import PageExplorer from '@/components/Page/Explorer/PageExplorer.vue';
     import NavigationSettingsDropdown from '@/components/Navigation/NavigationSettingsDropdown.vue';
     import { useTaskStore } from '@/stores/TaskStore.js';
+    import { useSearchStore } from '@/stores/SearchStore.js';
 
     const navigationItems = [
         {
@@ -54,6 +67,7 @@
     ];
     const currentRoute = useRoute();
     const taskStore = useTaskStore();
+    const searchStore = useSearchStore();
 
     const isSelected = (navigationItem) => {
         return currentRoute.name?.includes(navigationItem) ?? false;

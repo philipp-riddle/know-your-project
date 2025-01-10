@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Entity\Interface\CrudEntityInterface;
+use App\Entity\Interface\CrudEntityValidationInterface;
+use App\Entity\Interface\EntityVectorEmbeddingInterface;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Repository\PageRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -12,7 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PageRepository::class)]
 #[ORM\HasLifecycleCallbacks]
-class Page implements UserPermissionInterface, CrudEntityInterface
+class Page implements UserPermissionInterface, CrudEntityInterface, CrudEntityValidationInterface, EntityVectorEmbeddingInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -149,55 +151,6 @@ class Page implements UserPermissionInterface, CrudEntityInterface
     }
 
     /**
-     * This is useful when creating many tabs at once without defining the name; creates names like 'Tab 1', 'Tab 2', etc.
-     */
-    public function getNewTabNameWithNumber(): string
-    {
-        $maxNumber = 0;
-
-        foreach ($this->getPageTabs() as $pageTab) {
-            $pageTabNameParts = explode(' ', $pageTab->getName());
-
-            if (count($pageTabNameParts) < 2 || !\is_int($pageTabNameParts[1])) {
-                continue;
-            }
-
-            $number = (int) $pageTabNameParts[1];
-            $maxNumber = \max($maxNumber, $number);
-        }
-
-        return 'Tab ' . ($maxNumber + 1);
-
-    }
-
-    public function hasUserAccess(User $user): bool
-    {
-        $this->validate();
-
-        return $this->user?->getId() === $user->getId() || $this->project?->hasUserAccess($user);
-    }
-
-    public function initialize(): static
-    {
-        $this->createdAt ??= new \DateTime();
-
-        return $this;
-    }
-
-    #[ORM\PostUpdate]
-    #[ORM\PostPersist]
-    public function validate()
-    {
-        if (null === $this->getUser() && null === $this->getProject()) {
-            throw new \RuntimeException('Page must either have a project or a user connected');
-        }
-
-        // if (\count($this->getPageTabs()) === 0) {
-        //     throw new \RuntimeException('Page must have at least one tab');
-        // }
-    }
-
-    /**
      * @return TagPage[]
      */
     public function getTags(): array
@@ -229,5 +182,52 @@ class Page implements UserPermissionInterface, CrudEntityInterface
         }
 
         return $this;
+    }
+
+    // === IMPLEMENTATION OF interface methods =======
+
+    public function hasUserAccess(User $user): bool
+    {
+        $this->validate();
+
+        return $this->user?->getId() === $user->getId() || $this->project?->hasUserAccess($user);
+    }
+
+    public function initialize(): static
+    {
+        $this->createdAt ??= new \DateTime();
+
+        return $this;
+    }
+
+    public function validate(): void
+    {
+        if (null === $this->getUser() && null === $this->getProject()) {
+            throw new \RuntimeException('Page must either have a project or a user connected');
+        }
+
+        if (\count($this->getPageTabs()) === 0) {
+            throw new \RuntimeException('Page must have at least one tab');
+        }
+    }
+
+    public function getTextForEmbedding(): string
+    {
+        return \sprintf('Page (%d): %s', $this->getId(), $this->getName());
+    }
+
+    public function getMetaAttributes(): array
+    {
+        $attributes = [
+            'page' => $this->getId(),
+            'project' => $this->getProject()->getId(),
+            'tags' => \array_map(fn(TagPage $tag) => $tag->getTag()->getId(), $this->getTags()),
+        ];
+
+        if (null !== ($this->task ?? null))  {
+            $attributes['task'] = $this->task->getId();
+        }
+
+        return $attributes;
     }
 }

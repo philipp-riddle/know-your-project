@@ -60,7 +60,7 @@
 	import draggable from "vuedraggable";
 	import Vue from 'vue';
 	import { ref, onMounted, nextTick, computed } from "vue";
-	import { createTask } from "@/fetch/TaskFetcher.js";
+	import { createTask } from "@/stores/fetch/TaskFetcher.js";
 	import TaskCard from '@/components/Task/TaskCard.vue';
 	import { useTaskStore } from '@/stores/TaskStore.js';
 	import { usePageStore } from '@/stores/PageStore.js';

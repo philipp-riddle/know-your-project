@@ -9,12 +9,15 @@
             </div>
         </div>
     </div>
+
+    <SearchModal />
 </template>
 
 <script setup>
     import { watch,reactive, computed } from 'vue';
-    import NavigationSidebar from '@/components/Navigation/NavigationSidebar.vue';
     import { useRoute } from 'vue-router';
+    import NavigationSidebar from '@/components/Navigation/NavigationSidebar.vue';
+    import SearchModal from '@/components/Search/SearchModal.vue';
     import { usePageStore } from '@/stores/PageStore.js';
 
     const currentRoute = useRoute();

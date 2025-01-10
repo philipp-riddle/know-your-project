@@ -2,8 +2,8 @@ import { defineStore } from 'pinia';
 import { usePageTabStore  } from './PageTabStore';
 import { useProjectStore } from './ProjectStore';
 import { ref } from 'vue';
-import { fetchCreatePage, fetchDeletePage, fetchUpdatePage, fetchGetPage, fetchGetPageList } from '@/fetch/PageFetcher';
-import { fetchCreateTagPageFromTagName, fetchCreateTagPageFromTagId, fetchDeleteTagPage } from '@/fetch/TagFetcher';
+import { fetchCreatePage, fetchDeletePage, fetchUpdatePage, fetchGetPage, fetchGetPageList } from '@/stores/fetch/PageFetcher';
+import { fetchCreateTagPageFromTagName, fetchCreateTagPageFromTagId, fetchDeleteTagPage } from '@/stores/fetch/TagFetcher';
 
 export const usePageStore = defineStore('page', () => {
     const pages = ref({});

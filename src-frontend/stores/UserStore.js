@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { fetchGetCurrentUser, fetchUserProjectInvititations, fetchCreateUserProjectInvitation, fetchDeleteUserProjectInvitation } from '@/fetch/UserFetcher';
+import { fetchGetCurrentUser, fetchUserProjectInvititations, fetchCreateUserProjectInvitation, fetchDeleteUserProjectInvitation } from '@/stores/fetch/UserFetcher';
 import { ref } from 'vue';
 
 export const useUserStore = defineStore('user', () => {

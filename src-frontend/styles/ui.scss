@@ -132,3 +132,23 @@ hr {
         border-color: $dark-gray !important;
     }
 }
+
+/* === MODALS ============================================================= */
+
+// specific styling for the search modal; makes the background transparent and the input field a bit bigger.
+// styling is also applied to the search results.
+.search-modal {
+    .modal-content {
+        background-color: transparent !important;
+    }
+
+    input {
+        border-radius: 2rem !important;
+        background-color: $white-60 !important;
+        box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1) !important;
+        backdrop-filter: blur(10px) !important;
+        min-height: 4rem;
+        font-size: 1.25em; // this is the equivalent of a h5 tag
+        padding-left: 2.5rem;
+    }
+}

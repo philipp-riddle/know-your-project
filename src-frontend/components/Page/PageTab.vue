@@ -1,5 +1,5 @@
 <template>
-    <div class="d-grid flex-column gap-4">
+    <div class="d-grid flex-column gap-4 mb-5">
         <PageSectionDraggable :page="page" :pageTab="pageTab" :onPageSectionSubmit="onPageSectionSubmit" />
 
         <div class="row">

@@ -20,7 +20,7 @@ class PageSectionTextForm extends AbstractType
                 'constraints' => [
                     new Length([
                         'min' => 0,
-                        'max' => 1024,
+                        'max' => PageSectionText::MAX_CONTENT_LENGTH,
                     ])
                 ]
             ])

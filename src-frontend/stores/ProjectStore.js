@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { useUserStore } from '@/stores/UserStore';
-import { fetchGetProject, fetchCreateProject, fetchDeleteProjectUser } from '@/fetch/ProjectFetcher';
+import { fetchGetProject, fetchCreateProject, fetchDeleteProjectUser } from '@/stores/fetch/ProjectFetcher';
 
 export const useProjectStore = defineStore('project', () => {
     const projects = ref({});

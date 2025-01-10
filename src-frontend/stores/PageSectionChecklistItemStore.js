@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { usePageSectionStore } from './PageSectionStore';
-import { fetchCreatePageSectionChecklistItem, fetchUpdatePageSectionChecklistItem, fetchDeletePageSectionChecklistItem } from '../fetch/PageFetcher';
+import { fetchCreatePageSectionChecklistItem, fetchUpdatePageSectionChecklistItem, fetchDeletePageSectionChecklistItem } from '@/stores/fetch/PageFetcher';
 
 export const usePageSectionChecklistItemStore = defineStore('pageSectionChecklistItem', () => {
     const pageSectionStore = usePageSectionStore();

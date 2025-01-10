@@ -80,7 +80,7 @@
 
 <script setup>
     import { ref, watch, onMounted } from 'vue';
-    import { fetchCreateTagProjectUserFromTagId, fetchCreateTagProjectUserFromTagName, fetchDeleteTagProjectUser } from '@/fetch/TagFetcher.js';
+    import { fetchCreateTagProjectUserFromTagId, fetchCreateTagProjectUserFromTagName, fetchDeleteTagProjectUser } from '@/stores/fetch/TagFetcher.js';
     import { useProjectStore } from '@/stores/ProjectStore.js';
 
     const emit = defineEmits(['updateProjectUser']);

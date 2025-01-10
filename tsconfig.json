@@ -29,7 +29,9 @@
         "tests/**/*.tsx",
         "src-frontend/**/*.json",
         "defaultObjects/*.json",
-        "src-frontend/**/*.svg"
-, "src-frontend/app.ts", "src-frontend/fetch/WorkflowFetcher.js", "src-frontend/router/index.js"    ],
+        "src-frontend/**/*.svg",
+        "src-frontend/app.ts",
+        "src-frontend/router/index.js"
+    ],
     "exclude": ["node_modules", "src-frontend/**/*.cy.ts"]
 }

@@ -69,7 +69,7 @@
 </template>
 
 <script setup>
-    import { fetchGetPageList } from '@/fetch/PageFetcher.js';
+    import { fetchGetPageList } from '@/stores/fetch/PageFetcher.js';
     import { useUserStore } from '@/stores/UserStore.js';
     import { usePageStore } from '@/stores/PageStore.js';
     import { usePageSectionStore } from '@/stores/PageSectionStore.js';

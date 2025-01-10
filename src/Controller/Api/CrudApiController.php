@@ -8,12 +8,14 @@ use App\Entity\Interface\CrudEntityValidationInterface;
 use App\Entity\Interface\OrderListInterface;
 use App\Entity\Interface\OrderListItemInterface;
 use App\Entity\Interface\UserPermissionInterface;
+use App\Event\CreateCrudEntityEvent;
+use App\Event\DeleteCrudEntityEvent;
+use App\Event\UpdateCrudEntityEvent;
 use App\Service\OrderListHandler;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
  * This controller serves as a base for all CRUD (Create, Read, Update, Delete) controllers.
@@ -35,13 +37,6 @@ abstract class CrudApiController extends ApiController
      */
     abstract public function getFormClass(): string;
 
-    protected function checkUserAccess(UserPermissionInterface $userPermissionInterface): void
-    {
-        if (!$userPermissionInterface->hasUserAccess($this->getUser())) {
-            throw new AccessDeniedException('You do not have access to this '.$this->getEntityClass());
-        }
-    }
-
     protected function crudGet(UserPermissionInterface $userPermissionInterface, ?array $normalizeCallbacks = null): JsonResponse
     {
         $this->checkUserAccess($userPermissionInterface);
@@ -49,26 +44,36 @@ abstract class CrudApiController extends ApiController
         return $this->jsonSerialize($userPermissionInterface, $normalizeCallbacks);
     }
 
-    protected function crudDelete(UserPermissionInterface $userPermissionInterface, ?callable $onProcessEntity = null): JsonResponse
+    protected function crudDelete(UserPermissionInterface|CrudEntityInterface $userPermissionInterface, ?callable $onProcessEntity = null): JsonResponse
     {
+        if (!($userPermissionInterface instanceof CrudEntityInterface) || !($userPermissionInterface instanceof UserPermissionInterface)) {
+            throw new \Exception('Entity must implement both CrudEntityInterface and UserPermissionInterface');
+        }
+
         $this->checkUserAccess($userPermissionInterface);
 
         if (null !== $onProcessEntity) {
             $onProcessEntity($userPermissionInterface);
         }
 
+        // save the entity ID as it will be removed after the EM flush; we need this in the event.
+        $entityId = $userPermissionInterface->getId();
         $this->em->remove($userPermissionInterface);
+        $this->em->flush();
+
+        $this->eventDispatcher->dispatch(new DeleteCrudEntityEvent($userPermissionInterface, $entityId));
         $this->em->flush();
 
         return $this->json(['success' => true]);
     }
 
-    protected function crudUpdateOrCreate(?UserPermissionInterface $userPermissionInterface, Request $request, ?callable $onProcessEntity = null, ?string $formClass = null): JsonResponse
+    protected function crudUpdateOrCreate(UserPermissionInterface|CrudEntityInterface|null $userPermissionInterface, Request $request, ?callable $onProcessEntity = null, ?string $formClass = null): JsonResponse
     {
         if (null !== $userPermissionInterface) {
             $this->checkUserAccess($userPermissionInterface);
         }
 
+        $originalEntity = $userPermissionInterface !== null ? clone $userPermissionInterface : null;
         $formClass ??= $this->getFormClass();
 
         if ($request->getMethod() === 'PUT') {
@@ -85,6 +90,7 @@ abstract class CrudApiController extends ApiController
             $entityForm->submit($request->toArray());
         }
 
+        // now check if the form submission is valid or if there are any errors
         if (!$entityForm->isSubmitted() || !$entityForm->isValid()) {
             $errorContent = [];
 
@@ -95,6 +101,8 @@ abstract class CrudApiController extends ApiController
                 ];
             }
 
+            // there could be no validation errors -
+            // in this case we check if the form was submitted and if the request body was empty or invalid.
             if (\count($errorContent) === 0) {
                 if (!$entityForm->isSubmitted()) {
                     $errorContent = ['error' => 'Form was not submitted'];
@@ -110,6 +118,8 @@ abstract class CrudApiController extends ApiController
 
         $entity = $entityForm->getData();
 
+        // Each entity must implement both interfaces to work with this controller action.
+        // This is enforced by the controller to ensure that all entities are checked for user access and for further validation + initialisation.
         if (!($entity instanceof UserPermissionInterface)) {
             throw new \Exception('Entity must be an instance of UserPermissionInterface');
         } elseif (!($entity instanceof CrudEntityInterface)) {
@@ -131,6 +141,17 @@ abstract class CrudApiController extends ApiController
         }
 
         $this->em->persist($entity);
+        $this->em->flush();
+
+        // Dispatch the event after the entity has been persisted to the database.
+        // We do this to ensure that all contents are saved, even when the events and their subscribed services fail the operation.
+        if (null === $userPermissionInterface)  {
+            $this->eventDispatcher->dispatch(new CreateCrudEntityEvent($entity));
+        } else {
+            $this->eventDispatcher->dispatch(new UpdateCrudEntityEvent($entity, $originalEntity));
+        }
+
+        // flush after the event has been dispatched to ensure that all changes made in event subscribers are saved to the database 
         $this->em->flush();
 
         return $this->jsonSerialize($entity);

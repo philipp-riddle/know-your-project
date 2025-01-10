@@ -10,6 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: PageSectionTextRepository::class)]
 class PageSectionText implements UserPermissionInterface
 {
+    public const MAX_CONTENT_LENGTH = 65535;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -19,7 +21,7 @@ class PageSectionText implements UserPermissionInterface
     #[ORM\JoinColumn(nullable: false)]
     private ?PageSection $pageSection = null;
 
-    #[ORM\Column(type: Types::TEXT)]
+    #[ORM\Column(type: Types::TEXT, length: self::MAX_CONTENT_LENGTH)]
     private ?string $content = null;
 
     public function getId(): ?int

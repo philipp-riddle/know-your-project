@@ -8,6 +8,7 @@ use App\Entity\UserInvitation;
 use App\Form\UserInvitationForm;
 use App\Repository\UserInvitationRepository;
 use App\Service\Helper\ApiControllerHelperService;
+use App\Service\Helper\TestEnvironment;
 use App\Service\MailerService;
 use App\Service\UserService;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
@@ -45,7 +46,7 @@ class UserInvitationApiController extends CrudApiController
                 $userInvitation->setCode(bin2hex(openssl_random_pseudo_bytes(10))); // attach random code to user invitation so that it can be used to verify the user
 
                 // do not send email in test environment
-                if ($_ENV['APP_ENV'] !== 'test') {
+                if (TestEnvironment::isActive()) {
                     $this->mailerService->sendMail(
                         $userInvitation->getEmail(),
                         'You were invited to Know Your Project',

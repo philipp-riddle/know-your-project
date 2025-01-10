@@ -80,7 +80,7 @@
     import TaskStatusControl from '@/components/Page/PageControl/TaskStatusControl.vue';
     import TaskDueDateControl from '@/components/Page/PageControl/TaskDueDateControl.vue';
     import PageTagControl from '@/components/Page/PageControl/PageTagControl.vue';
-    import { fetchCreatePageTab } from '@/fetch/PageFetcher.js';
+    import { fetchCreatePageTab } from '@/stores/fetch/PageFetcher.js';
     import { usePageStore } from '@/stores/PageStore.js';
     import { usePageTabStore } from '@/stores/PageTabStore.js';
     import { usePageSectionStore } from '@/stores/PageSectionStore.js';

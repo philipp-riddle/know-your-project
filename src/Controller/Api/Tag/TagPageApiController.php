@@ -55,6 +55,12 @@ class TagPageApiController extends CrudApiController
         return $this->crudDelete($tagPage);
     }
 
+    #[Route('/list/{tag}', methods: ['GET'], name: 'tag_page_list')]
+    public function list(Tag $tag): JsonResponse
+    {
+        return $this->crudList(['tag' => $tag]);
+    }
+
     public function getEntityClass(): string
     {
         return TagPage::class;

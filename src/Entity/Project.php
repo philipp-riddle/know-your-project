@@ -17,7 +17,7 @@ class Project implements UserPermissionInterface
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'projects')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?User $owner = null;
 
     #[ORM\Column(length: 255)]

@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\CrudEntityValidationInterface;
+use App\Entity\Interface\EntityVectorEmbeddingInterface;
 use App\Entity\Interface\OrderListItemInterface;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Repository\PageSectionRepository;
@@ -12,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 #[ORM\Entity(repositoryClass: PageSectionRepository::class)]
-class PageSection implements UserPermissionInterface, CrudEntityInterface, OrderListItemInterface, CrudEntityValidationInterface
+class PageSection implements UserPermissionInterface, CrudEntityInterface, OrderListItemInterface, CrudEntityValidationInterface, EntityVectorEmbeddingInterface
 {
     public const TYPE_COMMENT = 'comment';
     public const TYPE_CHECKLIST = 'checklist';
@@ -141,6 +142,71 @@ class PageSection implements UserPermissionInterface, CrudEntityInterface, Order
         return $this;
     }
 
+    public function getOrderIndex(): ?int
+    {
+        return $this->orderIndex;
+    }
+
+    public function setOrderIndex(int $orderIndex): static
+    {
+        $this->orderIndex = $orderIndex;
+
+        return $this;
+    }
+
+    public function getPageSectionURL(): ?PageSectionURL
+    {
+        return $this->pageSectionURL;
+    }
+
+    public function setPageSectionURL(PageSectionURL $pageSectionURL): static
+    {
+        // set the owning side of the relation if necessary
+        if ($pageSectionURL->getPageSection() !== $this) {
+            $pageSectionURL->setPageSection($this);
+        }
+
+        $this->pageSectionURL = $pageSectionURL;
+
+        return $this;
+    }
+
+    public function getPageSectionUpload(): ?PageSectionUpload
+    {
+        return $this->pageSectionUpload;
+    }
+
+    public function setPageSectionUpload(PageSectionUpload $pageSectionUpload): static
+    {
+        // set the owning side of the relation if necessary
+        if ($pageSectionUpload->getPageSection() !== $this) {
+            $pageSectionUpload->setPageSection($this);
+        }
+
+        $this->pageSectionUpload = $pageSectionUpload;
+
+        return $this;
+    }
+
+    public function getEmbeddedPage(): ?PageSectionEmbeddedPage
+    {
+        return $this->embeddedPage;
+    }
+
+    public function setEmbeddedPage(PageSectionEmbeddedPage $embeddedPage): static
+    {
+        // set the owning side of the relation if necessary
+        if ($embeddedPage->getPageSection() !== $this) {
+            $embeddedPage->setPageSection($this);
+        }
+
+        $this->embeddedPage = $embeddedPage;
+
+        return $this;
+    }
+
+    // === IMPLEMENTATION OF interface methods =======
+
     public function hasUserAccess(User $user, bool $checkSubTypes = true): bool
     {
         if (!$this->pageTab->hasUserAccess($user)) {
@@ -207,66 +273,45 @@ class PageSection implements UserPermissionInterface, CrudEntityInterface, Order
         }
     }
 
-    public function getOrderIndex(): ?int
+    public function getTextForEmbedding(): string
     {
-        return $this->orderIndex;
-    }
+        if (null !== $text = $this->getPageSectionText()) {
+            return $text->getContent();
+        } else if (null !== $url = $this->getPageSectionURL()) {
+            return $url->getUrl();
+        } else if (null !== $embeddedPage = $this->getEmbeddedPage()) {
+            return \sprintf('Embedded page: %s', $embeddedPage->getPage()->getId());
+        } else if (null !== $upload = $this->getPageSectionUpload()) {
+            return $upload->getFilename();
+        } else if (null !== $checklist = $this->getPageSectionChecklist()) {
+            $text = \sprintf('<p>Checklist: %s</p>', $checklist->getName());
+            $text .= '<ul>';
 
-    public function setOrderIndex(int $orderIndex): static
-    {
-        $this->orderIndex = $orderIndex;
+            foreach ($checklist->getPageSectionChecklistItems() as $item) {
+                $itemName = $item->getName();
 
-        return $this;
-    }
+                if ($item->isComplete()) {
+                    $itemName = \sprintf('<s>%s</s> (complete)', $itemName);
+                }
 
-    public function getPageSectionURL(): ?PageSectionURL
-    {
-        return $this->pageSectionURL;
-    }
+                $text .= $itemName;
+            }
 
-    public function setPageSectionURL(PageSectionURL $pageSectionURL): static
-    {
-        // set the owning side of the relation if necessary
-        if ($pageSectionURL->getPageSection() !== $this) {
-            $pageSectionURL->setPageSection($this);
+            $text .= '</ul>';
+
+            return $text;
         }
 
-        $this->pageSectionURL = $pageSectionURL;
-
-        return $this;
+        throw new \InvalidArgumentException('No text for embedding in page section');
     }
 
-    public function getPageSectionUpload(): ?PageSectionUpload
+    public function getMetaAttributes(): array
     {
-        return $this->pageSectionUpload;
-    }
+        return [
+            'pageSection' => $this->getId(),
 
-    public function setPageSectionUpload(PageSectionUpload $pageSectionUpload): static
-    {
-        // set the owning side of the relation if necessary
-        if ($pageSectionUpload->getPageSection() !== $this) {
-            $pageSectionUpload->setPageSection($this);
-        }
-
-        $this->pageSectionUpload = $pageSectionUpload;
-
-        return $this;
-    }
-
-    public function getEmbeddedPage(): ?PageSectionEmbeddedPage
-    {
-        return $this->embeddedPage;
-    }
-
-    public function setEmbeddedPage(PageSectionEmbeddedPage $embeddedPage): static
-    {
-        // set the owning side of the relation if necessary
-        if ($embeddedPage->getPageSection() !== $this) {
-            $embeddedPage->setPageSection($this);
-        }
-
-        $this->embeddedPage = $embeddedPage;
-
-        return $this;
+            // merge the meta attributes from the page; this connects the sections and the page information in one space where we can later search for it
+            ...$this->pageTab->getPage()->getMetaAttributes(),
+        ];
     }
 }

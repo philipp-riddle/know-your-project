@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { usePageStore  } from './PageStore';
 import { usePageSectionStore } from './PageSectionStore';
-import { fetchCreatePageTab, fetchUpdatePageTab, fetchDeletePageTab } from '../fetch/PageFetcher';
+import { fetchCreatePageTab, fetchUpdatePageTab, fetchDeletePageTab } from './fetch/PageFetcher';
 
 export const usePageTabStore = defineStore('pageTab', () => {
     const pageTabs = ref({});

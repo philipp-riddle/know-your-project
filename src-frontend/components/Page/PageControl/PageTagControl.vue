@@ -85,7 +85,7 @@
 
 <script setup>
     import { ref, watch, onMounted } from 'vue';
-    import { fetchCreateTagPageFromTagId, fetchCreateTagPageFromTagName, fetchDeleteTagPage } from '@/fetch/TagFetcher.js';
+    import { fetchCreateTagPageFromTagId, fetchCreateTagPageFromTagName, fetchDeleteTagPage } from '@/stores/fetch/TagFetcher.js';
     import { usePageStore } from '@/stores/PageStore.js';
     import { useUserStore } from '@/stores/UserStore.js';
     import PageTagUserControl from '@/components/Page/PageControl/PageTagUserControl.vue';

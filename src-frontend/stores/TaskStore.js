@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { usePageStore } from './PageStore';
 import { ref, watch } from 'vue';
-import { fetchTasks, fetchTask, fetchUpdateTask, fetchCreateTask, fetchDeleteTask, fetchMoveTask, fetchChangeOrder } from "@/fetch/TaskFetcher.js";
+import { fetchTasks, fetchTask, fetchUpdateTask, fetchCreateTask, fetchDeleteTask, fetchMoveTask, fetchChangeOrder } from "@/stores/fetch/TaskFetcher.js";
 
 export const useTaskStore = defineStore('task', () => {
     const tasks = ref({});

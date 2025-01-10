@@ -90,7 +90,7 @@
 
 <script setup>
     import { ref, watch, computed, onMounted } from 'vue';
-    import { fetchCreateTagPageProjectUserFromTagId, fetchDeleteTagPageProjectUser } from '@/fetch/TagFetcher.js';
+    import { fetchCreateTagPageProjectUserFromTagId, fetchDeleteTagPageProjectUser } from '@/stores/fetch/TagFetcher.js';
     import { useUserStore } from '@/stores/UserStore.js';
     import { usePageStore } from '@/stores/PageStore.js';
     import { useProjectStore } from '@/stores/ProjectStore.js';

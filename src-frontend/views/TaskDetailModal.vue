@@ -38,8 +38,6 @@
     const router = useRouter();
     const taskId = route.params.id;
     const taskDetailModal = ref(null);
-    const task = ref(null);
-    const modalShow = ref(false);
 
     onMounted(() => {
         nextTick();
@@ -49,7 +47,6 @@
             // on mount set the selected page and force it to fetch it from the server to get all the required serialised contents
             pageStore.setSelectedPage(task.page, true).then(() => {
                 modal.show();
-                modalShow.value = true;
             });
         });
     });
