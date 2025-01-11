@@ -1,66 +1,64 @@
 <template>
-    <div class="row">
-        <div class="col-sm-12 col-lg-4 card">
-            <div class="card-body p-2">
-                <div v-if="embeddedPage.page?.id">
-                    <div class="d-flex flex-row justify-content-between align-items-center">
-                        <h4 class="m-0">
-                            <router-link
-                                :to="{ name: 'Page', params: { id: embeddedPage.page.id } }"
-                                v-tooltip="'Open page '"
-                                @click="pageStore.setSelectedPage(embeddedPage.page)"
-                            >
-                                {{ embeddedPage.page.name }}
-                            </router-link>
-                            &nbsp;&nbsp;
-                            <router-link
-                                :to="{ name: 'Page', params: { id: embeddedPage.page.id } }"
-                                class="btn btn-sm btn-dark"
-                                target="_blank"
-                                v-tooltip="'Open page in new tab'"
-                            >
-                                <font-awesome-icon :icon="['fas', 'arrow-up-right-from-square']" />
-                            </router-link>
-                        </h4>
-                        <button
-                            class="btn btn-sm black"
-                            @click="onSelectPage(null)"
-                            v-tooltip="'Select other page'"
+    <div class="card section-card section-card-small">
+        <div class="card-body p-2">
+            <div v-if="embeddedPage.page?.id">
+                <div class="d-flex flex-row justify-content-between align-items-center">
+                    <h4 class="m-0">
+                        <router-link
+                            :to="{ name: 'Page', params: { id: embeddedPage.page.id } }"
+                            v-tooltip="'Open page '"
+                            @click="pageStore.setSelectedPage(embeddedPage.page)"
                         >
-                            <font-awesome-icon :icon="['fas', 'xmark']" />
-                        </button>
-                    </div>
-                    <p>{{ embeddedPageExtract }}</p>
+                            {{ embeddedPage.page.name }}
+                        </router-link>
+                        &nbsp;&nbsp;
+                        <router-link
+                            :to="{ name: 'Page', params: { id: embeddedPage.page.id } }"
+                            class="btn btn-sm btn-dark"
+                            target="_blank"
+                            v-tooltip="'Open page in new tab'"
+                        >
+                            <font-awesome-icon :icon="['fas', 'arrow-up-right-from-square']" />
+                        </router-link>
+                    </h4>
+                    <button
+                        class="btn btn-sm black"
+                        @click="onSelectPage(null)"
+                        v-tooltip="'Select other page'"
+                    >
+                        <font-awesome-icon :icon="['fas', 'xmark']" />
+                    </button>
                 </div>
-                <div v-else class="d-flex flex-column gap-2">
-                    <div class="d-flex flex-row justify-content-between">
-                        <p class="text-muted bold m-0">SELECT PAGE TO EMBED</p>
-                        <button class="btn btn-sm m-0 p-0" @click="debouncedFetchApiForResults"><font-awesome-icon class="black" :icon="['fas', 'arrow-rotate-right']" /></button>
-                    </div>
-                    <h5><input
-                        type="text"
-                        class="form-control p"
-                        placeholder="Search..."
-                        ref="searchInput"
-                        @keyup="debouncedFetchApiForResults"
-                    ></h5>
+                <p>{{ embeddedPageExtract }}</p>
+            </div>
+            <div v-else class="d-flex flex-column gap-2">
+                <div class="d-flex flex-row justify-content-between">
+                    <p class="text-muted bold m-0">SELECT PAGE TO EMBED</p>
+                    <button class="btn btn-sm m-0 p-0" @click="debouncedFetchApiForResults"><font-awesome-icon class="black" :icon="['fas', 'arrow-rotate-right']" /></button>
+                </div>
+                <h5><input
+                    type="text"
+                    class="form-control p"
+                    placeholder="Search..."
+                    ref="searchInput"
+                    @keyup="debouncedFetchApiForResults"
+                ></h5>
 
-                    <div v-if="searchResults">
-                        <div
-                            v-for="result in searchResults"
-                            key="result.id"
-                        >
-                            <div class="d-flex flex-row justify-content-between align-items-center">
-                                <p class="m-0 p-0 col-sm-11">{{ result.name }}</p>
-                                <button
-                                    class="btn btn-sm black col-sm-1"
-                                    @click="onSelectPage(result)"
-                                >
-                                    <font-awesome-icon :icon="['fas', 'plus']" />
-                                </button>
-                            </div>
-                            <hr class="m-0 p-0">
+                <div v-if="searchResults">
+                    <div
+                        v-for="result in searchResults"
+                        key="result.id"
+                    >
+                        <div class="d-flex flex-row justify-content-between align-items-center">
+                            <p class="m-0 p-0 col-sm-11">{{ result.name }}</p>
+                            <button
+                                class="btn btn-sm black col-sm-1"
+                                @click="onSelectPage(result)"
+                            >
+                                <font-awesome-icon :icon="['fas', 'plus']" />
+                            </button>
                         </div>
+                        <hr class="m-0 p-0">
                     </div>
                 </div>
             </div>

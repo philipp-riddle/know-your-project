@@ -1,11 +1,16 @@
 <template>
     <div class="page-section row" :page-section="pageSection.id">
         <div class="col-sm-12 col-md-9 col-xl-2">
-            <div class="section-options d-flex flex-row gap-3" v-if="pageSection.id != null">
-                <PageSectionInfo :pageSection="pageSection" />
-                <button class="btn" v-tooltip="'Drag to rearrange order'">
-                    <span class="black"><font-awesome-icon :icon="['fas', 'grip-vertical']" /></span>
-                </button>
+            <div class="section-options d-flex flex-row gap-3 justify-content-between" v-if="pageSection.id != null">
+                <div class="d-flex flex-row gap-3 align-items-center">
+                    <PageSectionInfo :pageSection="pageSection" />
+                    <button class="btn p-0 m-0" v-tooltip="'Drag to rearrange order'">
+                        <span class="black"><font-awesome-icon :icon="['fas', 'grip-vertical']" /></span>
+                    </button>
+                </div>
+                <span class="btn btn-lg m-0 p-0" v-if="pageSectionIcon" v-tooltip="pageSectionTooltip">
+                    <font-awesome-icon :icon="['fas', pageSectionIcon]" />
+                </span>
             </div>
         </div>
 
@@ -65,7 +70,7 @@
     import PageSectionText from '@/components/Page/PageSection/Widget/PageSectionText.vue';
     import PageSectionURL from '@/components/Page/PageSection/Widget/PageSectionURL.vue';
     import PageSectionAIPrompt from '@/components/Page/PageSection/Widget/PageSectionAIPrompt.vue';
-    import { ref, onMounted } from 'vue';
+    import { computed, ref, onMounted } from 'vue';
     import { useDebounceFn } from '@vueuse/core';
 
     const props = defineProps({
@@ -106,6 +111,45 @@
             });
         });
     };
+
+    const pageSectionIcon = computed(() => {
+        if (props.pageSection.pageSectionText) {
+            return 'font';
+        }
+
+        if (props.pageSection.aiPrompt) {
+            return 'microchip';
+        }
+
+        if (props.pageSection.embeddedPage) {
+            return 'arrow-up-right-from-square';
+        }
+
+        if (props.pageSection.pageSectionChecklist) {
+            return 'list-check';
+        }
+
+        return null;
+    });
+    const pageSectionTooltip = computed(() => {
+        if (props.pageSection.pageSectionText) {
+            return 'Text - can be used to write notes';
+        }
+
+        if (props.pageSection.aiPrompt) {
+            return 'Ask assistant - can be used to generate text based on a prompt';
+        }
+
+        if (props.pageSection.embeddedPage) {
+            return 'Embedded Page - can be used to create connections in between pages and enrich context';
+        }
+
+        if (props.pageSection.pageSectionChecklist) {
+            return 'Checklist - can be used to track progress';
+        }
+
+        return null;
+    });
 </script>
 
 <style scoped>

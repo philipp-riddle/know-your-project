@@ -1,53 +1,66 @@
 <template>
-    <div class="card" style="max-width: 70%; text-wrap: wrap !important;" @click.stop="(e) => e.stopPropagation()">
-        <div class="p-3 card-header d-flex flex-row justify-content-between align-items-start">
-            <div class="d-flex flex-column gap-2">
-                <div class="d-flex flex-row gap-3 align-items-start">
-                    <button class="btn btn-sm" v-tooltip="'This is your instruction to the assistant - e.g. summarize the page'">
-                        <font-awesome-icon :icon="['fas', 'question']" />
-                    </button>
-                    <h4 class="m-0">Ask prompt</h4>
-                </div>
-                <div v-if="isPromptLoading">
-                    <p class="m-0" v-html="currentText"></p>
-                </div>
-                <editor-content
-                    v-else
-                    class="m-0"
-                    v-tooltip="tooltip"
-                    :editor="editor"
-                />
+    <div class="section-card card" @click.stop="(e) => e.stopPropagation()">
+        <div class="p-3 card-header d-flex flex-row gap-5 justify-content-between align-items-start">
+            <div v-if="isPromptLoading">
+                <p class="m-0" v-html="currentText"></p>
             </div>
-
+            <TextEditor
+                v-else
+                :text="currentText"
+                :tooltip="tooltip"
+                :focus="!isPromptLoading"
+                @onChange="currentText = $event"
+                placeholder="e.g. Summarize the page"
+            />
+            
             <button
+                v-if="!isRegenerate || oldText !== currentText"
                 class="btn btn-dark d-flex flex-row gap-3 align-items-center"
                 :disabled="!canSubmit"
                 v-tooltip="canSubmit ? '' : 'Enter a prompt to generate'"
                 @click="onPromptSubmit"
             >
-                <div v-if="isPromptLoading" class="spinner-border text-white" role="status">
+                <div v-if="isPromptLoading" class="spinner-border spinner-border-sm text-white" role="status">
                     <span class="visually-hidden">Loading...</span>
                 </div>
                 <font-awesome-icon
                     v-else
-                    :icon="['fas', isRegenerate ? 'arrows-rotate' : 'microchip']"
+                    :icon="['fas', 'arrows-rotate']"
                 />
                 <span>{{ isRegenerate ? 'Regenerate' : 'Generate'}}</span>
             </button>
+            <div
+                v-else
+                class="d-flex flex-row gap-3 align-items-center"
+            >
+                <button
+                    class="btn btn-sm p-0"
+                    v-tooltip="'Refresh response'"
+                    @click="onPromptSubmit"
+                >
+                    <div v-if="isPromptLoading" class="spinner-border spinner-border-sm text-white" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <font-awesome-icon
+                        v-else
+                        :icon="['fas', 'arrows-rotate']"
+                    />
+                </button>
+            </div>
         </div>
         <div class="card-body" v-if="pageSection.aiPrompt.responseText && pageSection.aiPrompt.responseText != ''">
-            <p class="m-0"v-html="pageSection.aiPrompt.responseText"></p>
+            <TextEditor
+                :text="pageSection.aiPrompt.responseText"
+                @onChange="pageSection.aiPrompt.responseText = $event"
+            />
         </div>
     </div>
 </template>
 
 <script setup>
-    import Placeholder from '@tiptap/extension-placeholder';
-    import { useEditor, EditorContent } from '@tiptap/vue-3';
-    import StarterKit from '@tiptap/starter-kit';
-    import Link from '@tiptap/extension-link';
     import { ref, computed, watch } from 'vue';
     import { usePageSectionStore } from '@/stores/PageSectionStore.js';
+    import TextEditor from '@/components/Util/TextEditor.vue';
 
     const props = defineProps({
         pageSection: {
@@ -59,50 +72,26 @@
             required: true,
         },
     });
+    const pageSection = ref(props.pageSection);
+    const isPromptLoading = ref(false);
+    const pageSectionStore = usePageSectionStore();
+    const oldText = ref(props.pageSection.aiPrompt.prompt); // save the prompt text before the user changes it - this is used to determine whether the user has changed the prompt text and change the UI accordingly
+    const currentText = ref(props.pageSection.aiPrompt.prompt);
+
+    const tooltip = computed(() => {
+        return props.pageSection.aiPrompt.prompt === '' ? 'Set prompt' : 'Edit prompt';
+    });
+
     /**
      * We can determine whether it is a regenerate or a new prompt by checking if the response text is not empty.
      * We change some UI elements based on this flag.
      */
-    const isRegenerate = props.pageSection.aiPrompt.responseText !== '' && props.pageSection.aiPrompt.responseText !== null;
-    const pageSection = ref(props.pageSection);
-    const isPromptLoading = ref(false);
-    const pageSectionStore = usePageSectionStore();
-    const currentText = ref(props.pageSection.aiPrompt.prompt);
-    const tooltip = computed(() => {
-        return props.pageSection.aiPrompt.prompt === '' ? 'Set prompt' : 'Edit prompt';
-    });
-    const editor = useEditor({
-        content: currentText.value,
-        extensions: [
-            StarterKit, // add starter kit; otherwise the editor cannot render due to missing schemas
-            Placeholder.configure({
-                placeholder: 'e.g. "Summarize the page"',
-                emptyEditorClass: 'is-editor-empty',
-            }),
-            Link,
-        ],
-        onUpdate: ({ editor }) => {
-            currentText.value = editor.getHTML();
-        },
-        onKeydown: ({ editor, event }) => {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                onPromptSubmit();
-            }
-        },
-        onCreate: ({ editor }) => {
-            editor.commands.focus('end'); // this automatically sets the focus to the end of the editor when initialized / created
-        },
-        onFocus: ({ editor }) => {
-            pageSectionStore.selectedPageSection = props.pageSection.id;
-        },
-        onBlur: ({ editor, event }) => {
-            // user clicks outside of the editor or on no element of the editor UI
-            // we do not want to hide this editor if the user clicks on a button or similar because this would shift the layout and therefore the user would have to click twice if a button moves
-            if (!event.relatedTarget) {
-                pageSectionStore.selectedPageSection = null;
-            }
-        },
+    const isRegenerate = computed(() => {
+        if (!pageSection.value) {
+            return false;
+        }
+
+        return pageSection.value.aiPrompt.responseText !== '' && props.pageSection.aiPrompt.responseText !== null
     });
 
     const canSubmit = computed(() =>  {
@@ -131,6 +120,7 @@
                 prompt: currentText.value,
             },
         }).then((updatedSection) => {
+            oldText.value = currentText.value;
             pageSection.value = updatedSection;
             isPromptLoading.value = false;
         });
@@ -150,11 +140,9 @@
         outline: none !important;
     }
 
-    .card-header {
-        // this is to ensure that the text box does not have any natural margin
-        p {
-            margin: 0! important;
-        }
+    // this is to ensure that the text box does not have any natural margin
+    p {
+        margin: 0 !important;
     }
 
     .card-body > p {

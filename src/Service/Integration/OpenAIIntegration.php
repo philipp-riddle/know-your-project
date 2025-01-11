@@ -36,33 +36,41 @@ final class OpenAIIntegration
     /**
      * @return CreateResponse The chat response from OpenAI based on the given prompt
      */
-    public function getChatResponse(string $context, string $prompt): CreateResponse
+    public function getChatResponse(string|array $context, string $prompt): CreateResponse
     {
+        $messages = [
+            [
+                'role' => 'system',
+                'content' => $this->getAssistantSystemInstructions(),
+            ],
+        ];
+
+        $context = \is_array($context) ? $context : [$context];
+
+        foreach ($context as $contextInstruction => $contextItem) {
+            $messages[] = [
+                'role' => 'user',
+                'content' => $contextInstruction.$this->getDefaultContextInstructions($contextItem),
+            ];
+        }
+
+        $messages[] = [
+            'role' => 'user',
+            'content' => $prompt,
+        ];
+
         $client = $this->getClient();
         $response = $client->chat()->create([
             'model' => self::CHAT_MODEL,
-            'messages' => [
-                [
-                    'role' => 'system',
-                    'content' => $this->getAssistantSystemInstructions(),
-                ],
-                [
-                    'role' => 'user',
-                    'content' => $this->getContextInstructions($context),
-                ],
-                [
-                    'role' => 'user',
-                    'content' => $prompt,
-                ],
-            ],
+            'messages' => $messages,
         ]);
 
         return $response;
     }
 
-    public function getContextInstructions(string $context): string
+    public function getDefaultContextInstructions(string $context): string
     {
-        return 'User Context is provided to enrich the chat session and to enhance the results. I will now provide you with context you must use and prioritize when answering questions. Here is the important context: '.$context;
+        return 'I will now provide you with another context you must use and prioritize when answering questions. Here is the context: '.$context;
     }
 
     /**
@@ -85,7 +93,8 @@ final class OpenAIIntegration
 
             Maintain context-awareness across conversations but *do not* use sentences like "If you need help, let me know." or "If you have any questions, feel free to ask.".
             If asked suggest next steps or tools to complete tasks.
-            Answer in HTML format for easy integration into web pages and better readability. Please start with <h3> tags.
+            Answer in HTML format for easy integration into web pages and better readability. Start with <h3> tags.
+            Always respond in the language the prompt has been written in. Try your best to translate the response into the same language as the prompt.
 
             4. Features:
 
@@ -95,7 +104,15 @@ final class OpenAIIntegration
             4.4 Dynamic Responses: Adjust length, format (e.g., bullet points, tables, or prose).
             4.5 Collaboration: Suggest ideas and refine outputs with user feedback.
 
-            5. Examples:
+            5. Special terms, glossary, and examples:
+
+            "Tags" are keywords or labels that help categorize content. Each page HTML has tags attributed. If the user mentions them use them to generate the response.
+            Note: If you think that a page has no tags, ask the user to provide them and do not hallucinate about other content on the page.
+
+            "Pages" are the main content entities in the system. Each page has a name, tags, and sections.
+            "Page sections" can be anything, from text to embedded pages. They are the building blocks of a page.
+
+            6. Examples:
 
             5.2 Brainstorming: "I need ideas for a product launch." Response: "Here are strategies: [list]. Want to prioritize or detail any?"
             5.3 Data Analysis: "Analyze this sales data." Response: "Key trends: [trends]. Want visualizations or next steps?"

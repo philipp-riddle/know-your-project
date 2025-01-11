@@ -20,7 +20,7 @@
                         <li class="nav-item"><button class="nav-link inactive btn btn-sm p" type="button" @click.stop="() => switchToPageSectionType('checklist')">Checklist</button></li>
                         <li class="nav-item"><button class="nav-link inactive btn btn-sm p" type="button" @click.stop="() => switchToPageSectionType('upload')">Upload</button></li>
                         <li class="nav-item"><button class="nav-link inactive btn btn-sm p" type="button" @click.stop="() => switchToPageSectionType('embeddedPage')">Embed other page / task</button></li>
-                        <li class="nav-item"><button class="nav-link inactive btn btn-sm p" type="button" @click.stop="() => switchToPageSectionType('aiPrompt')">Ask prompt</button></li>
+                        <li class="nav-item"><button class="nav-link inactive btn btn-sm p" type="button" @click.stop="() => switchToPageSectionType('aiPrompt')">Ask assistant</button></li>
                     </ul>
                 </div>
             </div>

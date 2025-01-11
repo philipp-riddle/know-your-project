@@ -2,7 +2,6 @@
 
 namespace App\Service\Integration;
 
-use App\Service\Helper\TestEnvironment;
 use Qdrant\Config;
 use Qdrant\Http\Builder;
 use Qdrant\Models\Filter\Filter;

@@ -4,8 +4,8 @@
         :shown="showPopover"
     >
         <!-- This will be the popover reference (for the events and position) -->
-        <button class="btn btn-sm btn-dark nav-create-item" v-tooltip="'Details about this section'">
-            <span class="white"><font-awesome-icon :icon="['fas', 'info']" /></span>
+        <button class="btn btn-lg m-0 p-0 nav-create-item" v-tooltip="'Details about this section'">
+            <span class="black"><font-awesome-icon :icon="['fas', 'circle-info']" /></span>
         </button>
 
         <!-- This will be the content of the popover -->

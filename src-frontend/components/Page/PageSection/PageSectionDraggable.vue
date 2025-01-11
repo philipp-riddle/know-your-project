@@ -2,7 +2,7 @@
 	<div style="min-width: 350px;" class="task-list">
 		<div v-if="pageSectionStore && pageSectionStore.displayedPageSections" class="list-area p-0" style="min-height: 150px" :page="page.id">
 			<draggable
-				class="dragArea pb-4 m-0 d-flex gap-3 flex-column"
+				class="dragArea pb-4 m-0 d-flex gap-4 flex-column"
 				:data-page="page"
 				tag="ul"
 				v-model="this.pageSectionStore.displayedPageSections"

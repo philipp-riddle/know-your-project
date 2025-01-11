@@ -290,7 +290,10 @@ class PageSection extends CachedEntityVectorEmbedding implements UserPermissionI
     public function getTextForEmbedding(): ?string
     {
         if (null !== $text = $this->getPageSectionText()) {
-            return $text->getContent();
+            $textHTML = '<h2>Page section of type "text"</h2>';
+            $textHTML .= $text->getContent();
+
+            return $textHTML;
         } else if (null !== $url = $this->getPageSectionURL()) {
             return $url->getUrl();
         } else if (null !== $embeddedPage = $this->getEmbeddedPage()) {
@@ -298,11 +301,11 @@ class PageSection extends CachedEntityVectorEmbedding implements UserPermissionI
                 return null;
             }
 
-            return \sprintf('Embedded page: %s', $embeddedPage->getPage()->getId());
+            return \sprintf('<p>This page embeds the page %s (ID %s). Prioritize this information.</p>',  $embeddedPage->getPage()->getName(), $embeddedPage->getPage()->getId());
         } else if (null !== $upload = $this->getPageSectionUpload()) {
             return $upload->getFilename();
         } else if (null !== $checklist = $this->getPageSectionChecklist()) {
-            $text = \sprintf('<p>Checklist: %s</p>', $checklist->getName());
+            $text = \sprintf('<h2>Page section of type "checklist": %s</p>', $checklist->getName());
             $text .= '<ul>';
 
             foreach ($checklist->getPageSectionChecklistItems() as $item) {
@@ -318,22 +321,8 @@ class PageSection extends CachedEntityVectorEmbedding implements UserPermissionI
             $text .= '</ul>';
 
             return $text;
-        } else if (null !== $aiPrompt = $this->getAiPrompt()) {
-            if (null === $aiPrompt->getPrompt() && null === $aiPrompt->getResponseText()) {
-                return null;
-            }
-
-            $text = '';
-
-            if (null !== $aiPrompt->getPrompt()) {
-                $text .= \sprintf('<p>AI Prompt: %s</p>', $aiPrompt->getPrompt());
-            }
-
-            if (null !== $aiPrompt->getResponseText()) {
-                $text .= \sprintf('<p>Response: %s</p>', $aiPrompt->getResponseText());
-            }
-
-            return $text;
+        } else if (null !== $this->getAiPrompt()) {
+            return null; // do not include the AI prompt in the text for embedding; this can cause trouble as the LLM is confused what the prompt is and what the response is
         }
 
         throw new \InvalidArgumentException('No text for embedding in page section');

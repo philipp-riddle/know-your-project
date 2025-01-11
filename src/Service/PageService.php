@@ -31,7 +31,7 @@ class PageService
             ->setAuthor($task->getProject()->getOwner())
             ->setOrderIndex(0);
         $pageSectionText = (new PageSectionText())
-            ->setContent('Testi'); // add empty content for the user to start
+            ->setContent(''); // add empty content for the user to start
         $pageSection->setPageSectionText($pageSectionText);
 
         $pageTab->addPageSection($pageSection);

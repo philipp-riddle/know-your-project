@@ -73,7 +73,7 @@
 
 <style scoped lang="sass">
     .modal-dialog {
-        padding-left: 50%;
+        padding-left: 40%;
         padding-right: 0%;
         padding-top: 0%;
         padding-bottom: 0%;

@@ -4,6 +4,10 @@
 
 .btn {
     border-radius: 2rem;
+
+    &:disabled {
+        border-width: 0px !important;
+    }
 }
 
 /* === DIVIDERS ============================================================= */
@@ -16,7 +20,15 @@ hr {
 
 .card {
     border-radius: 15px;
-    // background-color: $light-gray;
+
+    &.section-card {
+        max-width: 70%;
+        text-wrap: wrap;
+
+        &.section-card-small {
+            max-width: 50%;
+        }
+    }
 }
 
 .card-options {
