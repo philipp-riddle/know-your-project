@@ -44,6 +44,12 @@
                 :pageSection="pageSection"
                 :onPageSectionSubmit="(sectionItem) => onPageSectionSubmitHandler(pageSection, sectionItem)"
             />
+            <PageSectionAIPrompt
+                v-once
+                v-else-if="pageSection.aiPrompt != null"
+                :pageSection="pageSection"
+                :onPageSectionSubmit="(sectionItem) => onPageSectionSubmitHandler(pageSection, sectionItem)"
+            />
             <div v-else class="alert alert-danger">
                 <p>Unknown section type - cannot render.</p>
             </div>
@@ -52,13 +58,13 @@
 </template>
 
 <script setup>
-    import PageSectionCreateButton from '@/components/Page/PageSection/PageSectionCreateButton.vue';
     import PageSectionInfo from '@/components/Page/PageSection/PageSectionInfo.vue';
     import PageSectionChecklist from '@/components/Page/PageSection/Widget/PageSectionChecklist.vue';
     import PageSectionEmbeddedPage from '@/components/Page/PageSection/Widget/PageSectionEmbeddedPage.vue';
     import PageSectionUpload from '@/components/Page/PageSection/Widget/PageSectionUpload.vue';
     import PageSectionText from '@/components/Page/PageSection/Widget/PageSectionText.vue';
     import PageSectionURL from '@/components/Page/PageSection/Widget/PageSectionURL.vue';
+    import PageSectionAIPrompt from '@/components/Page/PageSection/Widget/PageSectionAIPrompt.vue';
     import { ref, onMounted } from 'vue';
     import { useDebounceFn } from '@vueuse/core';
 

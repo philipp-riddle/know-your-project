@@ -5,6 +5,9 @@ namespace App\Controller\Api\Page;
 use App\Controller\Api\CrudApiController;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Entity\PageSection;
+use App\Entity\PageSectionAIPrompt;
+use App\Entity\PageSectionEmbeddedPage;
+use App\Entity\PageSectionText;
 use App\Entity\PageSectionUpload;
 use App\Entity\PageTab;
 use App\Form\PageSectionForm;
@@ -12,6 +15,7 @@ use App\Form\PageSectionUploadForm;
 use App\Service\Helper\ApiControllerHelperService;
 use App\Service\OrderListHandler;
 use App\Service\Search\Entity\EntityVectorEmbeddingInterface;
+use App\Service\Search\GenerationEngine;
 use App\Service\Search\RecommendationEngine;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
@@ -24,6 +28,7 @@ class PageSectionApiController extends CrudApiController
 {
     public function __construct(
         ApiControllerHelperService $apiControllerHelperService,
+        private GenerationEngine $generationEngine,
         private RecommendationEngine $recommendationEngine,
     ) {
         parent::__construct($apiControllerHelperService);
@@ -69,7 +74,18 @@ class PageSectionApiController extends CrudApiController
     #[Route('/{pageSection}', name: 'api_page_section_update', methods: ['PUT'])]
     public function update(PageSection $pageSection, Request $request): JsonResponse
     {
-        return $this->crudUpdateOrCreate($pageSection, $request);
+        return $this->crudUpdateOrCreate(
+            $pageSection,
+            $request,
+            onProcessEntity: function (PageSection $pageSection) {
+                if (null !== $pageSection->getAiPrompt()) {
+                    // generate the AI prompt response; this is done by chatting with the AI and using the page contents as context
+                    $this->generationEngine->generatePageSectionAIPrompt($pageSection->getPageTab()->getPage(), $pageSection->getAiPrompt());
+                }
+
+                return $pageSection;
+            },
+        );
     }
 
     #[Route('', name: 'api_page_section_create', methods: ['POST'])]
@@ -86,14 +102,42 @@ class PageSectionApiController extends CrudApiController
 
                 return $pageSection->getPageTab()->getPageSections();
             },
-            onProcessEntity: function (PageSection $pageSection) {
+            onProcessEntity: function (PageSection $pageSection) use ($request) {
                 $pageSection->setAuthor($this->getUser());
+                $requestContent = $request->toArray();
 
-                // make sure to persist any child entities as well - in this case the checklist items.
-                if (null !== $pageSection->getPageSectionChecklist()) {
+                // @todo edge case:
+                // when submitting a text section with '' as the string, it does resolve to NULL somehow. we need to make sure to set it to a valid PageSectionText entity.
+                if ('' === @$requestContent['pageSectionText']['content']) {
+                    $pageSectionText = (new PageSectionText())
+                        ->setContent('');
+                    $pageSection->setPageSectionText($pageSectionText);
+                    $this->em->persist($pageSectionText);
+                
+                // additional edge case for empty page section embedded page
+                } else  if (\array_key_exists('page', $requestContent['embeddedPage'] ?? []) && null === @$requestContent['embeddedPage']['page']) {
+                    $pageSectionEmbeddedPage = (new PageSectionEmbeddedPage()) // initialise the embedded page with nothing
+                        ->setPage(null);
+                    $pageSection->setEmbeddedPage($pageSectionEmbeddedPage);
+                    $this->em->persist($pageSectionEmbeddedPage);
+
+                // additional edge case for empty AI prompt creation
+                } else if ('' === @$requestContent['aiPrompt']['prompt']) {
+                    $pageSectionAIPrompt = (new PageSectionAIPrompt())
+                        ->setPrompt('');
+                    $pageSection->setAiPrompt($pageSectionAIPrompt);
+                    $this->em->persist($pageSectionAIPrompt);
+
+                // make sure to persist any child entities for the checklist as well
+                } else if (null !== $pageSection->getPageSectionChecklist()) {
                     foreach ($pageSection->getPageSectionChecklist()->getPageSectionChecklistItems() as $item) {
                         $this->em->persist($item);
                     }
+                }
+
+                if (null !== $pageSection->getAiPrompt()) {
+                    // generate the AI prompt response; this is done by chatting with the AI and using the page contents as context
+                    $this->generationEngine->generatePageSectionAIPrompt($pageSection->getPageTab()->getPage(), $pageSection->getAiPrompt());
                 }
 
                 return $pageSection;

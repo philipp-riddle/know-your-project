@@ -126,8 +126,6 @@
     import Placeholder from '@tiptap/extension-placeholder';
     import { useEditor, EditorContent } from '@tiptap/vue-3';
     import StarterKit from '@tiptap/starter-kit';
-    import Paragraph from '@tiptap/extension-paragraph';
-    import Heading from '@tiptap/extension-heading';
     import Link from '@tiptap/extension-link';
     import { ref, computed, watch } from 'vue';
     import { usePageSectionStore } from '@/stores/PageSectionStore.js';

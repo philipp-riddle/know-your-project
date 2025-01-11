@@ -2,22 +2,19 @@
 
 namespace App\Form;
 
-use App\Entity\Page;
-use App\Entity\PageSectionEmbeddedPage;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use App\Entity\PageSectionAIPrompt;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class PageSectionEmbeddedPageForm extends AbstractType
+class PageSectionAIPromptForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         parent::buildForm($builder, $options);
 
-        $builder->add('page', EntityType::class, [
-            'class' => Page::class,
-            'choice_label' => 'id',
+        // can only set prompt when updating / creating a page section AI prompt
+        $builder->add('prompt', options: [
             'required' => false,
             'empty_data' => null,
         ]);
@@ -27,7 +24,7 @@ class PageSectionEmbeddedPageForm extends AbstractType
     {
         $resolver->setDefaults([
             'csrf_protection' => false,
-            'data_class' => PageSectionEmbeddedPage::class,
+            'data_class' => PageSectionAIPrompt::class,
         ]);
     }
 }

@@ -158,12 +158,18 @@ final class EntityVectorEmbeddingService
 
     public function updateEmbeddedEntity(EntityVectorEmbeddingInterface $entity): void
     {
+        $textForEmbedding = $entity->getTextForEmbedding();
+
+        if (null === $textForEmbedding || \trim('') === \strip_tags($textForEmbedding)) {
+            return; // skip entities that have no text to display
+        }
+
         $metaAttributes = $entity->getMetaAttributes();
         $metaAttributes['type'] = (new \ReflectionClass($entity))->getShortName();
 
         $embedding = $this->qdrant->insertUserContent(
             $this->getEntityUuid($entity),
-            $entity->getTextForEmbedding(),
+            $textForEmbedding,
             $metaAttributes,
         );
 

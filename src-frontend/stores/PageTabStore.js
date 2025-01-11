@@ -21,8 +21,6 @@ export const usePageTabStore = defineStore('pageTab', () => {
     async function setSelectedTab(pageTab) {
         selectedTab.value = pageTab;
 
-        console.log('set selected tab', pageTab);
-
         if (!pageStore.selectedPage) {
             console.error('Cannot set selected tab without a selected page');
             return;

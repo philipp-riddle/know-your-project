@@ -21,15 +21,26 @@ class PageService
             ->setProject($task->getProject())
             ->setName($pageName)
             ->setCreatedAt(new \DateTime());
-
         $pageTab = (new PageTab())
             ->setName('Overview')
             ->setEmojiIcon('🌐')
             ->setCreatedAt(new \DateTime());
+        $pageSection = (new PageSection())
+            ->setUpdatedAt(new \DateTimeImmutable())
+            ->setCreatedAt(new \DateTimeImmutable())
+            ->setAuthor($task->getProject()->getOwner())
+            ->setOrderIndex(0);
+        $pageSectionText = (new PageSectionText())
+            ->setContent('Testi'); // add empty content for the user to start
+        $pageSection->setPageSectionText($pageSectionText);
+
+        $pageTab->addPageSection($pageSection);
         $page->addPageTab($pageTab);
 
         $this->em->persist($page);
         $this->em->persist($pageTab);
+        $this->em->persist($pageSection);
+        $this->em->persist($pageSectionText);
 
         return $page;
     }

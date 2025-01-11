@@ -33,18 +33,21 @@ class PageSection extends CachedEntityVectorEmbedding implements UserPermissionI
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $createdAt = null;
 
-    #[ORM\OneToOne(mappedBy: 'pageSection', cascade: ['persist', 'remove'])]
-    private ?PageSectionText $pageSectionText = null;
-
-    #[ORM\OneToOne(mappedBy: 'pageSection', cascade: ['persist', 'remove'])]
-    private ?PageSectionChecklist $pageSectionChecklist = null;
-
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $author = null;
 
     #[ORM\Column]
     private ?int $orderIndex = null;
+
+    // == all different page section types and their associated entities ==
+    // == each page section can only have one of these ====================
+
+    #[ORM\OneToOne(mappedBy: 'pageSection', cascade: ['persist', 'remove'])]
+    private ?PageSectionText $pageSectionText = null;
+
+    #[ORM\OneToOne(mappedBy: 'pageSection', cascade: ['persist', 'remove'])]
+    private ?PageSectionChecklist $pageSectionChecklist = null;
 
     #[ORM\OneToOne(mappedBy: 'pageSection', cascade: ['persist', 'remove'])]
     private ?PageSectionURL $pageSectionURL = null;
@@ -54,6 +57,9 @@ class PageSection extends CachedEntityVectorEmbedding implements UserPermissionI
 
     #[ORM\OneToOne(mappedBy: 'pageSection', cascade: ['persist', 'remove'])]
     private ?PageSectionEmbeddedPage $embeddedPage = null;
+
+    #[ORM\OneToOne(mappedBy: 'pageSection', cascade: ['persist', 'remove'])]
+    private ?PageSectionAIPrompt $aiPrompt = null;
 
     public function getId(): ?int
     {
@@ -226,6 +232,10 @@ class PageSection extends CachedEntityVectorEmbedding implements UserPermissionI
             if ($this->embeddedPage !== null && !$this->embeddedPage->hasUserAccess($user)) {
                 return false;
             }
+
+            if ($this->aiPrompt != null && !$this->aiPrompt->hasUserAccess($user)) {
+                return false;
+            }
         }
 
         return true;
@@ -241,8 +251,8 @@ class PageSection extends CachedEntityVectorEmbedding implements UserPermissionI
 
     public function validate(): void
     {
-        if ($this->pageSectionText === null && $this->pageSectionChecklist === null && $this->pageSectionURL === null && $this->pageSectionUpload === null && $this->embeddedPage === null) {
-            throw new BadRequestHttpException('A page section must have a content type');
+        if ($this->pageSectionText === null && $this->pageSectionChecklist === null && $this->pageSectionURL === null && $this->pageSectionUpload === null && $this->embeddedPage === null && $this->aiPrompt === null) {
+            throw new BadRequestHttpException('A page section must have a content type (text, checklist, URL, upload, embedded page, AI prompt)');
         }
 
         $pageSectionTypesNotNull = 0;
@@ -268,18 +278,26 @@ class PageSection extends CachedEntityVectorEmbedding implements UserPermissionI
             $this->embeddedPage->validate();
         }
 
+        if ($this->aiPrompt != null) {
+            $pageSectionTypesNotNull++;
+        }
+
         if ($pageSectionTypesNotNull > 1) {
             throw new BadRequestHttpException('A page section must have only one content type');
         }
     }
 
-    public function getTextForEmbedding(): string
+    public function getTextForEmbedding(): ?string
     {
         if (null !== $text = $this->getPageSectionText()) {
             return $text->getContent();
         } else if (null !== $url = $this->getPageSectionURL()) {
             return $url->getUrl();
         } else if (null !== $embeddedPage = $this->getEmbeddedPage()) {
+            if (null === $embeddedPage->getPage()) {
+                return null;
+            }
+
             return \sprintf('Embedded page: %s', $embeddedPage->getPage()->getId());
         } else if (null !== $upload = $this->getPageSectionUpload()) {
             return $upload->getFilename();
@@ -300,6 +318,22 @@ class PageSection extends CachedEntityVectorEmbedding implements UserPermissionI
             $text .= '</ul>';
 
             return $text;
+        } else if (null !== $aiPrompt = $this->getAiPrompt()) {
+            if (null === $aiPrompt->getPrompt() && null === $aiPrompt->getResponseText()) {
+                return null;
+            }
+
+            $text = '';
+
+            if (null !== $aiPrompt->getPrompt()) {
+                $text .= \sprintf('<p>AI Prompt: %s</p>', $aiPrompt->getPrompt());
+            }
+
+            if (null !== $aiPrompt->getResponseText()) {
+                $text .= \sprintf('<p>Response: %s</p>', $aiPrompt->getResponseText());
+            }
+
+            return $text;
         }
 
         throw new \InvalidArgumentException('No text for embedding in page section');
@@ -313,5 +347,22 @@ class PageSection extends CachedEntityVectorEmbedding implements UserPermissionI
             // merge the meta attributes from the page; this connects the sections and the page information in one space where we can later search for it
             ...$this->pageTab->getPage()->getMetaAttributes(),
         ];
+    }
+
+    public function getAiPrompt(): ?PageSectionAIPrompt
+    {
+        return $this->aiPrompt;
+    }
+
+    public function setAiPrompt(PageSectionAIPrompt $aiPrompt): static
+    {
+        // set the owning side of the relation if necessary
+        if ($aiPrompt->getPageSection() !== $this) {
+            $aiPrompt->setPageSection($this);
+        }
+
+        $this->aiPrompt = $aiPrompt;
+
+        return $this;
     }
 }

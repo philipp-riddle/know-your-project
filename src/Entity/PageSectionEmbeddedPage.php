@@ -22,7 +22,7 @@ class PageSectionEmbeddedPage implements UserPermissionInterface, CrudEntityInte
     private ?PageSection $pageSection = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Page $page = null;
 
     public function getId(): ?int
@@ -56,7 +56,7 @@ class PageSectionEmbeddedPage implements UserPermissionInterface, CrudEntityInte
 
     public function hasUserAccess(User $user): bool
     {
-        return $this->pageSection->hasUserAccess($user, checkSubTypes: false) && $this->page->hasUserAccess($user);
+        return $this->pageSection->hasUserAccess($user, checkSubTypes: false) && ($this->page?->hasUserAccess($user) ?? true);
     }
 
     public function initialize(): static

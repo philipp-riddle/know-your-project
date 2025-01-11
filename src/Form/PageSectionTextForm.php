@@ -17,6 +17,7 @@ class PageSectionTextForm extends AbstractType
 
         $builder
             ->add('content', TextType::class, [
+                'empty_data' => '', // by explicitly setting this to an empty string we can also create page section text entities with empty content
                 'constraints' => [
                     new Length([
                         'min' => 0,

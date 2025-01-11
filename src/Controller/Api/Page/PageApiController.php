@@ -4,6 +4,8 @@ namespace App\Controller\Api\Page;
 
 use App\Controller\Api\CrudApiController;
 use App\Entity\Page;
+use App\Entity\PageSection;
+use App\Entity\PageSectionText;
 use App\Entity\PageTab;
 use App\Entity\Project;
 use App\Entity\Tag;
@@ -97,8 +99,20 @@ class PageApiController extends CrudApiController
                     ->setName('Tab 1')
                     ->setEmojiIcon('📝')
                     ->setCreatedAt(new \DateTime());
+                $pageSection = (new PageSection())
+                    ->setUpdatedAt(new \DateTimeImmutable())
+                    ->setCreatedAt(new \DateTimeImmutable())
+                    ->setAuthor($this->getUser())
+                    ->setOrderIndex(0);
+                $pageSectionText = (new PageSectionText())
+                    ->setContent(''); // add empty content for the user to start
+                $pageSection->setPageSectionText($pageSectionText);
+                $pageTab->addPageSection($pageSection);
                 $page->addPageTab($pageTab);
+
                 $this->em->persist($pageTab);
+                $this->em->persist($pageSection);
+                $this->em->persist($pageSectionText);
 
                 return $page;
             }

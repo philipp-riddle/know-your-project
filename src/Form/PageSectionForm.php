@@ -59,6 +59,13 @@ class PageSectionForm extends AbstractType
                 'data' => $pageSection?->getEmbeddedPage(),
             ]);
         }
+
+        if ($isNewObject || $pageSection?->getAiPrompt()) {
+            $builder->add('aiPrompt', PageSectionAIPromptForm::class, [
+                'required' => !$isNewObject,
+                'data' => $pageSection?->getAiPrompt(),
+            ]);
+        }
     }
 
     public function configureOptions(OptionsResolver $resolver): void

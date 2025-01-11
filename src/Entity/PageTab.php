@@ -96,7 +96,7 @@ class PageTab implements UserPermissionInterface, CrudEntityInterface
     }
 
     /**
-     * @return Collection<int, PageSection>
+     * @return PageSection[]|Collection<int, PageSection>
      */
     public function getPageSections(): Collection
     {

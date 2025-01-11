@@ -67,8 +67,6 @@ export const usePageStore = defineStore('page', () => {
                 }
             }
 
-            console.log('refresh', refresh);
-
             if (refresh) {
                 selectedPage.value = null;
                 isLoadingPage.value = true;

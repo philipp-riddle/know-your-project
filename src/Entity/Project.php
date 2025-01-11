@@ -277,7 +277,7 @@ class Project extends CachedEntityVectorEmbedding implements UserPermissionInter
         return $this;
     }
 
-    public function getTextForEmbedding(): string
+    public function getTextForEmbedding(): ?string
     {
         return \sprintf('Project "%s"', $this->getName());
     }

@@ -211,7 +211,7 @@ class Page extends CachedEntityVectorEmbedding implements UserPermissionInterfac
         }
     }
 
-    public function getTextForEmbedding(): string
+    public function getTextForEmbedding(): ?string
     {
         return $this->getName();
     }

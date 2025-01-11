@@ -1,7 +1,6 @@
 <template>
     <VMenu
         :distance="5"
-        :shown="showPopover"
         @blur="showPopover = false"
     >
         <!-- This will be the popover reference (for the events and position) -->
@@ -21,6 +20,7 @@
                         <li class="nav-item"><button class="nav-link inactive btn btn-sm p" type="button" @click.stop="() => switchToPageSectionType('checklist')">Checklist</button></li>
                         <li class="nav-item"><button class="nav-link inactive btn btn-sm p" type="button" @click.stop="() => switchToPageSectionType('upload')">Upload</button></li>
                         <li class="nav-item"><button class="nav-link inactive btn btn-sm p" type="button" @click.stop="() => switchToPageSectionType('embeddedPage')">Embed other page / task</button></li>
+                        <li class="nav-item"><button class="nav-link inactive btn btn-sm p" type="button" @click.stop="() => switchToPageSectionType('aiPrompt')">Ask prompt</button></li>
                     </ul>
                 </div>
             </div>
@@ -29,11 +29,9 @@
 </template>
 
 <script setup>
-    import { onMounted, ref } from 'vue';
-    import PageSectionChecklist from '@/components/Page/PageSection/Widget/PageSectionChecklist.vue';
-    import PageSectionText from '@/components/Page/PageSection/Widget/PageSectionText.vue';
-    import PageSection from '@/components/Page/PageSection/PageSection.vue';
+    import { ref } from 'vue';
     import { usePageSectionStore } from '@/stores/PageSectionStore.js';
+    import { usePageTabStore } from '@/stores/PageTabStore.js';
 
     const props = defineProps({
         index: {
@@ -42,10 +40,9 @@
             default: null,
         },
     });
-    const checklistDropdown = ref(null);
     const showPopover = ref(false);
-    const createMode = ref(props.openedCreateDialogue ?? 'text');
     const pageSectionStore = usePageSectionStore();
+    const pageTabStore = usePageTabStore();
 
     const switchToPageSectionType = (type) => {
         showPopover.value = false;
@@ -76,7 +73,19 @@
                     page: null,
                 },
             };
+        } else if (type == 'aiPrompt') {
+            defaultObject = {
+                aiPrompt: {
+                    prompt: '',
+                },
+            };
         }
+
+        pageSectionStore.createSection(pageTabStore.selectedTab.id, defaultObject).then((createdSection) => {
+            resolve(createdSection);
+        });
+
+        return;
 
         // @todo this is a very hacky way to create an object which is not yet saved in the database
         // we assign this ID to make it easier to mutate via VUE and to keep of track of all these non-initialized objects

@@ -15,9 +15,9 @@ interface EntityVectorEmbeddingInterface
      * Return the text which should be used for embedding into the vector database.
      * The entity needs to implement some code to convert the entity into a text a vector database and a LLM model can understand.
      * 
-     * @return string The text for embedding; null if the entity should not be embedded and should be ignored.
+     * @return string|null The text for embedding; null if the entity should not be embedded and should be ignored.
      */
-    public function getTextForEmbedding(): string;
+    public function getTextForEmbedding(): ?string;
 
     /**
      * Returns all attributes which should be used as meta information for this entity in the vector database.

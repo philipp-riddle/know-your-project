@@ -37,21 +37,25 @@ export const usePageSectionStore = defineStore('pageSection', () => {
     // == fetch + store methods
 
     async function createSection(pageTabId, pageSection) {
-        const newSection = await fetchCreatePageSection(pageTabId, pageSection);
+        return new Promise((resolve) => {
+            fetchCreatePageSection(pageTabId, pageSection).then((newSection) => {
 
-        if (!newSection) {
-            return;
-        }
+                if (newSection.pageTab.page.id === pageStore.selectedPage.id) {
+                    displayedPageSections.value.push(newSection);
+                }
+            });
+        });
 
-        // now we need to swap out the new section with the old one in displayedPageSections
-        for (const sectionKey of Object.keys(displayedPageSections.value)) {
-            const section = displayedPageSections.value[sectionKey];
+        // @todo remove this code - no longer necessary
+        // // now we need to swap out the new section with the old one in displayedPageSections
+        // for (const sectionKey of Object.keys(displayedPageSections.value)) {
+        //     const section = displayedPageSections.value[sectionKey];
 
-            if (isNaN(section.id)) { // if the section id is NaN, it means it's a new section that hasn't been saved to the server yet; we can replace it with the new section
-                displayedPageSections.value[sectionKey] = newSection;
-                break;
-            }
-        }
+        //     if (isNaN(section.id)) { // if the section id is NaN, it means it's a new section that hasn't been saved to the server yet; we can replace it with the new section
+        //         displayedPageSections.value[sectionKey] = newSection;
+        //         break;
+        //     }
+        // }
 
         return newSection;
     }

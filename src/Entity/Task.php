@@ -143,7 +143,7 @@ class Task extends CachedEntityVectorEmbedding implements OrderListItemInterface
         }
     }
 
-    public function getTextForEmbedding(): string
+    public function getTextForEmbedding(): ?string
     {
         $lines = [
             \sprintf('Task (%d): %s', $this->getId(), $this->getStepType()),

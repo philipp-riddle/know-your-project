@@ -11,11 +11,9 @@
 </template>
 
 <script setup>
-    import PageSection from '@/components/Page/PageSection/PageSection.vue';
     import PageSectionCreateButton from '@/components/Page/PageSection/PageSectionCreateButton.vue';
     import PageSectionDraggable from '@/components/Page/PageSection/PageSectionDraggable.vue';
     import { usePageSectionStore } from '@/stores/PageSectionStore.js';
-    import { ref } from 'vue';
 
     const props = defineProps({
         page: {
@@ -47,25 +45,14 @@
         }
 
         return new Promise(async (resolve) => {
-            if (pageSection.id) {
-                const pageSectionSubmitObject = {
-                    id: pageSection.id,
-                    ...updatedPageSectionItem,
-                };
+            const pageSectionSubmitObject = {
+                id: pageSection.id,
+                ...updatedPageSectionItem,
+            };
 
-                pageSectionStore.updateSection(pageSectionSubmitObject).then((updatedSection) => {
-                    resolve(updatedSection);
-                });
-            } else {
-                const pageSectionSubmitObject = {
-                    id: pageSection.id,
-                    ...updatedPageSectionItem,
-                };
-
-                pageSectionStore.createSection(props.pageTab.id, pageSectionSubmitObject).then((createdSection) => {
-                    resolve(createdSection);
-                });
-            }
+            pageSectionStore.updateSection(pageSectionSubmitObject).then((updatedSection) => {
+                resolve(updatedSection);
+            });
         });
     };
 
