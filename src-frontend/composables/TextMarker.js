@@ -1,6 +1,8 @@
 export function  useTextMarker() {
     /**
-     * Given a date string, it returns a formatted date string presenting the "distance", e.g. "2 days ago", "in 3 days", "in 10 hours", etc.
+     * Given a text, this function will generate a HTML string that highlights the search term in the text.
+     * It also works with HTML text, i.e. it will not highlight the search term in HTML tags and will also not break the HTML structure.
+     * 
      * @param {String} date 
      * @returns {String} 
      */

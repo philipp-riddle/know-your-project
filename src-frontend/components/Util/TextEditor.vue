@@ -3,6 +3,7 @@
         class="m-0"
         v-tooltip="tooltip"
         :editor="editor"
+        :disabled="disabled"
     />
 </template>
 
@@ -12,11 +13,12 @@
     import StarterKit from '@tiptap/starter-kit';
     import Link from '@tiptap/extension-link';
     import BulletList from '@tiptap/extension-bullet-list'
+    import { computed } from 'vue';
     import { usePageSectionStore } from '@/stores/PageSectionStore.js';
 
-    const emit = defineEmits(['onChange']);
+    const emit = defineEmits(['onChange', 'onFocus']);
     const props = defineProps({
-        'text': {
+        text: {
             type: String,
             required: true,
         },
@@ -40,11 +42,17 @@
             required: false,
             default: true,
         },
+        disabled: {
+            type: Boolean,
+            required: false,
+            default: false,
+        },
     });
     const pageSectionStore = usePageSectionStore();
+    const currentText = computed(() => props.text);
 
     const editor = useEditor({
-        content: props.text,
+        content: currentText.value,
         editable: props.editable,
         extensions: [
             StarterKit, // add starter kit; otherwise the editor cannot render due to missing schemas
@@ -61,6 +69,9 @@
             if (props.focus) {
                 editor.commands.focus();
             }
+        },
+        onFocus: ({ editor }) => {
+            emit('onFocus');
         },
     });
 </script>

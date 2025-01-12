@@ -22,11 +22,9 @@ class PageSectionAIPrompt implements UserPermissionInterface
     #[ORM\ManyToOne]
     private ?Page $pageContext = null;
 
-    #[ORM\Column(type: Types::TEXT, length: 1024, nullable: false)]
-    private ?string $prompt = null;
-
-    #[ORM\Column(type: Types::TEXT, length: 65535, nullable: true)]
-    private ?string $responseText = null;
+    #[ORM\OneToOne(inversedBy: 'pageSectionAIPrompt', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    private ?Prompt $prompt = null;
 
     public function getId(): ?int
     {
@@ -57,32 +55,20 @@ class PageSectionAIPrompt implements UserPermissionInterface
         return $this;
     }
 
-    public function getPrompt(): ?string
+    public function hasUserAccess(User $user): bool
+    {
+        return $this->pageSection->hasUserAccess($user, checkSubTypes: false) && ($this->pageContext?->hasUserAccess($user) ?? true);
+    }
+
+    public function getPrompt(): ?Prompt
     {
         return $this->prompt;
     }
 
-    public function setPrompt(string $prompt): static
+    public function setPrompt(Prompt $prompt): static
     {
         $this->prompt = $prompt;
 
         return $this;
-    }
-
-    public function getResponseText(): ?string
-    {
-        return $this->responseText;
-    }
-
-    public function setResponseText(string $responseText): static
-    {
-        $this->responseText = $responseText;
-
-        return $this;
-    }
-
-    public function hasUserAccess(User $user): bool
-    {
-        return $this->pageSection->hasUserAccess($user, checkSubTypes: false) && ($this->pageContext?->hasUserAccess($user) ?? true);
     }
 }

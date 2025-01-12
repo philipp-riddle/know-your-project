@@ -48,6 +48,7 @@
         showPopover.value = false;
         let defaultObject = {};
 
+        // @todo move this code to a composable or some place where it is better found, managed, and maintained.
         if (type == 'text') {
             defaultObject = {
                 pageSectionText: {
@@ -76,21 +77,13 @@
         } else if (type == 'aiPrompt') {
             defaultObject = {
                 aiPrompt: {
-                    prompt: '',
+                    prompt: {
+                        promptText: '',
+                    },
                 },
             };
         }
 
-        pageSectionStore.createSection(pageTabStore.selectedTab.id, defaultObject).then((createdSection) => {
-            resolve(createdSection);
-        });
-
-        return;
-
-        // @todo this is a very hacky way to create an object which is not yet saved in the database
-        // we assign this ID to make it easier to mutate via VUE and to keep of track of all these non-initialized objects
-        // defaultObject.id = 'NULL-' + Math.random(0, 1000);
-        // pageSectionStore.displayedPageSections = pageSectionStore.displayedPageSections.filter((section) => !isNaN(section.id));
-        pageSectionStore.displayedPageSections.push(defaultObject);
+        pageSectionStore.createSection(pageTabStore.selectedTab.id, defaultObject);
     };
 </script>

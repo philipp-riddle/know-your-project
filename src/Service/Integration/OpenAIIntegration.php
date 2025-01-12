@@ -2,6 +2,7 @@
 
 namespace App\Service\Integration;
 
+use App\Entity\Prompt;
 use OpenAI;
 use OpenAI\Client;
 use OpenAI\Responses\Chat\CreateResponse;
@@ -34,30 +35,31 @@ final class OpenAIIntegration
     }
 
     /**
+     * Requests a chat response from OpenAI based on the given context and prompt.
+     * Writes the response and the spent tokens to the given prompt.
+     */
+    public function generatePromptChatResponse(Prompt &$prompt, array $messages): void
+    {
+        $createResponse = $this->getChatResponse($messages);
+        $prompt->setResponseText($createResponse->choices[0]->message->content);
+        $prompt->setPromptTokens($createResponse->usage->promptTokens);
+        $prompt->setCompletionTokens($createResponse->usage->completionTokens);
+        $prompt->setUpdatedAt(new \DateTime());
+    }
+
+    /**
      * @return CreateResponse The chat response from OpenAI based on the given prompt
      */
-    public function getChatResponse(string|array $context, string $prompt): CreateResponse
+    public function getChatResponse(array $messages = []): CreateResponse
     {
         $messages = [
             [
                 'role' => 'system',
                 'content' => $this->getAssistantSystemInstructions(),
             ],
+            ...$messages,
         ];
 
-        $context = \is_array($context) ? $context : [$context];
-
-        foreach ($context as $contextInstruction => $contextItem) {
-            $messages[] = [
-                'role' => 'user',
-                'content' => $contextInstruction.$this->getDefaultContextInstructions($contextItem),
-            ];
-        }
-
-        $messages[] = [
-            'role' => 'user',
-            'content' => $prompt,
-        ];
 
         $client = $this->getClient();
         $response = $client->chat()->create([
@@ -66,11 +68,6 @@ final class OpenAIIntegration
         ]);
 
         return $response;
-    }
-
-    public function getDefaultContextInstructions(string $context): string
-    {
-        return 'I will now provide you with another context you must use and prioritize when answering questions. Here is the context: '.$context;
     }
 
     /**

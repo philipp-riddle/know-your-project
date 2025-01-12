@@ -1,0 +1,47 @@
+<template>
+    <div class="d-flex flex-row gap-3 align-items-start justify-content-between thread-item">
+        <div class="col-sm-10">
+            <ThreadItemPrompt v-if="threadItem.itemPrompt" :threadItem="threadItem" />
+            <div v-else>
+                <p class="text-danger">Cannot display thread item.</p>
+            </div>
+        </div>
+        <div class="thread-options">
+            <button class="btn btn-sm m-0 p-0" :disabled="isDeleting" @click="onDelete" v-tooltip="'Delete thread item'">
+                <font-awesome-icon :icon="['fas', 'trash']" />
+            </button>
+        </div>
+    </div>
+</template>
+
+<script setup>
+    import { ref } from 'vue';
+    import ThreadItemPrompt from '@/components/Thread/ThreadItemPrompt.vue';
+    import { useThreadStore } from '@/stores/ThreadStore.js';
+
+    const props = defineProps({
+        threadItem: {
+            type: Object,
+            required: true,
+        },
+    });
+    const isDeleting = ref(false);
+    const threadStore = useThreadStore();
+
+    const onDelete = () => {
+        isDeleting.value = true;
+        threadStore.deleteThreadItem(props.threadItem).then(() => {
+            isDeleting.value = false;
+        });
+    };
+</script>
+
+<style scoped>
+    .thread-options {
+        display: none;
+    }
+
+    .thread-item:hover .thread-options {
+        display: block;
+    }
+</style>

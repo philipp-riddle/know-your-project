@@ -24,8 +24,6 @@ export const usePageSectionChecklistItemStore = defineStore('pageSectionChecklis
             console.error('Failed to update checklist item with id:', checklistItem.id);
         }
 
-        // pageSectionStore.pageSections[pageSectionId].pageSectionChecklist.pageSectionChecklistItems = pageSectionStore.pageSections[pageSectionId].pageSectionChecklist.pageSectionChecklistItems.map(item => item.id === checklistItem.id ? checklistItem : item);
-
         return updatedChecklistItem;
     }
 

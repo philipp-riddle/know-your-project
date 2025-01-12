@@ -10,6 +10,7 @@
         </div>
     </div>
 
+    <ThreadBox />
     <SearchModal />
 </template>
 
@@ -18,6 +19,7 @@
     import { useRoute } from 'vue-router';
     import NavigationSidebar from '@/components/Navigation/NavigationSidebar.vue';
     import SearchModal from '@/components/Search/SearchModal.vue';
+    import ThreadBox from '@/components/Thread/ThreadBox.vue';
     import { usePageStore } from '@/stores/PageStore.js';
 
     const currentRoute = useRoute();

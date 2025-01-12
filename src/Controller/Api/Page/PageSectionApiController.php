@@ -10,6 +10,7 @@ use App\Entity\PageSectionEmbeddedPage;
 use App\Entity\PageSectionText;
 use App\Entity\PageSectionUpload;
 use App\Entity\PageTab;
+use App\Entity\Prompt;
 use App\Form\PageSectionForm;
 use App\Form\PageSectionUploadForm;
 use App\Service\Helper\ApiControllerHelperService;
@@ -122,9 +123,14 @@ class PageSectionApiController extends CrudApiController
                     $this->em->persist($pageSectionEmbeddedPage);
 
                 // additional edge case for empty AI prompt creation
-                } else if ('' === @$requestContent['aiPrompt']['prompt']) {
+                } else if ('' === @$requestContent['aiPrompt']['prompt']['promptText']) {
+                    $prompt = (new Prompt())
+                        ->setProject($pageSection->getPageTab()->getPage()->getProject())
+                        ->setUser($this->getUser()) // log the current user - this can be used to further personalise the AI response for the user
+                        ->setPromptText('')
+                        ->setCreatedAt(new \DateTime());
                     $pageSectionAIPrompt = (new PageSectionAIPrompt())
-                        ->setPrompt('');
+                        ->setPrompt($prompt);
                     $pageSection->setAiPrompt($pageSectionAIPrompt);
                     $this->em->persist($pageSectionAIPrompt);
 

@@ -61,6 +61,9 @@ class PageSection extends CachedEntityVectorEmbedding implements UserPermissionI
     #[ORM\OneToOne(mappedBy: 'pageSection', cascade: ['persist', 'remove'])]
     private ?PageSectionAIPrompt $aiPrompt = null;
 
+    #[ORM\OneToOne(mappedBy: 'pageSection', cascade: ['persist', 'remove'])]
+    private ?ThreadPageSectionContext $threadContext = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -351,6 +354,23 @@ class PageSection extends CachedEntityVectorEmbedding implements UserPermissionI
         }
 
         $this->aiPrompt = $aiPrompt;
+
+        return $this;
+    }
+
+    public function getThreadContext(): ?ThreadPageSectionContext
+    {
+        return $this->threadContext;
+    }
+
+    public function setThreadContext(ThreadPageSectionContext $threadContext): static
+    {
+        // set the owning side of the relation if necessary
+        if ($threadContext->getPageSection() !== $this) {
+            $threadContext->setPageSection($this);
+        }
+
+        $this->threadContext = $threadContext;
 
         return $this;
     }
