@@ -8,15 +8,17 @@
             v-tooltip="item.complete ? 'Mark item as incomplete' : 'Mark item as complete'"
             @click="onCheckboxClick"
         />
-        <input
-            class="form-control magic-input"
-            type="text"
-            v-model="item.name"
-            ref="createItemInputField"
-            :placeholder="placeholder"
-            @keyup="onTitleKeyup"
-            @keyup.enter="onTitleEnterClick"
-        />
+        <div class="flex-fill">
+            <input
+                class="form-control magic-input"
+                type="text"
+                v-model="item.name"
+                ref="createItemInputField"
+                :placeholder="placeholder"
+                @keyup="onTitleKeyup"
+                @keyup.enter="onTitleEnterClick"
+            />
+        </div>
     </div>
 </template>
 
@@ -116,23 +118,33 @@
     };
 </script>
 
-<style scoped lang="sass">
+<style scoped lang="scss">
 	@import '@/styles/colors.scss';
 
     input.form-check-input {
         border: 5px solid $green;
         border-radius: 2rem;
-        padding:3%;
-        background-color: 5px solid $green !important;
+        padding: 1.5%;
+        cursor: pointer;
 
         &:focus {
             box-shadow: none !important;
             background-color: 5px solid $green;
         }
 
-        &:checked, &:hover {
+        &:not(:checked) {
+            border-color: red !important;
+            background-color: transparent !important;
+    
+            &:hover {
+                border-color: $green !important;
+                background-color: $green !important;
+            }
+        }
+
+        &:checked {
+            border-color: $green !important;
             background-color: $green !important;
-            cursor: pointer;
         }
     }
 </style>

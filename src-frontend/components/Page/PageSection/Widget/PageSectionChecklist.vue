@@ -1,10 +1,10 @@
 <template>
-    <div class="card section-card section-card-small " v-if="checklist">
-        <div class="card-body p-2">
-            <div class="d-flex flex-row justify-content-between align-items-center">
-                <h4 class="mb-2">
+    <div class="card section-card section-card-small w-100 " v-if="checklist">
+        <div class="card-body p-4">
+            <div class="d-flex flex-row align-items-center gap-3">
+                <h4 class="flex-fill">
                     <input
-                        class="p bold form-control magic-input"
+                        class="p bold form-control magic-input m-0 p-0"
                         type="text"
                         v-model="checklist.name"
                         placeholder="Enter checklist name"
@@ -26,8 +26,13 @@
             </div>
             <div class="d-flex flex-column gap-2">
                 <div v-for="item in checklist.pageSectionChecklistItems" :key="item.id">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <PageSectionChecklistItem :item="item" :onItemUpdate="onChecklistUpdateItem" :focusOnInit="false" />
+                    <div class="d-flex  align-items-center">
+                        <PageSectionChecklistItem
+                            :item="item"
+                            :onItemUpdate="onChecklistUpdateItem"
+                            :focusOnInit="false"
+                            class="flex-fill"
+                        />
                         <div class="dropdown">
                             <h5 class="dropdown-toggle m-0" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false" @click.stop="">
                                 <font-awesome-icon :icon="['fas', 'ellipsis']" />

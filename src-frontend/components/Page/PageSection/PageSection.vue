@@ -14,7 +14,7 @@
             </div>
         </div>
 
-        <div class="col-sm-12 col-md-9 col-xl-10">
+        <div class="col-sm-12 col-md-9 col-xl-10 d-flex flex-row gap-3">
             <!-- the PageSection elements all need the v-once directive! -->
             <!-- this is important to not cause any re-renders of the object when creating or updating the pageSection ref value. -->
             <!-- otherwise this could interrupt the user flow, e.g. by losing the input focus while typing. -->
@@ -58,18 +58,25 @@
             <div v-else class="alert alert-danger">
                 <p>Unknown section type - cannot render.</p>
             </div>
+
+            <div class="d-flex flex-column align-items-center justify-content-center">
+                <PageSectionThreadButton :pageSection="pageSection" />
+            </div>
         </div>
     </div>
 </template>
 
 <script setup>
-    import PageSectionInfo from '@/components/Page/PageSection/PageSectionInfo.vue';
+    // we need to import all the PageSection components here to make sure they are available in the template; huge if stament bundles them all together
     import PageSectionChecklist from '@/components/Page/PageSection/Widget/PageSectionChecklist.vue';
     import PageSectionEmbeddedPage from '@/components/Page/PageSection/Widget/PageSectionEmbeddedPage.vue';
     import PageSectionUpload from '@/components/Page/PageSection/Widget/PageSectionUpload.vue';
     import PageSectionText from '@/components/Page/PageSection/Widget/PageSectionText.vue';
     import PageSectionURL from '@/components/Page/PageSection/Widget/PageSectionURL.vue';
     import PageSectionAIPrompt from '@/components/Page/PageSection/Widget/PageSectionAIPrompt.vue';
+
+    import PageSectionInfo from '@/components/Page/PageSection/PageSectionInfo.vue';
+    import PageSectionThreadButton from '@/components/Page/PageSection/PageSectionThreadButton.vue';
     import { computed, ref, onMounted } from 'vue';
     import { useDebounceFn } from '@vueuse/core';
 

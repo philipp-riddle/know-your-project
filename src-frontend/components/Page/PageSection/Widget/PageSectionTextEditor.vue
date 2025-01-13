@@ -117,7 +117,6 @@
     </div>
     <editor-content
         v-else
-        v-tooltip="tooltip"
         :editor="editor"
     />
 </template>
@@ -145,9 +144,6 @@
         },
     });
     const currentText = ref(props.text);
-    const tooltip = computed(() => {
-        return !pageSectionStore.selectedPageSection == props.pageSection.id ? 'Edit text' : '';
-    });
     const editor = useEditor({
         content: props.text,
         extensions: [

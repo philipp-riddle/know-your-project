@@ -1,5 +1,5 @@
 <template>
-    <div class="card section-card section-card-small">
+    <div class="card section-card section-card-small w-100">
         <div class="card-body p-2">
             <div v-if="embeddedPage.page?.id">
                 <div class="d-flex flex-row justify-content-between align-items-center">

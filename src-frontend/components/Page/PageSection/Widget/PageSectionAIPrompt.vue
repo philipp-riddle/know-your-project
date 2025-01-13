@@ -1,5 +1,5 @@
 <template>
-    <div class="section-card card" @click.stop="(e) => e.stopPropagation()">
+    <div class="section-card card w-100" @click.stop="(e) => e.stopPropagation()">
         <div class="p-3 card-header d-flex flex-row gap-5 justify-content-between align-items-start">
             <div v-if="isPromptLoading">
                 <p class="m-0" v-html="currentText"></p>
@@ -46,21 +46,6 @@
                         v-else
                         :icon="['fas', 'arrows-rotate']"
                     />
-                </button>
-                <button
-                    class="btn btn-sm position-relative"
-                    v-tooltip="pageSection.threadContext ? 'Resume the thread with the assistant' : 'Start a thread with the assistant to refine the response'"
-                    @click="onThreadStart"
-                    :disabled="threadStore.isCreatingThread"
-                    :class="{
-                        'btn-dark': pageSection.threadContext && pageSection.threadContext.id == threadStore.selectedThread?.id,
-                        'p-0': pageSection.threadContext === null,
-                    }"
-                >
-                    <font-awesome-icon :icon="['fas', 'comments']" />
-                    <span v-if="pageSection.threadContext != null" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                        {{ pageSection.threadContext.thread.threadItems.length }}
-                    </span>
                 </button>
             </div>
         </div>
@@ -189,14 +174,6 @@
     const onFocusPromptResponse = () => {
         showResponseNotEditableError.value = true;
         debouncedErrorHide();
-    };
-
-    const onThreadStart = () => {
-        if (pageSection.value.threadContext === null) {
-            threadStore.createThreadFromPageSectionAIPrompt(pageSection.value); // this creates a thread and opens the thread box automatically
-        } else {
-            threadStore.selectedThread = pageSection.value.threadContext.thread; // this opens the thread box for the already existing task
-        }
     };
 </script>
 
