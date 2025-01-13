@@ -61,7 +61,9 @@ class UserInvitation implements CrudEntityInterface, UserPermissionInterface
         return $this;
     }
 
-    public function getCode(): ?string
+    // attribute does not work but prefixing the method with a '_' works. meh.
+    #[Ignore]
+    public function _getCode(): ?string
     {
         return $this->code;
     }

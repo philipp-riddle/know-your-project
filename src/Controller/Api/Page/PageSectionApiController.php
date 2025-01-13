@@ -36,12 +36,17 @@ class PageSectionApiController extends CrudApiController
     }
 
     /**
-     * When creating or updating a page section we want to recommend similar pages to the user.
+     * When updating a page section we want to recommend similar pages to the user.
+     * Not when retrieving, creating or deleting a page section.
      * 
-     * @param PageSection $entity
+     * @param PageSection $entity The entity to get additional data for.
      */
-    protected function getAdditionalDataToSerialize(UserPermissionInterface $entity): array
+    protected function getAdditionalDataToSerialize(UserPermissionInterface $entity, string $httpMethod): array
     {
+        if (\in_array($httpMethod, ['GET', 'POST', 'DELETE'], true)) {
+            return [];
+        }
+
         if (!($entity instanceof EntityVectorEmbeddingInterface)) {
             throw new \RuntimeException('The entity must implement the EntityVectorEmbeddingInterface to generate recommendations. Class: '.\get_class($entity));
         }

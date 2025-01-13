@@ -2,6 +2,7 @@
 
 namespace App\EventSubscriber;
 
+use App\Entity\PageSection;
 use App\Service\Search\Entity\EntityVectorEmbeddingInterface;
 use App\Event\CreateCrudEntityEvent;
 use App\Event\DeleteCrudEntityEvent;
@@ -24,11 +25,16 @@ class EntityVectorEmbeddingSubscriber implements EventSubscriberInterface
     {
         $entity = $event->getEntity();
 
+        if ($event instanceof CreateCrudEntityEvent && $entity instanceof PageSection) {
+            return; // we do not listen on page section creations as they are created in an empty state
+        }
+
         // only handle entities if they the EntityVectorEmbeddingInterface and we are not in a test environment
         if ($entity instanceof EntityVectorEmbeddingInterface && !TestEnvironment::isActive()) {
             // we want to avoid unnecessary updates at any cost.
             // we can avoid them by checking if the text or attributes have changed of the entity.
             if ($event instanceof UpdateCrudEntityEvent) {
+
                 /** @var EntityVectorEmbeddingInterface */
                 $originalEntity = $event->getOriginalEntity();
                 $oldTextEmbedding = $originalEntity->getTextForEmbedding();
