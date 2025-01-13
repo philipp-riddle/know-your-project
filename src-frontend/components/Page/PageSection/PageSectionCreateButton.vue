@@ -5,7 +5,13 @@
     >
         <!-- This will be the popover reference (for the events and position) -->
         <div class="d-flex flex-row justify-content-center">
-            <button @click.stop="showPopover = !showPopover" class="btn btn-sm btn-primary " v-tooltip="'Add sections'">
+            <button
+                @click.stop="showPopover = !showPopover"
+                class="btn btn-sm btn-primary "
+                v-tooltip="'Add content'"
+                disabled="pageSectionStore.isCreatingPageSection"
+            >
+            
                 <font-awesome-icon class="white" :icon="['fas', 'plus']" />
             </button>
         </div>

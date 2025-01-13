@@ -3,6 +3,15 @@
         <PageSectionDraggable :page="page" :pageTab="pageTab" :onPageSectionSubmit="onPageSectionSubmit" />
 
         <div class="row">
+            <!--  we need this many classes to be in the same layout as the page section -->
+            <div class="offset-md-3 offset-xl-2 col-sm-12 col-md-9 col-xl-10">
+                <div v-if="pageSectionStore.isCreatingPageSection" class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
             <div class="col-sm-12 col-md-3 col-xl-2">
                 <PageSectionCreateButton />
             </div>

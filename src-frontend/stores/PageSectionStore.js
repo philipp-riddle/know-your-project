@@ -8,6 +8,7 @@ export const usePageSectionStore = defineStore('pageSection', () => {
     // == helper variables
     const displayedPageSections = ref([]);
     const isDraggingPageSection = ref(false);
+    const isCreatingPageSection = ref(false);
     const selectedPageSection = ref(null);
 
     // == helper stores
@@ -24,12 +25,17 @@ export const usePageSectionStore = defineStore('pageSection', () => {
 
     async function createSection(pageTabId, pageSection) {
         return new Promise((resolve) => {
+            isCreatingPageSection.value = true;
+
             fetchCreatePageSection(pageTabId, pageSection).then((newSection) => {
                 if (newSection.pageTab.page.id === pageStore.selectedPage.id) {
                     displayedPageSections.value.push(newSection);
                 }
 
+                isCreatingPageSection.value = false;
                 resolve(newSection);
+            }).catch((error) => {
+                isCreatingPageSection.value = false;
             });
         });
     }
@@ -78,6 +84,7 @@ export const usePageSectionStore = defineStore('pageSection', () => {
     return {
         // helper variables
         isDraggingPageSection,
+        isCreatingPageSection,
         displayedPageSections,
         selectedPageSection,
 
