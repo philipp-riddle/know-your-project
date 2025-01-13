@@ -123,7 +123,7 @@ final class QdrantIntegration
     {
         // We use different collections for different environments;
         // This is done to make sure to not push from different environments (dev / production / testdata) into one database.
-        return \sprintf('%s_%s', static::COLLECTION_USERDATA, $_ENV['APP_ENV']);
+        return \sprintf('%s_%s', static::COLLECTION_USERDATA, $_ENV['APP_ENV_EXACTLY']);
     }
 
     private function getClient(): Qdrant
