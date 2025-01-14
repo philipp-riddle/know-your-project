@@ -25,8 +25,8 @@ class EntityVectorEmbeddingSubscriber implements EventSubscriberInterface
     {
         $entity = $event->getEntity();
 
-        if ($event instanceof CreateCrudEntityEvent && $entity instanceof PageSection) {
-            return; // we do not listen on page section creations as they are created in an empty state
+        if ($event instanceof CreateCrudEntityEvent) {
+            return; // @todo we do not listen on the creation; this is not performant and not necessary at the moment. this must be done via a command.
         }
 
         // only handle entities if they the EntityVectorEmbeddingInterface and we are not in a test environment
