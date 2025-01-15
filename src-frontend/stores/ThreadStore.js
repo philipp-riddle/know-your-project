@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref, watch } from 'vue';
-import { fetchCreateThread, fetchCreateThreadPrompt, fetchCreateThreadCommentItem, fetchCreateThreadPromptItem, fetchDeleteThreadItem } from '@/stores/fetch/ThreadFetcher';
+import { fetchCreateThread, fetchCreateThreadCommentItem, fetchCreateThreadPromptItem, fetchDeleteThreadItem } from '@/stores/fetch/ThreadFetcher';
 import { usePageSectionStore } from '@/stores/PageSectionStore';
 
 export const useThreadStore = defineStore('thread', () => {
@@ -41,23 +41,6 @@ export const useThreadStore = defineStore('thread', () => {
             }).catch(() => isCreatingThread.value = false);
         });
     };
-
-    const createThreadFromPageSectionAIPrompt = (pageSection) => {
-        return new Promise((resolve) => {
-            if (isCreatingThread.value) {
-                console.error("Already creating thread");
-                return;
-            }
-
-            isCreatingThread.value = true;
-            fetchCreateThreadPrompt(pageSection.aiPrompt.id).then((thread) => {
-                selectedThread.value = thread;
-                isCreatingThread.value = false;
-
-                resolve(thread);
-            }).catch(() => isCreatingThread.value = false);
-        });
-    }
 
     const createThreadCommentItem = (threadId, comment) => {
         return new Promise((resolve) => {
@@ -110,7 +93,6 @@ export const useThreadStore = defineStore('thread', () => {
         isCreatingThread,
         selectedThread,
         createThreadFromPageSection,
-        createThreadFromPageSectionAIPrompt,
         createThreadCommentItem,
         createThreadPromptItem,
         deleteThreadItem,

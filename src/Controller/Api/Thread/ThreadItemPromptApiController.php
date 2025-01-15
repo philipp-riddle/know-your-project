@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/api/thread/prompt/item')]
+#[Route('/api/thread/item/prompt')]
 class ThreadItemPromptApiController extends CrudApiController
 {
     public function __construct(
@@ -46,6 +46,7 @@ class ThreadItemPromptApiController extends CrudApiController
                 $threadItem = (new ThreadItem())
                     ->setItemPrompt($threadItemPrompt)
                     ->setThread($thread)
+                    ->setUser($this->getUser())
                     ->initialize();
                 $this->em->persist($threadItem);
 

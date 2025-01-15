@@ -4,7 +4,7 @@
         :class="{
             // if we do not set this class the thread button is always visible.
             // this helps with boosting the visibility of the existing thread and its items; otherwise the thread button is only visible on hover.
-            'section-options': !hasThreadWithItems && threadStore.selectedThread?.id !== threadContext?.thread.id,
+            'section-options': !showThreadButton,
         }"
     >
         <button
@@ -13,13 +13,13 @@
             @click="() => toggleThreadBox()"
             :disabled="threadStore.isCreatingThread"
             :class="{
-                'btn-dark': threadContext && threadContext.id == threadStore.selectedThread?.id,
-                'p-0': threadContext === null,
+                'btn-dark': pageSection.threadContext && pageSection.threadContext.id == threadStore.selectedThread?.id,
+                'p-0': pageSection.threadContext === null,
             }"
         >
             <font-awesome-icon :icon="['fas', 'comments']" />
-            <span v-if="threadContext != null && threadContext.thread.threadItems.length > 0" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                {{ threadContext.thread.threadItems.length }}
+            <span v-if="pageSection.threadContext != null && pageSection.threadContext.thread.threadItems.length > 0" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                {{ pageSection.threadContext.thread.threadItems.length }}
             </span>
         </button>
     </div>
@@ -36,10 +36,9 @@
         },
     });
     const threadStore = useThreadStore();
-    const threadContext = ref(props.pageSection.threadContext);
 
     const tooltip = computed(() => {
-        if (threadContext.value && threadStore.selectedThread && threadContext.value.thread.id === threadStore.selectedThread.id) {
+        if (props.pageSection.threadContext && threadStore.selectedThread && props.pageSection.threadContext.thread.id === threadStore.selectedThread.id) {
             return 'Close the thread';
         }
 
@@ -61,11 +60,22 @@
         return props.pageSection.aiPrompt !== null;
     });
     const hasThreadWithItems = computed(() => {
-        return threadContext.value && threadContext.value.thread.threadItems.length > 0;
+        return props.pageSection.threadContext !== null && props.pageSection.threadContext?.thread.threadItems.length > 0;
     });
+    const showThreadButton = computed(() => {
+        if (hasThreadWithItems.value) {
+            return true;
+        }
+
+        if (null === threadStore.selectedThread) {
+            return false;
+        }
+
+        return threadStore.selectedThread.id === props.pageSection.threadContext?.thread.id;
+    })
 
     const toggleThreadBox = () => {
-        if (threadStore.selectedThread === null || threadStore.selectedThread.id !== threadContext.value.thread.id) {
+        if (threadStore.selectedThread === null || threadStore.selectedThread.id !== props.pageSection.threadContext.thread.id) {
             onThreadStart();
         } else {
             threadStore.selectedThread = null;
@@ -73,16 +83,11 @@
     };
 
     const onThreadStart = () => {
-        if (threadContext.value === null) {
-            if (isAIThread.value) {
-                // this creates a thread and opens the thread box automatically
-                threadStore.createThreadFromPageSectionAIPrompt(props.pageSection);
-            } else {
-                // this creates an empty thread from the page section and opens the thread box automatically
-                threadStore.createThreadFromPageSection(props.pageSection);
-            }
+        if (props.pageSection.threadContext === null) {
+            // this creates an empty thread from the page section and opens the thread box automatically
+            threadStore.createThreadFromPageSection(props.pageSection);
         } else {
-            var threadValue = threadContext.value.thread;
+            var threadValue = props.pageSection.threadContext.thread;
             threadValue.pageSectionContext = { // we inject the page section into the thread context data as it is not fully serialised (it is a circular reference)
                 pageSection: props.pageSection,
             };

@@ -12,7 +12,7 @@
                 <p class="text-danger">Cannot display thread item.</p>
             </div>
         </div>
-        <div class="thread-options">
+        <div class="thread-options" v-if="canDeleteThreadItem">
             <button class="btn btn-sm m-0 p-0" :disabled="isDeleting" @click="onDelete" v-tooltip="'Delete thread item'">
                 <font-awesome-icon :icon="['fas', 'trash']" />
             </button>
@@ -21,10 +21,11 @@
 </template>
 
 <script setup>
-    import { ref } from 'vue';
+    import { computed, ref } from 'vue';
     import ThreadItemComment from '@/components/Thread/ThreadItemComment.vue';
     import ThreadItemPrompt from '@/components/Thread/ThreadItemPrompt.vue';
     import { useThreadStore } from '@/stores/ThreadStore.js';
+    import { useUserStore } from '@/stores/UserStore.js';
 
     const props = defineProps({
         threadItem: {
@@ -33,7 +34,12 @@
         },
     });
     const isDeleting = ref(false);
+    const userStore = useUserStore();
     const threadStore = useThreadStore();
+
+    const canDeleteThreadItem = computed(() => {
+        return props.threadItem.user.id === userStore.currentUser.id;
+    });
 
     const onDelete = () => {
         isDeleting.value = true;

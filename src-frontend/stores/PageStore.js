@@ -60,7 +60,8 @@ export const usePageStore = defineStore('page', () => {
             // If the page tabs are loaded we must check if they are arrays or objects.
             // If they are not, we must refresh the page. E.g. if the serialiser returned only numbers as the circular reference handler clicked in.
             } else {
-                for (const pageTab in page.pageTabs) {
+                for (let i = 0; i < page.pageTabs.length; i++) {
+                    const pageTab = page.pageTabs[i];
                     if (!Array.isArray(pageTab) && typeof pageTab !== 'object') {
                         refresh = true; // contains page tabs which are not arrays/objects, thus we must refresh
                     }

@@ -29,20 +29,10 @@ export async function fetchCreateThreadCommentItem(threadId, comment) {
     return resp.data;
 }
 
-const BaseThreadPromptService = BaseThreadService + "/prompt";
-
-export async function fetchCreateThreadPrompt(pageSectionAIPromptId) {
-    const resp = await axios.post(`${BaseThreadPromptService}`, {
-        pageSectionAIPrompt: pageSectionAIPromptId,
-    });
-
-    return resp.data;
-}
-
-const BaseThreadPromptItemService = BaseThreadPromptService + "/item";
+const BaseThreadItemPromptService = BaseThreadItemService + "/prompt";
 
 export async function fetchCreateThreadPromptItem(threadId, prompt) {
-    const resp = await axios.post(`${BaseThreadPromptItemService}`, {
+    const resp = await axios.post(`${BaseThreadItemPromptService}`, {
         thread: threadId,
         prompt: {
             promptText: prompt,
