@@ -37,6 +37,7 @@ hr {
 
 .card .card-body:hover .card-options {
     display: block;
+    transition: opacity 0.2s ease-in-out;
 }
 
 /* class for the input text field with no borders; this makes it easy to integrate in an UI and the user can edit it with a simple click on it */

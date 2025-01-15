@@ -14,7 +14,7 @@
             </div>
         </div>
 
-        <div class="col-sm-12 col-md-9 col-xl-10 d-flex flex-row gap-3">
+        <div class="col-sm-12 col-md-9 col-xl-10 d-flex flex-row gap-5">
             <!-- the PageSection elements all need the v-once directive! -->
             <!-- this is important to not cause any re-renders of the object when creating or updating the pageSection ref value. -->
             <!-- otherwise this could interrupt the user flow, e.g. by losing the input focus while typing. -->
@@ -59,9 +59,7 @@
                 <p>Unknown section type - cannot render.</p>
             </div>
 
-            <div class="d-flex flex-column align-items-center justify-content-center">
-                <PageSectionThreadButton :pageSection="pageSection" />
-            </div>
+            <PageSectionThreadButton :pageSection="pageSection" />
         </div>
     </div>
 </template>
@@ -140,7 +138,7 @@
     });
     const pageSectionTooltip = computed(() => {
         if (props.pageSection.pageSectionText) {
-            return 'Text - can be used to write notes';
+            return 'Text - can be used to write documention';
         }
 
         if (props.pageSection.aiPrompt) {
@@ -167,11 +165,6 @@
 
     .page-section:hover > div > .section-options {
         opacity: 1.0 !important;
-        transition: 'opacity' 0.5s 'ease-in-out';
-    }
-
-    .page-section:hover > div > .section-options {
-        opacity: 1.0 !important;
-        transition: 'opacity' 0.5s 'ease-in-out';
+        transition: opacity 0.2s ease-in-out;
     }
 </style>

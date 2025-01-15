@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref, watch } from 'vue';
-import { fetchCreateThreadPrompt, fetchCreateThreadPromptItem, fetchDeleteThreadItem } from '@/stores/fetch/ThreadFetcher';
+import { fetchCreateThread, fetchCreateThreadPrompt, fetchCreateThreadCommentItem, fetchCreateThreadPromptItem, fetchDeleteThreadItem } from '@/stores/fetch/ThreadFetcher';
 import { usePageSectionStore } from '@/stores/PageSectionStore';
 
 export const useThreadStore = defineStore('thread', () => {
@@ -25,6 +25,23 @@ export const useThreadStore = defineStore('thread', () => {
         }
     }, { deep: true});
 
+    const createThreadFromPageSection = (pageSection) => {
+        return new Promise((resolve) => {
+            if (isCreatingThread.value) {
+                console.error("Already creating thread");
+                return;
+            }
+
+            isCreatingThread.value = true;
+            fetchCreateThread(pageSection.id).then((thread) => {
+                selectedThread.value = thread;
+                isCreatingThread.value = false;
+
+                resolve(thread);
+            }).catch(() => isCreatingThread.value = false);
+        });
+    };
+
     const createThreadFromPageSectionAIPrompt = (pageSection) => {
         return new Promise((resolve) => {
             if (isCreatingThread.value) {
@@ -38,7 +55,22 @@ export const useThreadStore = defineStore('thread', () => {
                 isCreatingThread.value = false;
 
                 resolve(thread);
-            });
+            }).catch(() => isCreatingThread.value = false);
+        });
+    }
+
+    const createThreadCommentItem = (threadId, comment) => {
+        return new Promise((resolve) => {
+            fetchCreateThreadCommentItem(threadId, comment).then((threadCommentItem) => {
+                // Add the comment item to the thread item; this is a bit of a hack to work with serialisation and circular references
+                var threadItem = threadCommentItem.threadItem;
+                threadItem.threadItemComment = threadCommentItem;
+
+                selectedThread.value.threadItems.push(threadItem);
+                isCreatingThread.value = false;
+
+                resolve(threadCommentItem);
+            }).catch(() => isCreatingThread.value = false);
         });
     }
 
@@ -53,7 +85,7 @@ export const useThreadStore = defineStore('thread', () => {
                 isCreatingThread.value = false;
 
                 resolve(threadPromptItem);
-            });
+            }).catch(() => isCreatingThread.value = false);
         });
     }
 
@@ -77,7 +109,9 @@ export const useThreadStore = defineStore('thread', () => {
     return {
         isCreatingThread,
         selectedThread,
+        createThreadFromPageSection,
         createThreadFromPageSectionAIPrompt,
+        createThreadCommentItem,
         createThreadPromptItem,
         deleteThreadItem,
     }

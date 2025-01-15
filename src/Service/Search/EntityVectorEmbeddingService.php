@@ -48,7 +48,7 @@ final class EntityVectorEmbeddingService
      */
     public function searchEmbeddedEntity(User $user, EntityVectorEmbeddingInterface $entity, string $search, float $scoreTreshold, ?Filter $filter = null): \Generator
     {
-        return $this->search($user, $search, $filter ?? $entity->getFilter(), $scoreTreshold);
+        return $this->search($user, $search, $filter ?? $entity->buildVectorDatabaseFilter(), $scoreTreshold);
     }
 
     /**

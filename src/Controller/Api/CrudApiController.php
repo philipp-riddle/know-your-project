@@ -97,7 +97,7 @@ abstract class CrudApiController extends ApiController
      * 
      * @return JsonResponse JSON response containing the updated or created entity
      */
-    protected function crudUpdateOrCreate(UserPermissionInterface|CrudEntityInterface|null $userPermissionInterface, Request $request, ?callable $onProcessEntity = null, ?callable $afterProcessEntity = null, ?string $formClass = null): JsonResponse
+    protected function crudUpdateOrCreate(UserPermissionInterface|CrudEntityInterface|null $userPermissionInterface, Request $request, ?callable $onProcessEntity = null, ?callable $afterProcessEntity = null, ?string $formClass = null, array $normalizeCallbacks = []): JsonResponse
     {
         if (null !== $userPermissionInterface) {
             $this->checkUserAccess($userPermissionInterface);
@@ -192,7 +192,7 @@ abstract class CrudApiController extends ApiController
         // additional data to serialize and return in the JSON response.
         $additionalData = $this->getAdditionalDataToSerialize($entity, httpMethod: $request->getMethod());
 
-        return $this->jsonSerialize($entity, additionalData: $additionalData);
+        return $this->jsonSerialize($entity, additionalData: $additionalData, normalizeCallbacks: $normalizeCallbacks);
     }
 
     /**

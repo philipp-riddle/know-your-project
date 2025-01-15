@@ -4,6 +4,7 @@
         v-tooltip="tooltip"
         :editor="editor"
         :disabled="disabled"
+        :key="editorRandomKey" 
     />
 </template>
 
@@ -13,7 +14,7 @@
     import StarterKit from '@tiptap/starter-kit';
     import Link from '@tiptap/extension-link';
     import BulletList from '@tiptap/extension-bullet-list'
-    import { computed } from 'vue';
+    import { computed, watch, ref } from 'vue';
     import { usePageSectionStore } from '@/stores/PageSectionStore.js';
 
     const emit = defineEmits(['onChange', 'onFocus']);
@@ -50,6 +51,7 @@
     });
     const pageSectionStore = usePageSectionStore();
     const currentText = computed(() => props.text);
+    const editorRandomKey = ref(Math.random()); // this is to force the editor to re-render when the text changes; otherwise it is set into stone :/
 
     const editor = useEditor({
         content: currentText.value,
@@ -73,6 +75,24 @@
         onFocus: ({ editor }) => {
             emit('onFocus');
         },
+    });
+
+    watch (() => props.text, (newValue) => {
+        if (newValue === '') {
+            // if any component outside of this text editor sets the text to an empty string, we need to reset the editor and re-render it by setting a new key
+            editor.value?.commands.setContent(newValue);
+            editorRandomKey.value = Math.random();
+
+            if (props.focus) {
+                editor.value?.commands.focus();
+            }
+        }
+    });
+
+    watch (() => props.focus, (newValue) => {
+        if (newValue) {
+            editor.value?.commands.focus();
+        }
     });
 </script>
 

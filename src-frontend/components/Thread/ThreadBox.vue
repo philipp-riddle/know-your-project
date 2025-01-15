@@ -5,7 +5,8 @@
     >
         <div class="card-header">
             <div class="d-flex justify-content-between align-items-center">
-                <p class="m-0 bold">THREAD</p>
+                <p v-if="isAIThread"class="m-0 bold">ASSISTANT THREAD</p>
+                <p v-else class="m-0 bold">THREAD</p>
                 <button
                     v-tooltip="'Close thread'"
                     class="btn btn-sm m-0 p-0"
@@ -16,11 +17,14 @@
         </div>
         <div class="card-body thread-messages">
             <div class="d-flex flex-column gap-2">
-                <ThreadItem
+                <ThreadItem v-if="threadStore.selectedThread.threadItems.length > 0"
                     v-for="threadItem in threadStore.selectedThread.threadItems"
                     :key="threadItem.id"
                     :threadItem="threadItem"
                 />
+                <div v-else>
+                    <p class="text-muted"><i>No messages in this thread yet.</i></p>
+                </div>
             </div>
         </div>
         <div class="card-footer p-3 pb-4 d-flex flex-row gap-3 align-items-center justify-content-between">
@@ -40,7 +44,7 @@
                 <div v-if="isCreatingItem" class="spinner-border spinner-border-sm" role="status">
                     <span class="visually-hidden">Loading...</span>
                 </div>
-                <font-awesome-icon v-else :icon="['fas', 'paper-plane']" />
+                <font-awesome-icon v-else :icon="['fas', isAIThread ? 'microchip' : 'paper-plane']" v-tooltip="'Prompt and refine'" />
             </button>
         </div>
     </div>
@@ -60,15 +64,29 @@
         return !isCreatingItem.value && currentText.value.trim() !== '' && currentText.value.trim() !== '<p></p>';
     });
 
+    const isAIThread = computed(() => {
+        return threadStore.selectedThread?.pageSectionContext.pageSection.aiPrompt !== null;
+    });
+
     const sendThreadMessage = () => {
         if (!canSend.value || isCreatingItem.value) {
             return;
         }
 
         isCreatingItem.value = true;
-        threadStore.createThreadPromptItem(threadStore.selectedThread.id, currentText.value).then(() => {
-            currentText.value = '';
-            isCreatingItem.value = false;
-        });
+
+        if (isAIThread.value) {
+            // if it is an AI thread, we create a prompt for the AI to respond to
+            threadStore.createThreadPromptItem(threadStore.selectedThread.id, currentText.value).then(() => {
+                currentText.value = '';
+                isCreatingItem.value = false;
+            });
+        } else {
+            // if it is a regular thread for any other page section, we create a comment
+            threadStore.createThreadCommentItem(threadStore.selectedThread.id, currentText.value).then(() => {
+                currentText.value = '';
+                isCreatingItem.value = false;
+            });
+        }
     };
 </script>

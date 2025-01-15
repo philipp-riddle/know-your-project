@@ -1,7 +1,13 @@
 <template>
     <div class="d-flex flex-row gap-3 align-items-start justify-content-between thread-item">
         <div class="col-sm-10">
-            <ThreadItemPrompt v-if="threadItem.itemPrompt" :threadItem="threadItem" />
+            <ThreadItemComment
+                v-if="threadItem.threadItemComment" :threadItem="threadItem"
+            />
+            <ThreadItemPrompt
+                v-else-if="threadItem.itemPrompt"
+                :threadItem="threadItem"
+            />
             <div v-else>
                 <p class="text-danger">Cannot display thread item.</p>
             </div>
@@ -16,6 +22,7 @@
 
 <script setup>
     import { ref } from 'vue';
+    import ThreadItemComment from '@/components/Thread/ThreadItemComment.vue';
     import ThreadItemPrompt from '@/components/Thread/ThreadItemPrompt.vue';
     import { useThreadStore } from '@/stores/ThreadStore.js';
 

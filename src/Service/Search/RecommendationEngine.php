@@ -38,7 +38,7 @@ final class RecommendationEngine
         // first off we must exclude the entity itself from the search results we want to recommend
         $excludeEntity ??= $baseEntity;
         $excludeEntityShortName = \strtolower((new \ReflectionClass($excludeEntity))->getShortName());
-        $filter = $queryEntity->getFilter();
+        $filter = $queryEntity->buildVectorDatabaseFilter();
         $filter->addMustNot(new MatchInt($excludeEntityShortName, $excludeEntity->getId()));
 
         if ($baseEntity instanceof CachedEntityVectorEmbedding && null !== $cachedEmbedding = $baseEntity->getCachedEmbedding()) {

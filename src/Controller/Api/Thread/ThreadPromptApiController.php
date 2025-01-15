@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Api\Embedding;
+namespace App\Controller\Api\Thread;
 
 use App\Controller\Api\CrudApiController;
 use App\Entity\PageSectionAIPrompt;

@@ -36,5 +36,5 @@ interface EntityVectorEmbeddingInterface
     /**
      * Returns the filter instance for the vector database to search for this entity.
      */
-    public function getFilter(): Filter;
+    public function buildVectorDatabaseFilter(): Filter;
 }

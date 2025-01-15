@@ -1,17 +1,12 @@
 <?php
 
-namespace App\Controller\Api\Embedding;
+namespace App\Controller\Api\Thread;
 
 use App\Controller\Api\CrudApiController;
-use App\Entity\Thread;
 use App\Entity\ThreadItem;
-use App\Entity\ThreadItemPrompt;
-use App\Form\ThreadItemPromptForm;
 use App\Service\Helper\ApiControllerHelperService;
 use App\Service\Search\SearchEngine;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/api/thread/item')]

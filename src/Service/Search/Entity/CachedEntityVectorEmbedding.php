@@ -29,9 +29,9 @@ abstract class CachedEntityVectorEmbedding implements EntityVectorEmbeddingInter
 
     /**
      * By default this filter returns all entities with the same ID as this entity.
-     * Child classes can override this method to add more filters; make sure to call and use parent::getFilter() in the child class.
+     * Child classes can override this method to add more filters; make sure to call and use parent::buildVectorDatabaseFilter() in the child class.
      */
-    public function getFilter(): Filter
+    public function buildVectorDatabaseFilter(): Filter
     {
         $shortName = \strtolower((new \ReflectionClass($this))->getShortName());
 

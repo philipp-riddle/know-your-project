@@ -29,6 +29,13 @@ class ThreadItem implements UserPermissionInterface, CrudEntityInterface
     #[ORM\OneToOne(mappedBy: 'threadItem', cascade: ['persist', 'remove'])]
     private ?ThreadItemPrompt $itemPrompt = null;
 
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
+
+    #[ORM\OneToOne(mappedBy: 'threadItem', cascade: ['persist', 'remove'])]
+    private ?ThreadItemComment $threadItemComment = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -96,6 +103,35 @@ class ThreadItem implements UserPermissionInterface, CrudEntityInterface
     {
         $this->createdAt ??= new \DateTime();
         $this->updatedAt = new \DateTime();
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    public function getThreadItemComment(): ?ThreadItemComment
+    {
+        return $this->threadItemComment;
+    }
+
+    public function setThreadItemComment(ThreadItemComment $threadItemComment): static
+    {
+        // set the owning side of the relation if necessary
+        if ($threadItemComment->getThreadItem() !== $this) {
+            $threadItemComment->setThreadItem($this);
+        }
+
+        $this->threadItemComment = $threadItemComment;
 
         return $this;
     }
