@@ -1,16 +1,21 @@
 <template>
-    <div class="page-section row" :page-section="pageSection.id">
+    <div class="page-section-container row" :page-section="pageSection.id">
         <div class="col-sm-12 col-md-9 col-xl-2">
             <div class="section-options d-flex flex-row gap-3 justify-content-between" v-if="pageSection.id != null">
                 <div class="d-flex flex-row gap-3 align-items-center">
                     <PageSectionInfo :pageSection="pageSection" />
+                    <button class="btn btn-light-gray p-0 m-0" v-tooltip="'Delete'" @click="onPageSectionDeleteClick">
+                        <font-awesome-icon class="" :icon="['fas', 'trash']" />
+                    </button>                    
+                </div>
+                <div class="d-flex flex-row gap-4 align-items-center">
                     <button class="btn p-0 m-0" v-tooltip="'Drag to rearrange order'">
                         <span class="black"><font-awesome-icon :icon="['fas', 'grip-vertical']" /></span>
                     </button>
+                    <span class="btn btn-lg m-0 p-0" v-if="pageSectionIcon" v-tooltip="pageSectionTooltip">
+                        <font-awesome-icon :icon="['fas', pageSectionIcon]" />
+                    </span>
                 </div>
-                <span class="btn btn-lg m-0 p-0" v-if="pageSectionIcon" v-tooltip="pageSectionTooltip">
-                    <font-awesome-icon :icon="['fas', pageSectionIcon]" />
-                </span>
             </div>
         </div>
 
@@ -76,6 +81,7 @@
     import PageSectionInfo from '@/components/Page/PageSection/PageSectionInfo.vue';
     import PageSectionThreadButton from '@/components/Page/PageSection/PageSectionThreadButton.vue';
     import { usePageSectionAccessibilityHelper } from '@/composables/PageSectionAccessibilityHelper.js';
+    import { usePageSectionStore } from '@/stores/PageSectionStore.js';
     import { computed, ref, onMounted } from 'vue';
     import { useDebounceFn } from '@vueuse/core';
 
@@ -97,6 +103,7 @@
             required: true,
         },
     });
+    const pageSectionStore = usePageSectionStore();
     const pageSection = ref(props.pageSection);
     const debouncedPageSectionSubmit = useDebounceFn((section, sectionItem) => props.onPageSectionSubmit(section, sectionItem), 500);
 
@@ -118,6 +125,10 @@
         });
     };
 
+    const onPageSectionDeleteClick = async () => {
+        await pageSectionStore.deleteSection(props.pageSection);
+    };
+
     const accessibilityHelper = usePageSectionAccessibilityHelper();
     const pageSectionIcon = computed(() => {
         return accessibilityHelper.getIcon(pageSection.value);
@@ -133,7 +144,7 @@
         display: none;
     }
 
-    .page-section:hover > div > .section-options {
+    .page-section-container:hover > div > .section-options {
         opacity: 1.0 !important;
         transition: opacity 0.2s ease-in-out;
     }

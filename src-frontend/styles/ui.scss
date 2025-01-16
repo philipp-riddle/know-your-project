@@ -8,6 +8,17 @@
     &:disabled {
         border-width: 0px !important;
     }
+
+    &.btn-light-gray {
+        color: $light-gray !important;
+        transition: color 0.3s ease-in-out;
+        background-color: transparent !important;
+
+        &:hover {
+            color: $dark-gray !important;
+            transition: color 0.3s ease-in-out;
+        }
+    }
 }
 
 /* === DIVIDERS ============================================================= */
@@ -200,5 +211,52 @@ modal-backdrop.show {
         overflow-y: scroll;
         // white-space: nowrap;
         
+    }
+}
+
+/* === PAGE STYLEs ============================================================= */
+
+.page-content {
+    max-height: 80vh;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    white-space: nowrap;
+}
+
+/* === IMAGE CONTAINER WITH OVERLAY ============================================================= */
+
+.img-container {
+    max-height: 40% !important;
+    position: relative;
+    border-radius: 2rem !important;
+
+    & > img {
+        max-height: 25rem;
+        /*  keep aspect ratio */
+        object-fit: contain;
+        border-radius: 2rem !important;
+    
+        &:hover {
+            cursor: pointer;
+        }
+    }
+    
+    & > .overlay {
+        position: absolute;
+        top: .25rem;
+        left: 0;
+        min-height: 10%;
+        max-height: 30%;
+        z-index: 5;
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white;
+        padding: 1rem;
+        opacity: 0.0;
+        border-radius: 2.5rem !important;
+    }
+
+    &:hover .overlay {
+        opacity: 1.0;
+        transition: opacity 0.3s ease-in-out;
     }
 }

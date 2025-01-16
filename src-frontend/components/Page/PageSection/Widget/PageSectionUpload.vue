@@ -1,10 +1,15 @@
 <template>
-    <div v-if="isImage" class="img-container d-flex flex-column gap-2">
+    <div v-if="isImage" class="img-container d-flex flex-column">
+        <div class="overlay d-flex flex-row justify-content-between align-items-center w-100">
+            <p class="m-0 white">{{ pageSection.pageSectionUpload.file.name }}</p>
+            <a class="btn btn-sm btn-light m-0" v-tooltip="'Download file'" :href="'/api/file/download/' + pageSection.pageSectionUpload.file.id">
+                <font-awesome-icon :icon="['fas', 'download']" />
+            </a>
+        </div>
         <img
             :src="pageSection.pageSectionUpload.file.publicFilePath"
             :alt="pageSection.pageSectionUpload.file.name"
         />
-        <p class="m-0 text-muted">{{ pageSection.pageSectionUpload.file.name }}</p>
     </div>
     <div v-else class="card section-card section-card-small w-100">
         <div class="card-body p-4 d-flex flex-row justify-content-between align-items-center">
@@ -38,20 +43,3 @@
         return props.pageSection.pageSectionUpload.file.mimeType.startsWith('image');
     });
 </script>
-
-<style scoped>
-    .img-container {
-        max-height: 40%;
-    }
-
-    img {
-        max-height: 25rem;
-        /*  keep aspect ratio */
-        object-fit: contain;
-        border-radius: 2rem;
-    }
-
-    img:hover {
-        cursor: pointer;
-    }
-</style>

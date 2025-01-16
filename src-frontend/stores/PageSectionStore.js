@@ -86,17 +86,19 @@ export const usePageSectionStore = defineStore('pageSection', () => {
     }
 
     async function deleteSection(pageSection) {
-        const deletedSection = await fetchDeletePageSection(pageSection.id);
-
-        if (!deletedSection) {
-            console.error('Failed to delete section with id:', pageSection.id);
-        }
-
+        // first, filter the section out of the displayed sections; this makes it appear faster.
         displayedPageSections.value = displayedPageSections.value.filter((s) => s.id !== pageSection.id);
 
         // if the deleted section had a thread and it was currently selected, deselect it as it is now deleted as well
         if (pageSection.threadContext?.thread.id === threadStore.selectedThread?.id) {
             threadStore.selectedThread = null;
+        }
+
+        // afterwards delete it from the server
+        const deletedSection = await fetchDeletePageSection(pageSection.id);
+
+        if (!deletedSection) {
+            console.error('Failed to delete section with id:', pageSection.id);
         }
 
         return deletedSection;

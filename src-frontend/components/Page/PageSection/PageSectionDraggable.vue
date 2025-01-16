@@ -130,13 +130,6 @@
 <style lang="sass" scoped>
 	@import '@/styles/colors.scss';
 
-	.list-area {
-		max-height: 80vh;
-        overflow-x: hidden;
-        overflow-y: scroll;
-        white-space: nowrap;
-	}
-
 	.card {
 		border-width: 2px;
 	}
