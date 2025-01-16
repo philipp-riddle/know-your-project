@@ -68,11 +68,9 @@
                 },
             };
         } else if (type == 'upload') {
-            defaultObject = {
-                pageSectionUpload: {
-                    files: [],
-                },
-            };
+            openFileExplorerForUpload();
+
+            return;
         } else if (type == 'embeddedPage') {
             defaultObject = {
                 embeddedPage: {
@@ -83,12 +81,27 @@
             defaultObject = {
                 aiPrompt: {
                     prompt: {
-                        promptText: '',
+                    promptText: '',
                     },
                 },
             };
         }
 
         pageSectionStore.createSection(pageTabStore.selectedTab.id, defaultObject);
+    };
+
+    const openFileExplorerForUpload = () => {
+        let input = document.createElement('input');
+        // allow multiple files to be uploaded
+        input.multiple = true;
+        input.type = 'file';
+        input.onchange = () => {
+            let files = input.files?? null;
+
+            if (files) {
+                pageSectionStore.uploadSection(pageTabStore.selectedTab.id, files);
+            }
+        };
+        input.click();
     };
 </script>

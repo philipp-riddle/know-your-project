@@ -1,49 +1,25 @@
 <template>
-    <div class="card">
-        <div
-            class="card-body"
-            @dragover="isDraggingOver = true"
-            @dragleave="isDraggingOver = false"
-            @dragstop="drop"
-        >
-            <div v-if="isDraggingOver">
-                <p>Release to drop files here.</p>
-            </div>
-            <div v-else>
-                <input
-                    type="file"
-                    multiple
-                    name="file"
-                    id="fileInput"
-                    class="hidden-input"
-                    @change="onUploadChange"
-                    ref="file"
-                    accept=".pdf,.jpg,.jpeg,.png"
-                />
-
-                <label for="fileInput" class="file-label d-flex flex-column justify-content-center align-items-center">
-                    <div v-if="isDraggingOver">
-                        Release to drop files here.
-                    </div>
-                    <div v-else-if="files.length == 0">
-                        Click here to upload
-                    </div>
-                </label>
-            </div>
-            
-
-            <div v-if="files.length > 0" class="row">
-                <div v-for="file in files" :key="file.name" class="col-sm-12 col-md-6 col-xl-4 ps-2 pe-2">
-                    {{ file.name }}
-                </div>
+    <div v-if="isImage" class="img-container d-flex flex-column gap-2">
+        <img
+            :src="pageSection.pageSectionUpload.file.publicFilePath"
+            :alt="pageSection.pageSectionUpload.file.name"
+        />
+        <p class="m-0 text-muted">{{ pageSection.pageSectionUpload.file.name }}</p>
+    </div>
+    <div v-else class="card section-card section-card-small w-100">
+        <div class="card-body p-4 d-flex flex-row justify-content-between align-items-center">
+            <p class="m-0">{{ pageSection.pageSectionUpload.file.name }}</p>
+            <div>
+                <a class="btn m-0 p-0" v-tooltip="'Download file'" :href="'/api/file/download/' + pageSection.pageSectionUpload.file.id">
+                    <font-awesome-icon :icon="['fas', 'download']" />
+                </a>
             </div>
         </div>
-  </div>
+    </div>
 </template>
 
 <script setup>
-    import { ref, onMounted, computed } from 'vue';
-    import { useDropZone } from '@vueuse/core';
+    import { computed, ref } from 'vue';
     import { usePageSectionStore } from '@/stores/PageSectionStore.js';
 
     const props = defineProps({
@@ -57,35 +33,25 @@
         },
     });
     const pageSectionStore = usePageSectionStore();
-    const urlInput = ref(null);
-    const isValidUrl = ref(null);
-    const isDraggingOver = ref(false);
-    const files = ref([]);
-    
 
-    const onUploadChange = (event) => {
-        const file = event.target.files[0];
-
-        files.value.push(file);
-        isDraggingOver.value = false;
-        props.onPageSectionSubmit(file);
-    };
-    const drop = (event) => {
-        console.log(drop);
-        event.preventDefault();
-        // isDragging.value = false;
-        const files = event.dataTransfer.files;
-    };
-
+    const isImage = computed(() => {
+        return props.pageSection.pageSectionUpload.file.mimeType.startsWith('image');
+    });
 </script>
 
 <style scoped>
-    input[type='file'] {
-        color: rgba(0, 0, 0, 0);
-        opacity: 0;
-        overflow: hidden;
-        position: absolute;
-        width: 1px;
-        height: 1px;
+    .img-container {
+        max-height: 40%;
+    }
+
+    img {
+        max-height: 25rem;
+        /*  keep aspect ratio */
+        object-fit: contain;
+        border-radius: 2rem;
+    }
+
+    img:hover {
+        cursor: pointer;
     }
 </style>

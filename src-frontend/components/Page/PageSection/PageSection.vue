@@ -75,6 +75,7 @@
 
     import PageSectionInfo from '@/components/Page/PageSection/PageSectionInfo.vue';
     import PageSectionThreadButton from '@/components/Page/PageSection/PageSectionThreadButton.vue';
+    import { usePageSectionAccessibilityHelper } from '@/composables/PageSectionAccessibilityHelper.js';
     import { computed, ref, onMounted } from 'vue';
     import { useDebounceFn } from '@vueuse/core';
 
@@ -117,43 +118,12 @@
         });
     };
 
+    const accessibilityHelper = usePageSectionAccessibilityHelper();
     const pageSectionIcon = computed(() => {
-        if (props.pageSection.pageSectionText) {
-            return 'font';
-        }
-
-        if (props.pageSection.aiPrompt) {
-            return 'microchip';
-        }
-
-        if (props.pageSection.embeddedPage) {
-            return 'arrow-up-right-from-square';
-        }
-
-        if (props.pageSection.pageSectionChecklist) {
-            return 'list-check';
-        }
-
-        return null;
+        return accessibilityHelper.getIcon(pageSection.value);
     });
     const pageSectionTooltip = computed(() => {
-        if (props.pageSection.pageSectionText) {
-            return 'Text - can be used to write documention';
-        }
-
-        if (props.pageSection.aiPrompt) {
-            return 'Ask assistant - can be used to generate text based on a prompt';
-        }
-
-        if (props.pageSection.embeddedPage) {
-            return 'Embedded Page - can be used to create connections in between pages and enrich context';
-        }
-
-        if (props.pageSection.pageSectionChecklist) {
-            return 'Checklist - can be used to track progress';
-        }
-
-        return null;
+        return accessibilityHelper.getTooltip(pageSection.value);
     });
 </script>
 

@@ -18,14 +18,9 @@ class PageSectionUpload
     #[ORM\JoinColumn(nullable: false)]
     private ?PageSection $pageSection = null;
 
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $fileType = null;
-
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $fileName = null;
-
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $filePath = null;
+    #[ORM\OneToOne(inversedBy: 'pageSectionUpload', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?File $file = null;
 
     public function getId(): ?int
     {
@@ -44,38 +39,14 @@ class PageSectionUpload
         return $this;
     }
 
-    public function getFileType(): ?string
+    public function getFile(): ?File
     {
-        return $this->fileType;
+        return $this->file;
     }
 
-    public function setFileType(string $fileType): static
+    public function setFile(File $file): static
     {
-        $this->fileType = $fileType;
-
-        return $this;
-    }
-
-    public function getFileName(): ?string
-    {
-        return $this->fileName;
-    }
-
-    public function setFileName(string $fileName): static
-    {
-        $this->fileName = $fileName;
-
-        return $this;
-    }
-
-    public function getFilePath(): ?string
-    {
-        return $this->filePath;
-    }
-
-    public function setFilePath(string $filePath): static
-    {
-        $this->filePath = $filePath;
+        $this->file = $file;
 
         return $this;
     }

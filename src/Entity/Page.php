@@ -6,6 +6,7 @@ use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\CrudEntityValidationInterface;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Repository\PageRepository;
+use App\Service\File\Interface\EntityMultipleFileInterface;
 use App\Service\Search\Entity\CachedEntityVectorEmbedding;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -14,7 +15,12 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PageRepository::class)]
 #[ORM\HasLifecycleCallbacks]
-class Page extends CachedEntityVectorEmbedding implements UserPermissionInterface, CrudEntityInterface, CrudEntityValidationInterface
+class Page extends CachedEntityVectorEmbedding
+implements
+    UserPermissionInterface,
+    CrudEntityInterface,
+    CrudEntityValidationInterface,
+    EntityMultipleFileInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -229,5 +235,24 @@ class Page extends CachedEntityVectorEmbedding implements UserPermissionInterfac
         }
 
         return $attributes;
+    }
+
+    /**
+     * Returns all files for the associated page.
+     * This includes all files from all page sections, i.e. the uploaded files.
+     */
+    public function getFiles(): array
+    {
+        $files = [];
+
+        foreach ($this->getPageTabs() as $pageTab) {
+            foreach ($pageTab->getPageSections() as $pageSection) {
+                if (null !== $pageSectionFile = $pageSection->getPageSectionUpload()?->getFile()) {
+                    $files[] = $pageSectionFile;
+                }
+            }
+        }
+
+        return $files;
     }
 }

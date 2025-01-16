@@ -40,10 +40,35 @@ export const usePageSectionStore = defineStore('pageSection', () => {
         });
     }
 
-    async function uploadSection(pageTabId, file) {
-        const newSection = await fetchUploadPageSection(pageTabId, file);
+    /**
+     * Uploads one or multiple files to create new page sections.
+     * 
+     * @param {integer} pageTabId 
+     * @param {File} files files to upload; if multiple files are uploaded multiple page sections are created as well
+     * @returns {Promise<PageSection[]>} created page sections
+     */
+    async function uploadSection(pageTabId, files) {
+        return new Promise((resolve) => {
+            isCreatingPageSection.value = true;
 
-        return newSection;
+            fetchUploadPageSection(pageTabId, files).then((createdSections) => {
+                for (var i = 0; i < createdSections.length; i++) {
+                    const newSection = createdSections[i];
+
+                    if (newSection.pageTab.page.id === pageStore.selectedPage.id) {
+                        displayedPageSections.value.push(newSection);
+                    }
+    
+                    isCreatingPageSection.value = false;
+                }
+
+                resolve(createdSections);
+            }).catch((error) => {
+                isCreatingPageSection.value = false;
+                console.error('Failed to upload section:', error);
+                resolve(null);
+            });
+        });
     }
 
     async function updateSection(pageSection) {

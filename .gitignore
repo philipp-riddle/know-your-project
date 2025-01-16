@@ -25,3 +25,10 @@ yarn-error.log
 .phpunit.result.cache
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
+
+### the following lines are there to make sure the directories always exist but the files in it are not tracked as they are user generated
+user/uploads/*
+!user/uploads/.gitignore
+
+public/user/uploads/*
+!public/user/uploads/.gitignore

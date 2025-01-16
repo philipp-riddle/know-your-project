@@ -123,9 +123,14 @@ export async function fetchChangePageSectionOrder(pageTabId, sectionIds) {
     return resp.data;
 }
 
-export async function fetchUploadPageSection(pageTabId, file) {
+export async function fetchUploadPageSection(pageTabId, files) {
     const formData = new FormData();
-    formData.append('file', file);
+
+    // Append each file to the form data; this is how you upload multiple files
+    for (let i = 0; i < files.length; i++) {
+        formData.append('files[]', files[i]);
+    }
+
     formData.append('pageTab', pageTabId);
 
     const resp = await axios.post(`${BasePageSectionService}/upload`, formData, {

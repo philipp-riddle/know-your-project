@@ -7,13 +7,20 @@ use App\Entity\Interface\CrudEntityValidationInterface;
 use App\Entity\Interface\OrderListItemInterface;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Repository\PageSectionRepository;
+use App\Service\File\Interface\EntityFileInterface;
 use App\Service\Search\Entity\CachedEntityVectorEmbedding;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 #[ORM\Entity(repositoryClass: PageSectionRepository::class)]
-class PageSection extends CachedEntityVectorEmbedding implements UserPermissionInterface, CrudEntityInterface, OrderListItemInterface, CrudEntityValidationInterface
+class PageSection extends CachedEntityVectorEmbedding
+implements
+    UserPermissionInterface,
+    CrudEntityInterface,
+    CrudEntityValidationInterface,
+    OrderListItemInterface,
+    EntityFileInterface
 {
     public const TYPE_COMMENT = 'comment';
     public const TYPE_CHECKLIST = 'checklist';
@@ -306,7 +313,7 @@ class PageSection extends CachedEntityVectorEmbedding implements UserPermissionI
 
             return \sprintf('<p>This page embeds the page %s (ID %s). Prioritize this information.</p>',  $embeddedPage->getPage()->getName(), $embeddedPage->getPage()->getId());
         } else if (null !== $upload = $this->getPageSectionUpload()) {
-            return $upload->getFilename();
+            return $upload->getFile()->getName();
         } else if (null !== $checklist = $this->getPageSectionChecklist()) {
             $text = \sprintf('<h2>Page section of type "checklist": %s</p>', $checklist->getName());
             $text .= '<ul>';
@@ -373,5 +380,10 @@ class PageSection extends CachedEntityVectorEmbedding implements UserPermissionI
         $this->threadContext = $threadContext;
 
         return $this;
+    }
+
+    public function getFile(): ?File
+    {
+        return $this->pageSectionUpload?->getFile();
     }
 }
