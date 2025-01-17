@@ -57,7 +57,7 @@ class PageSectionAIPrompt implements UserPermissionInterface
 
     public function hasUserAccess(User $user): bool
     {
-        return $this->pageSection->hasUserAccess($user, checkSubTypes: false) && ($this->pageContext?->hasUserAccess($user) ?? true);
+        return ($this->pageContext?->hasUserAccess($user) ?? true);
     }
 
     public function getPrompt(): ?Prompt

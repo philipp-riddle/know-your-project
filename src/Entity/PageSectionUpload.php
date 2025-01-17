@@ -2,12 +2,12 @@
 
 namespace App\Entity;
 
+use App\Entity\Interface\UserPermissionInterface;
 use App\Repository\PageSectionUploadRepository;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PageSectionUploadRepository::class)]
-class PageSectionUpload
+class PageSectionUpload implements UserPermissionInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -49,5 +49,10 @@ class PageSectionUpload
         $this->file = $file;
 
         return $this;
+    }
+
+    public function hasUserAccess(User $user): bool
+    {
+        return $this->file->hasUserAccess($user);
     }
 }

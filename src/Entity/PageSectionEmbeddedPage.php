@@ -56,7 +56,7 @@ class PageSectionEmbeddedPage implements UserPermissionInterface, CrudEntityInte
 
     public function hasUserAccess(User $user): bool
     {
-        return $this->pageSection->hasUserAccess($user, checkSubTypes: false) && ($this->page?->hasUserAccess($user) ?? true);
+        return ($this->page?->hasUserAccess($user) ?? true);
     }
 
     public function initialize(): static

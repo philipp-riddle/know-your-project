@@ -42,7 +42,7 @@
     });
 
     const onSummaryClickRefresh = () => {
-        props.onPageSectionSubmit({
+        props.onPageSectionSubmit(pageSection.value, {
             pageSectionSummary: {
                 prompt: {
                     promptText: ''

@@ -160,7 +160,6 @@ abstract class CrudApiController extends ApiController
             $entity = $onProcessEntity($entity, $entityForm);
         }
 
-
         // initialize the entity after the form and the processing has been applied - e.g. createdAt dates
         $entity->initialize();
         $this->checkUserAccess($entity); // check if the user has access to the entity after all fields have been initialized

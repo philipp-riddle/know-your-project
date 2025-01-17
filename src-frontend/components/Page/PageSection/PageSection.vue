@@ -1,5 +1,5 @@
 <template>
-    <div class="page-section-container row" :page-section="pageSection.id">
+    <div class="page-section page-section-container row" :page-section="pageSection.id">
         <div class="col-sm-12 col-md-9 col-xl-2">
             <div class="section-options d-flex flex-row gap-3 justify-content-between" v-if="pageSection.id != null">
                 <div class="d-flex flex-row gap-3 align-items-center">

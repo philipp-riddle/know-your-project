@@ -53,6 +53,6 @@ class PageSectionURL implements UserPermissionInterface
 
     public function hasUserAccess(User $user): bool
     {
-        return $this->pageSection->hasUserAccess($user, checkSubTypes: false);
+        return true;
     }
 }

@@ -142,7 +142,7 @@ class PageSectionApiController extends CrudApiController
                         $this->em->persist($item);
                     }
                 // edge case: empty page section summary
-                } else if ('' === @$requestContent['pageSectionSummary']['summary']) {
+                } else if ('' === @$requestContent['pageSectionSummary']['prompt']['promptText']) {
                     $pageSectionSummary = (new PageSectionSummary());
                     $pageSection->setPageSectionSummary($pageSectionSummary);
 

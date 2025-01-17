@@ -44,7 +44,7 @@ class PageSectionSummary implements UserPermissionInterface
 
     public function hasUserAccess(User $user): bool
     {
-        return $this->pageSection->hasUserAccess($user, checkSubTypes: false);
+        return $this->prompt->hasUserAccess($user);
     }
 
     public function getPrompt(): ?Prompt

@@ -89,7 +89,9 @@
         } else if (type == 'summary') {
             defaultObject = {
                 pageSectionSummary: {
-                    summary: '',
+                    prompt: {
+                        promptText: '',
+                    },
                 },
             };
         }
