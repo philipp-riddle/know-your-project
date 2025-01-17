@@ -39,14 +39,6 @@ class TaskApiController extends CrudApiController
     {
         return $this->jsonSerialize(
             $this->taskService->getTasks($this->getUser()->getSelectedProject(), $workflowStepType),
-            normalizeCallbacks: [
-                'pageTabs' => fn (Collection $pageTabs) => [$pageTabs[0] ?? []],
-                'pageSections' => function (Collection $pageSections) {
-                    // for the task serialisation we are only interested in the checklists to show the progress in the task list;
-                    // this decreases the payload size heavily.
-                    return \array_filter(\iterator_to_array($pageSections), fn(PageSection $pageSection) => $pageSection->getPageSectionChecklist() !== null);
-                },
-            ],
         );
     }
 

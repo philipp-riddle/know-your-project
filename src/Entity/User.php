@@ -2,7 +2,9 @@
 
 namespace App\Entity;
 
+use App\Entity\Interface\UserPermissionInterface;
 use App\Repository\UserRepository;
+use App\Serializer\Attribute\IgnoreWhenNested;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -14,7 +16,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface, UserPermissionInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -159,6 +161,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    #[IgnoreWhenNested]
     public function getSelectedProject(): ?Project
     {
         return $this->selectedProject;
@@ -174,6 +177,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return Collection|ProjectUser[]
      */
+    #[IgnoreWhenNested]
     public function getProjectUsers(): Collection
     {
         return $this->projectUsers;
@@ -199,5 +203,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         return $this;
+    }
+
+    public function hasUserAccess(User $user): bool
+    {
+        return $this->getId() === $user->getId();
     }
 }

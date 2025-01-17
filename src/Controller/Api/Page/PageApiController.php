@@ -55,26 +55,13 @@ class PageApiController extends CrudApiController
             $tags,
         );
 
-        return $this->jsonSerialize($projectPages, normalizeCallbacks: [
-            'pageTabs' => fn() => [], // do not serialize page tabs - this shrinkens the response payload size by a huge amount
-            'project' => fn() => $project->getId(), // same with the project; i.e. information we do not need here
-            'user' => fn(?User $user) => null === $user ? $user : [
-                'id' => $user->getId(),
-                'email' => $user->getEmail(),
-            ],
-        ]);
+        return $this->jsonSerialize($projectPages);
     }
 
     #[Route('/{page}', name: 'api_page_get', methods: ['GET'])]
     public function get(Page $page): JsonResponse
     {
-        return $this->crudGet($page, normalizeCallbacks: [
-            'project' => fn() => [],
-            'author' => fn(?User $user) => null === $user ? $user : [
-                'id' => $user->getId(),
-                'email' => $user->getEmail(),
-            ],
-        ]);
+        return $this->crudGet($page);
     }
 
     #[Route('/{page}', name: 'api_page_delete', methods: ['DELETE'])]

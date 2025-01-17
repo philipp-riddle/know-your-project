@@ -46,11 +46,6 @@ class ThreadItemCommentApiController extends CrudApiController
 
                 return $threadItemComment;
             },
-            // we need to drastically decrease the normalization depth for faster response
-            normalizeCallbacks: [
-                'pageTabs' => fn() => [],
-                'project' => fn() => [],
-            ],
         );
     }
 

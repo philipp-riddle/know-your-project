@@ -74,14 +74,12 @@ abstract class ApiControllerTestCase extends ApplicationTestCase
                 ->setName('Test Project')
                 ->setOwner($user)
                 ->setCreatedAt(new \DateTimeImmutable());
+            $user->setSelectedProject($selectedProject);
+            self::$em->persist($selectedProject);    
         } else {
-            // @todo throws an exception as the owner entity is new and not persisted according to the doctrine ORM
-            // $managedOwner = self::$em->getRepository(User::class)->find($selectedProject->getOwner()->getId());
-            // $selectedProject->setOwner($managedOwner);
+            // the passed $selectedProject could be unmanaged; thus, fetch a new managed instance from Doctrine.
+            $selectedProject = self::$em->getRepository(Project::class)->find($selectedProject->getId());
         }
-
-        $user->setSelectedProject($selectedProject);
-        self::$em->persist($selectedProject);
 
         if ($selectedProject->getProjectUser($user) === null) {
             $projectUser = (new ProjectUser())

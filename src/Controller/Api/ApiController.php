@@ -56,53 +56,25 @@ abstract class ApiController extends AbstractController
      * Serialises an object to JSON.
      * 
      * @param mixed $object The object(s) to serialise.
-     * @param array|null $normalizeCallbacks An array of normalisation callbacks; e.g. ['createdAt' => fn($date) => $date->format('Y-m-d H:i:s')]
      * 
      * @return JsonResponse The JSON response.
      */
-    protected function jsonSerialize(mixed $object, ?array $normalizeCallbacks = null, array $additionalData = []): JsonResponse
+    protected function jsonSerialize(mixed $object, array $additionalData = []): JsonResponse
     {
-        if (\is_array($object) || $object instanceof \Traversable) {
-            return $this->jsonSerializeMany($object, $normalizeCallbacks, $additionalData);
-        }
-    
-        return $this->json($this->normalize($object, $normalizeCallbacks, $additionalData));
+        return $this->createJsonResponse($this->normalize($object, $additionalData));
     }
 
-    protected function jsonSerializeMany(array|\Traversable $objects, ?array $normalizeCallbacks = null, array $additionalData = []): JsonResponse
-    {
-        $normalized = [];
-
-        foreach ($objects as $object) {
-            $normalized[] = $this->normalize($object, $normalizeCallbacks, $additionalData);
-        }
-
-        return $this->json($normalized);
-    }
-
-    protected function normalize(mixed $object, ?array $normalizeCallbacks = null, array $additionalData = []): array|null
+    protected function normalize(mixed $object, array $additionalData = [], int $maxDepth = 5): array|null
     {   
-        $normalizeCallbacks = [
-            ...$this->getDefaultNormalizeCallbacks(),
-            ...($normalizeCallbacks ?? []),
-        ];
-        $normalizedData = $this->normalizer->normalize($object, $normalizeCallbacks);
-
         // merge the normalized data with the additional data
         return [
-            ...$normalizedData,
+            ...$this->normalizer->normalize($this->getUser(), $object, maxDepth: $maxDepth),
             ...$additionalData,
         ];
     }
 
-    /**
-     * Returns the default normalisation callbacks for this controller.
-     * Child classes can override this method to add more default normalisation callbacks.
-     * 
-     * @return array The default normalisation callbacks.
-     */
-    protected function getDefaultNormalizeCallbacks(): array
+    protected function createJsonResponse($data): JsonResponse
     {
-        return [];
+        return new JsonResponse($data, 200);
     }
 }

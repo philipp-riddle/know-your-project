@@ -27,17 +27,8 @@ class Project extends CachedEntityVectorEmbedding implements UserPermissionInter
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\OneToMany(mappedBy: 'project', targetEntity: Task::class, orphanRemoval: true)]
-    private Collection $tasks;
-
     #[ORM\OneToMany(mappedBy: 'project', targetEntity: ProjectUser::class, orphanRemoval: true)]
     private Collection $projectUsers;
-
-    /**
-     * @var Collection<int, Page>
-     */
-    #[ORM\OneToMany(mappedBy: 'project', targetEntity: Page::class, orphanRemoval: true)]
-    private Collection $pages;
 
     /**
      * @var Collection<int, UserInvitation>
@@ -53,9 +44,7 @@ class Project extends CachedEntityVectorEmbedding implements UserPermissionInter
 
     public function __construct()
     {
-        $this->tasks = new ArrayCollection();
         $this->projectUsers = new ArrayCollection();
-        $this->pages = new ArrayCollection();
         $this->UserInvitations = new ArrayCollection();
         $this->tags = new ArrayCollection();
     }
@@ -97,36 +86,6 @@ class Project extends CachedEntityVectorEmbedding implements UserPermissionInter
     public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Task>
-     */
-    public function getTasks(): Collection
-    {
-        return $this->tasks;
-    }
-
-    public function addTask(Task $task): static
-    {
-        if (!$this->tasks->contains($task)) {
-            $this->tasks->add($task);
-            $task->setProject($this);
-        }
-
-        return $this;
-    }
-
-    public function removeTask(Task $task): static
-    {
-        if ($this->tasks->removeElement($task)) {
-            // set the owning side to null (unless already changed)
-            if ($task->getProject() === $this) {
-                $task->setProject(null);
-            }
-        }
 
         return $this;
     }
@@ -181,36 +140,6 @@ class Project extends CachedEntityVectorEmbedding implements UserPermissionInter
             // set the owning side to null (unless already changed)
             if ($projectUser->getProject() === $this) {
                 $projectUser->setProject(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Page>
-     */
-    public function getPages(): Collection
-    {
-        return $this->pages;
-    }
-
-    public function addPage(Page $page): static
-    {
-        if (!$this->pages->contains($page)) {
-            $this->pages->add($page);
-            $page->setProject($this);
-        }
-
-        return $this;
-    }
-
-    public function removePage(Page $page): static
-    {
-        if ($this->pages->removeElement($page)) {
-            // set the owning side to null (unless already changed)
-            if ($page->getProject() === $this) {
-                $page->setProject(null);
             }
         }
 

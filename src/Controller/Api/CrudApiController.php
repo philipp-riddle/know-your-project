@@ -46,15 +46,14 @@ abstract class CrudApiController extends ApiController
      * Standard CRUD operation to get an entity.
      * 
      * @param UserPermissionInterface $userPermissionInterface The entity to get; must implement UserPermissionInterface
-     * @param array|null $normalizeCallbacks An array of normalisation callbacks; e.g. ['createdAt' => fn($date) => $date->format('Y-m-d H:i:s')]
      * 
      * @return JsonResponse JSON response containing the entity
      */
-    protected function crudGet(UserPermissionInterface $userPermissionInterface, ?array $normalizeCallbacks = null): JsonResponse
+    protected function crudGet(UserPermissionInterface $userPermissionInterface): JsonResponse
     {
         $this->checkUserAccess($userPermissionInterface);
 
-        return $this->jsonSerialize($userPermissionInterface, $normalizeCallbacks);
+        return $this->jsonSerialize($userPermissionInterface);
     }
 
     /**
@@ -97,7 +96,7 @@ abstract class CrudApiController extends ApiController
      * 
      * @return JsonResponse JSON response containing the updated or created entity
      */
-    protected function crudUpdateOrCreate(UserPermissionInterface|CrudEntityInterface|null $userPermissionInterface, Request $request, ?callable $onProcessEntity = null, ?callable $afterProcessEntity = null, ?string $formClass = null, array $normalizeCallbacks = []): JsonResponse
+    protected function crudUpdateOrCreate(UserPermissionInterface|CrudEntityInterface|null $userPermissionInterface, Request $request, ?callable $onProcessEntity = null, ?callable $afterProcessEntity = null, ?string $formClass = null,): JsonResponse
     {
         if (null !== $userPermissionInterface) {
             $this->checkUserAccess($userPermissionInterface);
@@ -191,7 +190,7 @@ abstract class CrudApiController extends ApiController
         // additional data to serialize and return in the JSON response.
         $additionalData = $this->getAdditionalDataToSerialize($entity, httpMethod: $request->getMethod());
 
-        return $this->jsonSerialize($entity, additionalData: $additionalData, normalizeCallbacks: $normalizeCallbacks);
+        return $this->jsonSerialize($entity, additionalData: $additionalData);
     }
 
     /**

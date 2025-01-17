@@ -2,7 +2,8 @@
 
 namespace App\Service\Helper;
 
-use App\Serializer\NormalizeDepthHandler;
+use App\Entity\User;
+use App\Serializer\EntitySerializer;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
@@ -16,10 +17,22 @@ use Symfony\Component\Serializer\Serializer;
 final class DefaultNormalizer
 {
     public function __construct(
-        private NormalizeDepthHandler $normalizeDepthHandler,
+        private EntitySerializer $entitySerializer,
     ) { }
 
-    public function normalize($object, ?array $normalizeCallbacks = null): array
+    /**
+     * Normalizes data by using our own entity serializer.
+     */
+    public function normalize(User $currentUser, $object, ?int $maxDepth = null): array
+    {
+        return $this->entitySerializer->serialize($currentUser, $object, maxDepth: $maxDepth ?? 5);        
+    }
+
+    /**
+     * Normalizes data by using Symfony's normalizer.
+     * The object this function generates is unfiltered and  much larger in size than the one you get from the optimised entity serializer.
+     */
+    public function symfonyNormalize($object, array $normalizeCallbacks = [])
     {
         $maxDepthHandler = function (object $object): string {
             return $object->getId();
@@ -27,10 +40,6 @@ final class DefaultNormalizer
         $circularReferenceHandler = function (array|object|null $object): string {
             return $object->getId() ?? 'n/a';
         };
-        // $normalizeCallbacks = [
-        //     ...$normalizeCallbacks,
-        //     ...$this->normalizeDepthHandler->generateNormalizeCallbacks($object, maxDepth: 0), // by default we go 3 levels deep max in the object graph
-        // ];
 
         $normalizer = new ObjectNormalizer(defaultContext: [
             AbstractObjectNormalizer::ENABLE_MAX_DEPTH => true,

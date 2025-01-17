@@ -27,7 +27,7 @@ class Task extends CachedEntityVectorEmbedding implements OrderListItemInterface
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'tasks')]
+    #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?Project $project = null;
 

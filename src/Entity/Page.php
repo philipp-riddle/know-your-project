@@ -6,6 +6,7 @@ use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\CrudEntityValidationInterface;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Repository\PageRepository;
+use App\Serializer\Attribute\IgnoreWhenNested;
 use App\Service\File\Interface\EntityMultipleFileInterface;
 use App\Service\Search\Entity\CachedEntityVectorEmbedding;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -30,7 +31,7 @@ implements
     #[ORM\ManyToOne]
     private ?User $user = null;
 
-    #[ORM\ManyToOne(inversedBy: 'pages')]
+    #[ORM\ManyToOne]
     private ?Project $project = null;
 
     #[ORM\Column(length: 255)]
@@ -117,6 +118,7 @@ implements
     /**
      * @return Collection<int, PageTab>
      */
+    #[IgnoreWhenNested]
     public function getPageTabs(): Collection
     {
         return $this->pageTabs;
@@ -146,7 +148,7 @@ implements
 
     public function getTask(): ?Task
     {
-        return $this->task;
+        return $this->task ?? null;
     }
 
     public function setTask(?Task $task): static
@@ -194,8 +196,6 @@ implements
 
     public function hasUserAccess(User $user): bool
     {
-        $this->validate();
-
         return $this->user?->getId() === $user->getId() || $this->project?->hasUserAccess($user);
     }
 

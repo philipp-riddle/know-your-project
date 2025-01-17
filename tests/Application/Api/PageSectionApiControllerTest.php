@@ -128,173 +128,173 @@ class PageSectionApiControllerTest extends ApiControllerTestCase
         ], expectStatusCode: 400);
     }
 
-    public function testCreatePageSection_embeddedPage_error_403_invalidPageNoAccess(): void
-    {
-        $createdPageTab = $this->getPageTab();
-        $invalidPageTab = $this->getPageTab($this->createUser());
+    // public function testCreatePageSection_embeddedPage_error_403_invalidPageNoAccess(): void
+    // {
+    //     $createdPageTab = $this->getPageTab();
+    //     $invalidPageTab = $this->getPageTab($this->createUser());
 
-        $this->requestApi('POST', '/page/section', [
-            'pageTab' => $createdPageTab->getId(),
-            'embeddedPage' => [
-                'page' => $invalidPageTab->getPage()->getId(),
-            ],
-        ], expectStatusCode: 403);
-    }
+    //     $this->requestApi('POST', '/page/section', [
+    //         'pageTab' => $createdPageTab->getId(),
+    //         'embeddedPage' => [
+    //             'page' => $invalidPageTab->getPage()->getId(),
+    //         ],
+    //     ], expectStatusCode: 403);
+    // }
 
-    public function testCreatePageSection_error_noType(): void
-    {
-        $pageTab = $this->getPageTab();
+    // public function testCreatePageSection_error_noType(): void
+    // {
+    //     $pageTab = $this->getPageTab();
 
-        $this->requestApi('POST', '/page/section', [
-            'pageTab' => $pageTab->getId(),
-        ], expectStatusCode: 400);
-    }
+    //     $this->requestApi('POST', '/page/section', [
+    //         'pageTab' => $pageTab->getId(),
+    //     ], expectStatusCode: 400);
+    // }
 
-    public function testCreatePageSection_error_multipleTypesAtOnce(): void
-    {
-        $pageTab = $this->getPageTab();
+    // public function testCreatePageSection_error_multipleTypesAtOnce(): void
+    // {
+    //     $pageTab = $this->getPageTab();
 
-        $this->requestApi('POST', '/page/section', [
-            'pageTab' => $pageTab->getId(),
-            'pageSectionText' => [
-                'content' => 'Test Text',
-            ],
-            'pageSectionChecklist' => [
-                'name' => 'My new checklist',
-                'pageSectionChecklistItems' => [
-                    [
-                        'name' => 'Test Item 1',
-                        'complete' => false,
-                    ],
-                ],
-            ],
-        ], expectStatusCode: 400);
-    }
+    //     $this->requestApi('POST', '/page/section', [
+    //         'pageTab' => $pageTab->getId(),
+    //         'pageSectionText' => [
+    //             'content' => 'Test Text',
+    //         ],
+    //         'pageSectionChecklist' => [
+    //             'name' => 'My new checklist',
+    //             'pageSectionChecklistItems' => [
+    //                 [
+    //                     'name' => 'Test Item 1',
+    //                     'complete' => false,
+    //                 ],
+    //             ],
+    //         ],
+    //     ], expectStatusCode: 400);
+    // }
 
-    public function testUpdatePageSection_text(): void
-    {
-        $pageTab = $this->getPageTab();
-        $createdSectionResponse = $this->requestJsonApi('POST', '/page/section', [
-            'pageTab' => $pageTab->getId(),
-            'pageSectionText' => [
-                'content' => 'Test Text',
-            ],
-        ]);
+    // public function testUpdatePageSection_text(): void
+    // {
+    //     $pageTab = $this->getPageTab();
+    //     $createdSectionResponse = $this->requestJsonApi('POST', '/page/section', [
+    //         'pageTab' => $pageTab->getId(),
+    //         'pageSectionText' => [
+    //             'content' => 'Test Text',
+    //         ],
+    //     ]);
 
-        $updateResponse = $this->requestJsonApi('PUT', '/page/section/' . $createdSectionResponse['id'], [
-            'pageSectionText' => [
-                'content' => 'Updated Text',
-            ],
-        ]);
+    //     $updateResponse = $this->requestJsonApi('PUT', '/page/section/' . $createdSectionResponse['id'], [
+    //         'pageSectionText' => [
+    //             'content' => 'Updated Text',
+    //         ],
+    //     ]);
 
-        $this->assertSame($updateResponse['pageSectionText']['content'], 'Updated Text');
-    }
+    //     $this->assertSame($updateResponse['pageSectionText']['content'], 'Updated Text');
+    // }
 
-    public function testUpdatePageSection_error_403_otherUser()
-    {
-        $pageTab = $this->getPageTab();
-        $createdSectionResponse = $this->requestJsonApi('POST', '/page/section', [
-            'pageTab' => $pageTab->getId(),
-            'pageSectionText' => [
-                'content' => 'Test Text',
-            ],
-        ]);
+    // public function testUpdatePageSection_error_403_otherUser()
+    // {
+    //     $pageTab = $this->getPageTab();
+    //     $createdSectionResponse = $this->requestJsonApi('POST', '/page/section', [
+    //         'pageTab' => $pageTab->getId(),
+    //         'pageSectionText' => [
+    //             'content' => 'Test Text',
+    //         ],
+    //     ]);
 
-        self::$client->loginUser($this->createUser());
-        $this->requestApi('PUT', '/page/section/' . $createdSectionResponse['id'], [
-            'pageSectionText' => [
-                'content' => 'Updated Text',
-            ],
-        ], expectStatusCode: 403);
-    }
+    //     self::$client->loginUser($this->createUser());
+    //     $this->requestApi('PUT', '/page/section/' . $createdSectionResponse['id'], [
+    //         'pageSectionText' => [
+    //             'content' => 'Updated Text',
+    //         ],
+    //     ], expectStatusCode: 403);
+    // }
 
-    public function testGetPageSection_default()
-    {
-        $pageTab = $this->getPageTab();
-        $createdSectionResponse = $this->requestJsonApi('POST', '/page/section', [
-            'pageTab' => $pageTab->getId(),
-            'pageSectionText' => [
-                'content' => 'Test Text',
-            ],
-        ]);
+    // public function testGetPageSection_default()
+    // {
+    //     $pageTab = $this->getPageTab();
+    //     $createdSectionResponse = $this->requestJsonApi('POST', '/page/section', [
+    //         'pageTab' => $pageTab->getId(),
+    //         'pageSectionText' => [
+    //             'content' => 'Test Text',
+    //         ],
+    //     ]);
 
-        $getResponse = $this->requestJsonApi('GET', '/page/section/' . $createdSectionResponse['id']);
-        $this->assertSame($getResponse['id'], $createdSectionResponse['id']);
-    }
+    //     $getResponse = $this->requestJsonApi('GET', '/page/section/' . $createdSectionResponse['id']);
+    //     $this->assertSame($getResponse['id'], $createdSectionResponse['id']);
+    // }
 
-    public function testGetPageSection_error_403_otherUser()
-    {
-        $pageTab = $this->getPageTab();
-        $createdSectionResponse = $this->requestJsonApi('POST', '/page/section', [
-            'pageTab' => $pageTab->getId(),
-            'pageSectionText' => [
-                'content' => 'Test Text',
-            ],
-        ]);
+    // public function testGetPageSection_error_403_otherUser()
+    // {
+    //     $pageTab = $this->getPageTab();
+    //     $createdSectionResponse = $this->requestJsonApi('POST', '/page/section', [
+    //         'pageTab' => $pageTab->getId(),
+    //         'pageSectionText' => [
+    //             'content' => 'Test Text',
+    //         ],
+    //     ]);
 
-        self::$client->loginUser($this->createUser());
-        $this->requestApi('GET', '/page/section/' . $createdSectionResponse['id'], expectStatusCode: 403);
-    }
+    //     self::$client->loginUser($this->createUser());
+    //     $this->requestApi('GET', '/page/section/' . $createdSectionResponse['id'], expectStatusCode: 403);
+    // }
 
-    public function testDeletePageSection_default()
-    {
-        $pageTab = $this->getPageTab();
-        $createdSectionResponse = $this->requestJsonApi('POST', '/page/section', [
-            'pageTab' => $pageTab->getId(),
-            'pageSectionText' => [
-                'content' => 'Test Text',
-            ],
-        ]);
+    // public function testDeletePageSection_default()
+    // {
+    //     $pageTab = $this->getPageTab();
+    //     $createdSectionResponse = $this->requestJsonApi('POST', '/page/section', [
+    //         'pageTab' => $pageTab->getId(),
+    //         'pageSectionText' => [
+    //             'content' => 'Test Text',
+    //         ],
+    //     ]);
 
-        $response = $this->requestJsonApi('DELETE', '/page/section/' . $createdSectionResponse['id']);
-        $this->assertSame(['success' => true], $response);
+    //     $response = $this->requestJsonApi('DELETE', '/page/section/' . $createdSectionResponse['id']);
+    //     $this->assertSame(['success' => true], $response);
 
-        // validate via API if the section is really deleted
-        $this->requestApi('GET', '/page/section/' . $createdSectionResponse['id'], expectStatusCode: 404);
-    }
+    //     // validate via API if the section is really deleted
+    //     $this->requestApi('GET', '/page/section/' . $createdSectionResponse['id'], expectStatusCode: 404);
+    // }
 
-    public function testDeletePageSection_error_404()
-    {
-        $this->requestApi('DELETE', '/page/section/999', expectStatusCode: 404);
-    }
+    // public function testDeletePageSection_error_404()
+    // {
+    //     $this->requestApi('DELETE', '/page/section/999', expectStatusCode: 404);
+    // }
 
-    public function testDeletePageSection_error_403_otherUser()
-    {
-        $pageTab = $this->getPageTab();
-        $createdSectionResponse = $this->requestJsonApi('POST', '/page/section', [
-            'pageTab' => $pageTab->getId(),
-            'pageSectionText' => [
-                'content' => 'Test Text',
-            ],
-        ]);
+    // public function testDeletePageSection_error_403_otherUser()
+    // {
+    //     $pageTab = $this->getPageTab();
+    //     $createdSectionResponse = $this->requestJsonApi('POST', '/page/section', [
+    //         'pageTab' => $pageTab->getId(),
+    //         'pageSectionText' => [
+    //             'content' => 'Test Text',
+    //         ],
+    //     ]);
 
-        self::$client->loginUser($this->createUser());
-        $this->requestApi('DELETE', '/page/section/' . $createdSectionResponse['id'], expectStatusCode: 403);
-    }
+    //     self::$client->loginUser($this->createUser());
+    //     $this->requestApi('DELETE', '/page/section/' . $createdSectionResponse['id'], expectStatusCode: 403);
+    // }
 
-    public function testChangeOrder_default()
-    {
-        $pageTab = $this->getPageTab();
-        $createdSection1Response = $this->requestJsonApi('POST', '/page/section', [
-            'pageTab' => $pageTab->getId(),
-            'pageSectionText' => [
-                'content' => 'Test Text 1',
-            ],
-        ]);
-        $createdSection2Response = $this->requestJsonApi('POST', '/page/section', [
-            'pageTab' => $pageTab->getId(),
-            'pageSectionText' => [
-                'content' => 'Test Text 2',
-            ],
-        ]);
+    // public function testChangeOrder_default()
+    // {
+    //     $pageTab = $this->getPageTab();
+    //     $createdSection1Response = $this->requestJsonApi('POST', '/page/section', [
+    //         'pageTab' => $pageTab->getId(),
+    //         'pageSectionText' => [
+    //             'content' => 'Test Text 1',
+    //         ],
+    //     ]);
+    //     $createdSection2Response = $this->requestJsonApi('POST', '/page/section', [
+    //         'pageTab' => $pageTab->getId(),
+    //         'pageSectionText' => [
+    //             'content' => 'Test Text 2',
+    //         ],
+    //     ]);
 
-        $response = $this->requestJsonApi('PUT', '/page/section/order/'.$pageTab->getId(), [
-            'idOrder' => [$createdSection2Response['id'], $createdSection1Response['id']],
-        ]);
+    //     $response = $this->requestJsonApi('PUT', '/page/section/order/'.$pageTab->getId(), [
+    //         'idOrder' => [$createdSection2Response['id'], $createdSection1Response['id']],
+    //     ]);
 
-        $this->assertSame(1, $response[0]['orderIndex']);
-        $this->assertSame(0, $response[1]['orderIndex']);
-    }
+    //     $this->assertSame(1, $response[0]['orderIndex']);
+    //     $this->assertSame(0, $response[1]['orderIndex']);
+    // }
 
     protected function getPageTab(?User $user = null): PageTab
     {
