@@ -13,12 +13,14 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: PromptRepository::class)]
 class Prompt implements UserPermissionInterface, CrudEntityInterface
 {
+    public const MAX_PROMPT_LENGTH = 8096;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: self::MAX_PROMPT_LENGTH)]
     private ?string $promptText = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true, length: 65535)]
@@ -52,6 +54,9 @@ class Prompt implements UserPermissionInterface, CrudEntityInterface
     #[ORM\ManyToOne]
     private ?User $user = null;
 
+    #[ORM\OneToOne(mappedBy: 'prompt', cascade: ['persist', 'remove'])]
+    private ?PageSectionSummary $pageSectionSummary = null;
+
     public function __construct()
     {
         $this->threadItemPrompts = new ArrayCollection();
@@ -69,7 +74,7 @@ class Prompt implements UserPermissionInterface, CrudEntityInterface
 
     public function setPromptText(string $promptText): static
     {
-        $this->promptText = $promptText;
+        $this->promptText = \substr($promptText, 0, self::MAX_PROMPT_LENGTH);
 
         return $this;
     }
@@ -216,5 +221,22 @@ class Prompt implements UserPermissionInterface, CrudEntityInterface
     public function hasUserAccess(User $user): bool
     {
         return $this->getUser() === $user || $this->getProject()?->hasUserAccess($user);
+    }
+
+    public function getPageSectionSummary(): ?PageSectionSummary
+    {
+        return $this->pageSectionSummary;
+    }
+
+    public function setPageSectionSummary(PageSectionSummary $pageSectionSummary): static
+    {
+        // set the owning side of the relation if necessary
+        if ($pageSectionSummary->getPrompt() !== $this) {
+            $pageSectionSummary->setPrompt($this);
+        }
+
+        $this->pageSectionSummary = $pageSectionSummary;
+
+        return $this;
     }
 }

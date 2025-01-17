@@ -1,6 +1,6 @@
 <template>
     <div>
-        <PageSectionTextEditor :text="pageSection?.pageSectionText?.content ?? ''" :onTextChange="onTextSubmit" :pageSection="pageSection" />
+        <PageSectionTextEditor :text="pageSection.pageSectionText.content" :onTextChange="onTextSubmit" :pageSection="pageSection" />
     </div>
 </template>
 

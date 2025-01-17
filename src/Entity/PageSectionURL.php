@@ -2,12 +2,13 @@
 
 namespace App\Entity;
 
+use App\Entity\Interface\UserPermissionInterface;
 use App\Repository\PageSectionURLRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PageSectionURLRepository::class)]
-class PageSectionURL
+class PageSectionURL implements UserPermissionInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -48,5 +49,10 @@ class PageSectionURL
         $this->url = $url;
 
         return $this;
+    }
+
+    public function hasUserAccess(User $user): bool
+    {
+        return $this->pageSection->hasUserAccess($user, checkSubTypes: false);
     }
 }

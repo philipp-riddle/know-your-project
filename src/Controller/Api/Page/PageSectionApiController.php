@@ -7,6 +7,7 @@ use App\Entity\Interface\UserPermissionInterface;
 use App\Entity\PageSection;
 use App\Entity\PageSectionAIPrompt;
 use App\Entity\PageSectionEmbeddedPage;
+use App\Entity\PageSectionSummary;
 use App\Entity\PageSectionText;
 use App\Entity\PageTab;
 use App\Entity\Prompt;
@@ -109,22 +110,21 @@ class PageSectionApiController extends CrudApiController
                 $pageSection->setAuthor($this->getUser());
                 $requestContent = $request->toArray();
 
-                // @todo edge case:
-                // when submitting a text section with '' as the string, it does resolve to NULL somehow. we need to make sure to set it to a valid PageSectionText entity.
+                // edge case: when submitting a text section with '' as the string, it does resolve to NULL somehow. we need to make sure to set it to a valid PageSectionText entity.
                 if ('' === @$requestContent['pageSectionText']['content']) {
                     $pageSectionText = (new PageSectionText())
                         ->setContent('');
                     $pageSection->setPageSectionText($pageSectionText);
                     $this->em->persist($pageSectionText);
                 
-                // additional edge case for empty page section embedded page
+                // edge case: empty page section embedded page
                 } else  if (\array_key_exists('page', $requestContent['embeddedPage'] ?? []) && null === @$requestContent['embeddedPage']['page']) {
                     $pageSectionEmbeddedPage = (new PageSectionEmbeddedPage()) // initialise the embedded page with nothing
                         ->setPage(null);
                     $pageSection->setEmbeddedPage($pageSectionEmbeddedPage);
                     $this->em->persist($pageSectionEmbeddedPage);
 
-                // additional edge case for empty AI prompt creation
+                // edge case: empty AI prompt creation
                 } else if ('' === @$requestContent['aiPrompt']['prompt']['promptText']) {
                     $prompt = (new Prompt())
                         ->setProject($pageSection->getPageTab()->getPage()->getProject())
@@ -136,16 +136,29 @@ class PageSectionApiController extends CrudApiController
                     $pageSection->setAiPrompt($pageSectionAIPrompt);
                     $this->em->persist($pageSectionAIPrompt);
 
-                // make sure to persist any child entities for the checklist as well
+                // edge case: make sure to persist any child entities for the checklist as well
                 } else if (null !== $pageSection->getPageSectionChecklist()) {
                     foreach ($pageSection->getPageSectionChecklist()->getPageSectionChecklistItems() as $item) {
                         $this->em->persist($item);
                     }
+                // edge case: empty page section summary
+                } else if ('' === @$requestContent['pageSectionSummary']['summary']) {
+                    $pageSectionSummary = (new PageSectionSummary());
+                    $pageSection->setPageSectionSummary($pageSectionSummary);
+
+                    $this->em->persist($pageSectionSummary);
                 }
+
+                // == GENERATION ENGINE PART
+                // If the block is connected to an AI prompt, generate the AI prompt response immediately if the prompt is not empty
 
                 if (null !== $pageSection->getAiPrompt()) {
                     // generate the AI prompt response; this is done by chatting with the AI and using the page contents as context
                     $this->generationEngine->generatePageSectionAIPrompt($pageSection->getPageTab()->getPage(), $pageSection->getAiPrompt());
+                } else if (null !== $pageSection->getPageSectionSummary()) {
+                    // generate the summary for the page section
+                    $this->generationEngine->generatePageSummary($this->getUser(), $pageSection->getPageTab()->getPage(), $pageSection->getPageSectionSummary());
+                    $this->em->persist($pageSectionSummary->getPrompt());
                 }
 
                 return $pageSection;

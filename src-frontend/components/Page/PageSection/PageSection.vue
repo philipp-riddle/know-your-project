@@ -60,6 +60,12 @@
                 :pageSection="pageSection"
                 :onPageSectionSubmit="(sectionItem) => onPageSectionSubmitHandler(pageSection, sectionItem)"
             />
+            <PageSectionSummary
+                v-once
+                v-else-if="pageSection.pageSectionSummary != null"
+                :pageSection="pageSection"
+                :onPageSectionSubmit="(sectionItem) => onPageSectionSubmitHandler(pageSection, sectionItem)"
+            />
             <div v-else class="alert alert-danger">
                 <p>Unknown section type - cannot render.</p>
             </div>
@@ -74,6 +80,7 @@
     import PageSectionChecklist from '@/components/Page/PageSection/Widget/PageSectionChecklist.vue';
     import PageSectionEmbeddedPage from '@/components/Page/PageSection/Widget/PageSectionEmbeddedPage.vue';
     import PageSectionUpload from '@/components/Page/PageSection/Widget/PageSectionUpload.vue';
+    import PageSectionSummary from '@/components/Page/PageSection/Widget/PageSectionSummary.vue';
     import PageSectionText from '@/components/Page/PageSection/Widget/PageSectionText.vue';
     import PageSectionURL from '@/components/Page/PageSection/Widget/PageSectionURL.vue';
     import PageSectionAIPrompt from '@/components/Page/PageSection/Widget/PageSectionAIPrompt.vue';

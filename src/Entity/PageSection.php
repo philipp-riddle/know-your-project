@@ -71,6 +71,9 @@ implements
     #[ORM\OneToOne(mappedBy: 'pageSection', cascade: ['persist', 'remove'])]
     private ?ThreadPageSectionContext $threadContext = null;
 
+    #[ORM\OneToOne(mappedBy: 'pageSection', cascade: ['persist', 'remove'])]
+    private ?PageSectionSummary $pageSectionSummary = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -239,11 +242,27 @@ implements
                 return false;
             }
 
+            if ($this->pageSectionUpload !== null && !$this->pageSectionUpload->hasUserAccess($user)) {
+                return false;
+            }
+
             if ($this->embeddedPage !== null && !$this->embeddedPage->hasUserAccess($user)) {
                 return false;
             }
 
             if ($this->aiPrompt != null && !$this->aiPrompt->hasUserAccess($user)) {
+                return false;
+            }
+
+            if ($this->threadContext != null && !$this->threadContext->hasUserAccess($user)) {
+                return false;
+            }
+
+            if ($this->pageSectionSummary != null && !$this->pageSectionSummary->hasUserAccess($user)) {
+                return false;
+            }
+
+            if ($this->pageSectionURL != null && !$this->pageSectionURL->hasUserAccess($user)) {
                 return false;
             }
         }
@@ -259,63 +278,52 @@ implements
         return $this;
     }
 
+    /**
+     * We must validate the page section by checking if exactly one content type is set.
+     */
     public function validate(): void
     {
-        if ($this->pageSectionText === null && $this->pageSectionChecklist === null && $this->pageSectionURL === null && $this->pageSectionUpload === null && $this->embeddedPage === null && $this->aiPrompt === null) {
-            throw new BadRequestHttpException('A page section must have a content type (text, checklist, URL, upload, embedded page, AI prompt)');
-        }
-
+        $propertiesToCheckForNull = [
+            $this->pageSectionText,
+            $this->pageSectionChecklist,
+            $this->pageSectionURL,
+            $this->pageSectionUpload,
+            $this->embeddedPage,
+            $this->aiPrompt,
+            $this->pageSectionSummary,
+        ];
+        $pageSectionTypesNull = 0;
         $pageSectionTypesNotNull = 0;
 
-        if ($this->pageSectionText !== null) {
-            $pageSectionTypesNotNull++;
+        foreach ($propertiesToCheckForNull as $property) {
+            if ($property === null) {
+                $pageSectionTypesNull++;
+            } else {
+                $pageSectionTypesNotNull++;
+            }
         }
 
-        if ($this->pageSectionChecklist !== null) {
-            $pageSectionTypesNotNull++;
-        }
-
-        if ($this->pageSectionURL !== null) {
-            $pageSectionTypesNotNull++;
-        }
-
-        if ($this->pageSectionUpload !== null) {
-            $pageSectionTypesNotNull++;
-        }
-
-        if ($this->embeddedPage !== null) {
-            $pageSectionTypesNotNull++;
-            $this->embeddedPage->validate();
-        }
-
-        if ($this->aiPrompt != null) {
-            $pageSectionTypesNotNull++;
-        }
-
-        if ($pageSectionTypesNotNull > 1) {
+        if ($pageSectionTypesNotNull === 0) {
             throw new BadRequestHttpException('A page section must have only one content type');
+        }
+
+        if ($pageSectionTypesNull === \count($propertiesToCheckForNull)) {
+            throw new BadRequestHttpException('A page section must have a content type (text, checklist, URL, upload, embedded page, AI prompt)');
         }
     }
 
     public function getTextForEmbedding(): ?string
     {
         if (null !== $text = $this->getPageSectionText()) {
-            $textHTML = '<h2>Page section of type "text"</h2>';
-            $textHTML .= $text->getContent();
-
-            return $textHTML;
+            if ('' !== \trim($text->getContent())) {
+                return '<p>'.$text->getContent().'</p>';
+            }
         } else if (null !== $url = $this->getPageSectionURL()) {
             return $url->getUrl();
-        } else if (null !== $embeddedPage = $this->getEmbeddedPage()) {
-            if (null === $embeddedPage->getPage()) {
-                return null;
-            }
-
-            return \sprintf('<p>This page embeds the page %s (ID %s). Prioritize this information.</p>',  $embeddedPage->getPage()->getName(), $embeddedPage->getPage()->getId());
         } else if (null !== $upload = $this->getPageSectionUpload()) {
-            return $upload->getFile()->getName();
+            return \sprintf('<p>File (%s): %s', $upload->getFile()->getMimeType(), $upload->getFile()->getName());
         } else if (null !== $checklist = $this->getPageSectionChecklist()) {
-            $text = \sprintf('<h2>Page section of type "checklist": %s</p>', $checklist->getName());
+            $text = \sprintf('<h2>Checklist: %s</p>', $checklist->getName());
             $text .= '<ul>';
 
             foreach ($checklist->getPageSectionChecklistItems() as $item) {
@@ -331,11 +339,11 @@ implements
             $text .= '</ul>';
 
             return $text;
-        } else if (null !== $this->getAiPrompt()) {
-            return null; // do not include the AI prompt in the text for embedding; this can cause trouble as the LLM is confused what the prompt is and what the response is
         }
 
-        throw new \InvalidArgumentException('No text for embedding in page section');
+        // do not embed any AI prompts / summaries; simply return null.
+
+        return null;
     }
 
     public function getMetaAttributes(): array
@@ -385,5 +393,22 @@ implements
     public function getFile(): ?File
     {
         return $this->pageSectionUpload?->getFile();
+    }
+
+    public function getPageSectionSummary(): ?PageSectionSummary
+    {
+        return $this->pageSectionSummary;
+    }
+
+    public function setPageSectionSummary(PageSectionSummary $pageSectionSummary): static
+    {
+        // set the owning side of the relation if necessary
+        if ($pageSectionSummary->getPageSection() !== $this) {
+            $pageSectionSummary->setPageSection($this);
+        }
+
+        $this->pageSectionSummary = $pageSectionSummary;
+
+        return $this;
     }
 }

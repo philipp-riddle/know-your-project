@@ -25,6 +25,7 @@ Encore
 
     .addAliases({
         "@": path.resolve(__dirname, "src-frontend/"),
+        "@huggingface/transformers": path.resolve(__dirname, "node_modules/@huggingface/transformers"),
     })
 
     // enable Vue support with JSX

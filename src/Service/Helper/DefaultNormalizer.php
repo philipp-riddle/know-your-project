@@ -2,6 +2,7 @@
 
 namespace App\Service\Helper;
 
+use App\Serializer\NormalizeDepthHandler;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
@@ -14,14 +15,23 @@ use Symfony\Component\Serializer\Serializer;
  */
 final class DefaultNormalizer
 {
+    public function __construct(
+        private NormalizeDepthHandler $normalizeDepthHandler,
+    ) { }
+
     public function normalize($object, ?array $normalizeCallbacks = null): array
     {
         $maxDepthHandler = function (object $object): string {
             return $object->getId();
         };
-        $circularReferenceHandler = function (array|object $object): string {
-            return $object->getId();
+        $circularReferenceHandler = function (array|object|null $object): string {
+            return $object->getId() ?? 'n/a';
         };
+        // $normalizeCallbacks = [
+        //     ...$normalizeCallbacks,
+        //     ...$this->normalizeDepthHandler->generateNormalizeCallbacks($object, maxDepth: 0), // by default we go 3 levels deep max in the object graph
+        // ];
+
         $normalizer = new ObjectNormalizer(defaultContext: [
             AbstractObjectNormalizer::ENABLE_MAX_DEPTH => true,
             AbstractObjectNormalizer::MAX_DEPTH_HANDLER => $maxDepthHandler,

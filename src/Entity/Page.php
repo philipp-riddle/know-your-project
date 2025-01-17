@@ -222,6 +222,25 @@ implements
         return $this->getName();
     }
 
+    
+    public function getHtmlSummary(): string
+    {
+        $pageHtml = \sprintf('<h1>%s</h1>', $this->getName()); // The page name is the title of the page
+
+        foreach ($this->getPageTabs()[0]?->getPageSections() ?? [] as $section) {
+            if (!$section instanceof PageSectionEmbeddedPage) {
+                if (null !== $textForEmbedding = $section->getTextForEmbedding()) {
+                    $pageHtml .= '<section>';
+                    $pageHtml .= $textForEmbedding;
+                    $pageHtml .= '</section>';
+                }
+            }
+
+        }
+
+        return $pageHtml;
+    }
+
     public function getMetaAttributes(): array
     {
         $attributes = [

@@ -8,6 +8,10 @@ export function  usePageSectionAccessibilityHelper() {
             return 'microchip';
         }
 
+        if (pageSection.pageSectionSummary) {
+            return 'book';
+        }
+
         if (pageSection.embeddedPage) {
             return 'arrow-up-right-from-square';
         }
@@ -72,6 +76,8 @@ export function  usePageSectionAccessibilityHelper() {
             return 'CSV';
         } else if (icon === 'file-upload') {
             return 'File Upload';
+        } else if (icon === 'book') {
+            return 'Summary';
         }
     };
 
