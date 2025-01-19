@@ -10,6 +10,7 @@ use App\Entity\PageTab;
 use App\Entity\Project;
 use App\Form\PageForm;
 use App\Repository\PageRepository;
+use App\Repository\TaskRepository;
 use App\Service\Helper\ApiControllerHelperService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -63,9 +64,16 @@ class PageApiController extends CrudApiController
     }
 
     #[Route('/{page}', name: 'api_page_delete', methods: ['DELETE'])]
-    public function delete(Page $page): JsonResponse
+    public function delete(Page $page, TaskRepository $taskRepository): JsonResponse
     {
-        return $this->crudDelete($page);
+        return $this->crudDelete(
+            $page,
+            onProcessEntity: function (Page $page) use ($taskRepository) {
+                if (null !== $taskPage = $taskRepository->findOneBy(['page' => $page])) {
+                    $this->em->remove($taskPage); // remove the connected task if there is one
+                }
+            }
+        );
     }
 
     #[Route('', name: 'api_page_create', methods: ['POST'])]

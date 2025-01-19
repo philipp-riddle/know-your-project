@@ -16,6 +16,13 @@ export const useProjectStore = defineStore('project', () => {
                 return;
             }
 
+            // use the prefetched value from the window object if it exists
+            if (window.selectedProject) {
+                selectedProject.value = window.selectedProject;
+                resolve(window.selectedProject);
+                return;
+            }
+
             const user = await userStore.getCurrentUser();
 
             // if we are already fetching the project, wait for the promise to resolve.

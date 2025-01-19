@@ -2,6 +2,15 @@
 
 {% block title %}Know Your Project{% endblock %}
 
+{% block javascripts %}
+    <script>
+        // This can be read by the Vue store to start; saves API calls!
+        var currentUser = {{ user|json_encode|raw }};
+        var selectedProject = {{ project|json_encode|raw }};
+    </script>
+    {{ encore_entry_script_tags('app') }}
+{% endblock %}
+
 {% block body %}
     <div id="app"></div>
 {% endblock %}

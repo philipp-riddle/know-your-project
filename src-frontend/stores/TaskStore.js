@@ -93,9 +93,11 @@ export const useTaskStore = defineStore('task', () => {
     async function createTask(stepType, name) {
         return new Promise((resolve) => {
             fetchCreateTask(stepType, name).then((createdTask) => {
-                addTask(createdTask);
+                var createdTaskObject = createdTask.page;
+                createdTaskObject.task = createdTask; // because of serialisation we need to add the task to the page object
 
-                pageStore.addPagesAndTagsToStore([createdTask.page], []); // pass [] as tags to add the tag to the uncategorized list
+                addTask(createdTask);
+                pageStore.addPagesAndTagsToStore([createdTaskObject], []); // pass [] as tags to add the tag to the uncategorized list
                 resolve(createdTask);
             });
         });
@@ -132,19 +134,22 @@ export const useTaskStore = defineStore('task', () => {
     }
 
     function deleteTask(task) {
+        removeTaskFromStore(task);
+        
+        if (task.page) {
+            pageStore.removePage(task.page);
+        }
+
+        fetchDeleteTask(task.id);
+    }
+
+    function removeTaskFromStore(task) {
         if (!tasks.value[task.stepType]) {
             return;
         }
 
-        fetchDeleteTask(task.id).then(() => {
-            const index = tasks.value[task.stepType].findIndex((t) => t.id === task.id);
-            tasks.value[task.stepType].splice(index, 1);
-
-            if (task.page) {
-                pageStore.removePage(task.page);
-            }
-        });
-        
+        const index = tasks.value[task.stepType].findIndex((t) => t.id === task.id);
+        tasks.value[task.stepType].splice(index, 1);
     }
 
     /**
@@ -197,6 +202,7 @@ export const useTaskStore = defineStore('task', () => {
         addTask,
         updateTask,
         deleteTask,
+        removeTaskFromStore,
         moveTask,
     };
 });

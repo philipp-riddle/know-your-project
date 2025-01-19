@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { useTaskStore } from './TaskStore';
 import { usePageTabStore  } from './PageTabStore';
 import { useProjectStore } from './ProjectStore';
 import { ref } from 'vue';
@@ -8,6 +9,7 @@ import { fetchCreateTagPageFromTagName, fetchCreateTagPageFromTagId, fetchDelete
 export const usePageStore = defineStore('page', () => {
     const pages = ref({});
     const selectedPage = ref(null);
+    const taskStore = useTaskStore();
     const pageTabStore = usePageTabStore();
     const projectStore = useProjectStore();
 
@@ -290,6 +292,10 @@ export const usePageStore = defineStore('page', () => {
                 }
 
                 removePage(page);
+
+                if (page.task !== null) {
+                    taskStore.removeTaskFromStore(page.task);
+                }
 
                 resolve();
             });

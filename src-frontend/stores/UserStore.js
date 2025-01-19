@@ -13,6 +13,13 @@ export const useUserStore = defineStore('user', () => {
                 resolve(currentUser.value);
             }
 
+            // use the prefetched value from the window object if it exists
+            if (window.currentUser) {
+                currentUser.value = window.currentUser;
+                resolve(window.currentUser);
+                return;
+            }
+
             // if we are already fetching the user, wait for the promise to resolve
             if (currentPromise.value) {
                 currentPromise.value.then(() => {

@@ -1,6 +1,5 @@
 <template>
-    <VMenu :distance="5"
-    >
+    <VMenu>
         <!-- This will be the popover reference (for the events and position) -->
         <button class="btn btn-light-gray m-0 p-0">
             <font-awesome-icon :icon="['fas', 'circle-info']" />
