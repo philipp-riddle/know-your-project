@@ -122,12 +122,8 @@ final class EntitySerializer
     {
         $ignoreWhenNestedAttribute = $method->getAttributes(IgnoreWhenNested::class)[0] ?? null;
 
-        // if (null !== $ignoreWhenNestedAttribute) {
-        //     var_dump($method->getName(), $currentDepth);
-        // }
-
         if ($ignoreWhenNestedAttribute !== null && $currentDepth > 0) {
-            return null; // value is ignored when nested when this attribute is set
+            return null; // value is ignored if the 'nested' attribute is set
         }
 
         $methodReturnType = $method->getReturnType();
