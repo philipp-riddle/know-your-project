@@ -1,12 +1,13 @@
 <template>
     <VDropdown
         :placement="'left'"
+        v-if="pageStore.selectedPage?.task !== null"
     >
-        <div class="row" v-if="pageStore.selectedPage">
+        <div class="row m-0 p-0" v-if="pageStore.selectedPage">
             <div class="col-sm-12 col-md-3 col-xl-2 d-flex justify-content-center">
-                <button class="btn btn-sm m-0 p-0 text-muted d-flex flex-row gap-2" v-tooltip="'Click to change status'">
-                    <font-awesome-icon :icon="['fas', 'spinner']" />
+                <button class="btn btn-sm m-0 p-0 text-muted flex-fill d-flex flex-row justify-content-end gap-4" v-tooltip="'Click to change status'">
                     <span class="bold">STATUS</span>
+                    <font-awesome-icon :icon="['fas', 'spinner']" />
                 </button>
             </div>
             <div class="col-sm-12 col-md-9 col-xl-10">

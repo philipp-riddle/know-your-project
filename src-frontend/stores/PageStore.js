@@ -3,7 +3,7 @@ import { usePageTabStore  } from './PageTabStore';
 import { useProjectStore } from './ProjectStore';
 import { ref } from 'vue';
 import { fetchCreatePage, fetchDeletePage, fetchUpdatePage, fetchGetPage, fetchGetPageList } from '@/stores/fetch/PageFetcher';
-import { fetchCreateTagPageFromTagName, fetchCreateTagPageFromTagId, fetchDeleteTagPage } from '@/stores/fetch/TagFetcher';
+import { fetchCreateTagPageFromTagName, fetchCreateTagPageFromTagId, fetchDeleteTagPage, fetchUpdateTag } from '@/stores/fetch/TagFetcher';
 
 export const usePageStore = defineStore('page', () => {
     const pages = ref({});
@@ -247,22 +247,37 @@ export const usePageStore = defineStore('page', () => {
             fetchDeleteTagPage(tagPage.id).then(() => {
                 selectedPage.value.tags = selectedPage.value.tags.filter((tp) => tp.id !== tagPage.id);
 
-                // if the navigation is loaded for this tag we must remove the tagged page
+                // first, filter the page from the tag (if the tags are loaded - otherwise, we do not need to filter anything)
                 if (displayedPageTags.value[tagPage.tag.id]) {
-                    // first, filter the page from the tag
                     displayedPageTags.value[tagPage.tag.id] = displayedPageTags.value[tagPage.tag.id].filter((p) => p !== page.id);
+                }
 
-                    // if the seleceted page now has no tags, we must add it to the uncategorized pages
-                    if (selectedPage.value.tags.length === 0) {
-                        if (!displayedPageTags.value[-1]) {
-                            displayedPageTags.value[-1] = [];
-                        }
-
-                        displayedPageTags.value[-1].push(page.id);
+                // if the seleceted page now has no tags after the remove we must add it to the uncategorized pages
+                if (selectedPage.value.tags.length === 0) {
+                    if (!displayedPageTags.value[-1]) {
+                        displayedPageTags.value[-1] = [];
                     }
+
+                    displayedPageTags.value[-1].push(page.id);
                 }
 
                 resolve();
+            });
+        });
+    }
+
+    function updateTag(tag) {
+        return new Promise((resolve) => {
+            fetchUpdateTag(tag).then((updatedTag) => {
+                projectStore.selectedProject.tags = projectStore.selectedProject.tags.map((t) => {
+                    if (t.id === updatedTag.id) {
+                        return updatedTag;
+                    }
+
+                    return t;
+                });
+
+                resolve(updatedTag);
             });
         });
     }
@@ -325,6 +340,7 @@ export const usePageStore = defineStore('page', () => {
         addTagToPageByName,
         addTagToPageById,
         removeTagFromPage,
+        updateTag,
         deletePage,
         removePage,
     };

@@ -26,12 +26,6 @@
             {{ page.name }}
         </span>
     </div>
-
-    <div class="nav-item-options" v-if="!page.task">
-        <div class="d-flex flex-row align-items-center gap-2">
-            <DeletionButton label="page" :onConfirm="() => onPageDelete(page)" />
-        </div>
-    </div>
 </template>
 
 <script setup>

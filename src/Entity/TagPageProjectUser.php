@@ -54,7 +54,9 @@ class TagPageProjectUser implements UserPermissionInterface, CrudEntityInterface
 
     public function hasUserAccess(User $user): bool
     {
-        return $this->getTagPage()->hasUserAccess($user)  && $this->getProjectUser()->hasUserAccess($user);
+        // anyone who has access to the tag + page and is in the project can add, edit or delete any tag page project users.
+        // this means anyone in the project can assign users to tasks without permission problems.
+        return $this->getTagPage()->hasUserAccess($user)  && $this->getProjectUser()->getProject()->isUserInProject($user);
     }
 
     public function initialize(): static

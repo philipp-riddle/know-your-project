@@ -1,12 +1,22 @@
 <template>
     <div class="page-section page-section-container row" :page-section="pageSection.id">
         <div class="col-sm-12 col-md-9 col-xl-2">
-            <div class="section-options d-flex flex-row gap-3 justify-content-between" v-if="pageSection.id != null">
+            <div
+                v-if="pageSection.id != null"
+                class="d-flex flex-row gap-3 justify-content-between"
+                :class="{
+                    // if the deletion dropdown is open the control should be completely visible and not only on hover
+                    'section-options': !isDeletionDropdownVisible,
+                }"
+            >
                 <div class="d-flex flex-row gap-3 align-items-center">
-                    <PageSectionInfo :pageSection="pageSection" />
-                    <button class="btn btn-light-gray p-0 m-0" v-tooltip="'Delete'" @click="onPageSectionDeleteClick">
-                        <font-awesome-icon class="" :icon="['fas', 'trash']" />
-                    </button>                    
+                    <DeletionButton
+                        label="page section"
+                        @onShowDropdown="isDeletionDropdownVisible = true"
+                        @onHideDropdown="isDeletionDropdownVisible = false"
+                        @onConfirm="onPageSectionDeleteClick"
+                    />
+                    <PageSectionInfo :pageSection="pageSection" />              
                 </div>
                 <div class="d-flex flex-row gap-4 align-items-center">
                     <button class="btn p-0 m-0" v-tooltip="'Drag to rearrange order'">
@@ -87,9 +97,10 @@
 
     import PageSectionInfo from '@/components/Page/PageSection/PageSectionInfo.vue';
     import PageSectionThreadButton from '@/components/Page/PageSection/PageSectionThreadButton.vue';
+    import DeletionButton from '@/components/Util/DeletionButton.vue';
     import { usePageSectionAccessibilityHelper } from '@/composables/PageSectionAccessibilityHelper.js';
     import { usePageSectionStore } from '@/stores/PageSectionStore.js';
-    import { computed, ref, onMounted } from 'vue';
+    import { computed, ref } from 'vue';
     import { useDebounceFn } from '@vueuse/core';
 
     const props = defineProps({
@@ -112,14 +123,15 @@
     });
     const pageSectionStore = usePageSectionStore();
     const pageSection = ref(props.pageSection);
-    const debouncedPageSectionSubmit = useDebounceFn((section, sectionItem) => props.onPageSectionSubmit(section, sectionItem), 500);
 
-    onMounted(() => {
-        // our non-initialized objects have a string ID to make it easier to identify them for Vue - we filter them out here
-        if (isNaN(pageSection.value.id)) {
-            delete pageSection.value.id;
-        }
-    });
+    // depending on this we want to show all icons from the page section or not.
+    // better UX as the icons do not disappear when the dropdown is still there.
+    const isDeletionDropdownVisible = ref(false);
+
+    // debounce the page section submit.
+    // this means that the function will only be called after the last call to it has been made after 300ms.
+    // this saves requests and makes the UI more responsive.
+    const debouncedPageSectionSubmit = useDebounceFn((section, sectionItem) => props.onPageSectionSubmit(section, sectionItem), 300);
 
     const onPageSectionSubmitHandler = async (section, sectionItem) => {
         return new Promise(async (resolve) => {
@@ -144,15 +156,3 @@
         return accessibilityHelper.getTooltip(pageSection.value);
     });
 </script>
-
-<style scoped>
-    .section-options:not(.active) {
-        opacity: 0.0 !important;
-        display: none;
-    }
-
-    .page-section-container:hover > div > .section-options {
-        opacity: 1.0 !important;
-        transition: opacity 0.2s ease-in-out;
-    }
-</style>

@@ -4,23 +4,25 @@
         :triggers="[]"
         :shown="showDueDatePopover"
     >
-        <div class="row" @click="showDueDatePopover = !showDueDatePopover">
-            <div class="col-sm-12 col-md-3 col-xl-2 d-flex justify-content-center align-items-top">
-                <button class="btn btn-sm m-0 p-0 text-muted d-flex flex-row gap-2 align-items-center" v-tooltip="'Click to change due date'">
-                    <font-awesome-icon :icon="['fas', 'fa-calendar-check']" />
+        <div class="row m-0 p-0" @click="showDueDatePopover = !showDueDatePopover">
+            <div class="col-sm-12 col-md-3 col-xl-2 d-flex flex-row align-items-center">
+                <button class="btn btn-sm m-0 p-0 text-muted flex-fill d-flex flex-row justify-content-end gap-4" v-tooltip="'Click to change due date'">
                     <span class="bold">DUE DATE</span>
+                    <font-awesome-icon :icon="['fas', 'fa-calendar-check']" />
                 </button>
             </div>
             <div class="col-sm-12 col-md-9 col-xl-10 col-xl-8">
-                <div v-if="isDue" class="alert alert-danger p-2 d-flex flex-row gap-3 align-items-center" v-tooltip="'This task is overdue!'">
-                    <span class="bold">Overdue</span>
-                    <p class="m-0 text-muted">{{ displayedDueDate }}</p>
+                <div class="d-flex flex-row align-items-center">
+                    <div v-if="isDue" class="alert alert-danger m-0 p-2 d-flex flex-row gap-3 align-items-center" v-tooltip="'This task is overdue!'">
+                        <span class="bold">Overdue</span>
+                        <p class="m-0 text-muted">{{ displayedDueDate }}</p>
+                    </div>
+                    <div v-else-if="isDueSoon" class="alert alert-warning m-0 p-2 d-flex flex-row gap-3 align-items-center" v-tooltip="'This task is due soon!'">
+                        <span class="bold">Due soon</span>
+                        <p class="m-0 text-muted">{{ displayedDueDate }}</p>
+                    </div>
+                    <p v-else class="m-0 text-muted">{{ displayedDueDate }}</p>
                 </div>
-                <div v-else-if="isDueSoon" class="alert alert-warning p-2 d-flex flex-row gap-3 align-items-center" v-tooltip="'This task is due soon!'">
-                    <span class="bold">Due soon</span>
-                    <p class="m-0 text-muted">{{ displayedDueDate }}</p>
-                </div>
-                <p v-else class="m-0 text-muted">{{ displayedDueDate }}</p>
             </div>
         </div>
 

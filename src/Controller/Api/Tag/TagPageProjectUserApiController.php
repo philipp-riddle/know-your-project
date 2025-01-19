@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/api/tag/page/project-user')]
 class TagPageProjectUserApiController extends CrudApiController
 {
-    #[Route('', methods: ['POST'], name: 'tag_page_projectUser_create')]
+    #[Route('', methods: ['POST'], name: 'api_tag_page_projectUser_create')]
     public function create(Request $request): JsonResponse
     {
         return $this->crudUpdateOrCreate(
@@ -31,7 +31,7 @@ class TagPageProjectUserApiController extends CrudApiController
         );
     }
 
-    #[Route('/{tagPageProjectUser}', methods: ['DELETE'], name: 'tag_page_projectUser_delete')]
+    #[Route('/{tagPageProjectUser}', methods: ['DELETE'], name: 'api_tag_page_projectUser_delete')]
     public function delete(TagPageProjectUser $tagPageProjectUser): JsonResponse
     {
         return $this->crudDelete($tagPageProjectUser);

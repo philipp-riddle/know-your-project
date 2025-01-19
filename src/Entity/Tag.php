@@ -33,7 +33,7 @@ class Tag implements UserPermissionInterface, CrudEntityInterface
     private ?self $parent = null;
 
     /**
-     * @var Collection<int, self>
+     * @var Collection<int, Tag>
      */
     #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class)]
     private Collection $tags;
@@ -100,7 +100,7 @@ class Tag implements UserPermissionInterface, CrudEntityInterface
     }
 
     /**
-     * @return Collection<int, self>
+     * @return Collection<int, Tag>
      */
     public function getTags(): Collection
     {

@@ -1,12 +1,18 @@
 <template>
     <VDropdown
         :distance="6"
-        :shown="showPopover"
+        v-model:shown="showPopover"
+        :triggers="[]"
     >
         <!-- This will be the popover reference (for the events and position) -->
         <button
             v-tooltip="tooltip"
-            class="btn btn-sm btn-danger"
+            class="btn btn-sm"
+            @click="() => showPopover = !showPopover"
+            :class="{
+                'btn-light-gray': !showPopover, // this makes it appear 'unselected'
+                'btn-dark-gray': showPopover, // this makes it appear 'selected'
+            }"
         >
             <font-awesome-icon :icon="['fas', 'trash']" />
         </button>
@@ -18,8 +24,8 @@
                 <p>This {{ label }} will be deleted forever.</p>
 
                 <div class="d-flex flex-row justify-content-end gap-3">
-                    <button class="btn btn-sm btn-danger" @click.stop="onConfirm(yes)">Yes</button>
-                    <button class="btn btn-sm btn-secondary" @click.stop="showPopover = false">No</button>
+                    <button class="btn btn-sm btn-danger" @click.stop="$emit('onConfirm')">Yes</button>
+                    <button class="btn btn-sm btn-secondary" @click="() => showPopover = false">Cancel</button>
                 </div>
             </div>
         </template>
@@ -27,19 +33,31 @@
 </template>
 
 <script setup>
-    import { ref, computed } from 'vue';
+    import { ref, computed, watch } from 'vue';
 
+    const emit = defineEmits(['onShowDropdown', 'onHideDropdown', 'onConfirm'])
     const props = defineProps({
-        onConfirm: {
-            type: Function,
-            required: true,
-        },
         label: {
             type: String,
             required: false,
             default: 'item',
         },
+        showTooltip: {
+            type: Boolean,
+            required: false,
+            default: true,
+        },
     });
     const showPopover = ref(false);
-    const tooltip = computed(() => 'Delete ' + props.label);
+    const tooltip = computed(() => {
+        return props.showTooltip ? 'Delete ' + props.label : '';
+    });
+
+    watch(() => showPopover.value, (newValue) => {
+        if (newValue) {
+            emit('onShowDropdown');
+        } else {
+            emit('onHideDropdown');
+        }
+    });
 </script>

@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/api/tag/page')]
 class TagPageApiController extends CrudApiController
 {
-    #[Route('', methods: ['POST'], name: 'tag_page_create')]
+    #[Route('', methods: ['POST'], name: 'api_tag_page_create')]
     public function create(Request $request): JsonResponse
     {
         return $this->crudUpdateOrCreate(
@@ -49,13 +49,13 @@ class TagPageApiController extends CrudApiController
         );
     }
 
-    #[Route('/{tagPage}', methods: ['DELETE'], name: 'tag_page_delete')]
+    #[Route('/{tagPage}', methods: ['DELETE'], name: 'api_tag_page_delete')]
     public function delete(TagPage $tagPage): JsonResponse
     {
         return $this->crudDelete($tagPage);
     }
 
-    #[Route('/list/{tag}', methods: ['GET'], name: 'tag_page_list')]
+    #[Route('/list/{tag}', methods: ['GET'], name: 'api_tag_page_list')]
     public function list(Tag $tag): JsonResponse
     {
         return $this->crudList(['tag' => $tag]);

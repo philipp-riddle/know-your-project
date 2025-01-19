@@ -9,8 +9,8 @@
         @blur="onCloseModal"
     >
         <div class="modal-dialog modal-fullscreen">
-            <div class="modal-content">
-                <div class="modal-body mt-xl-3 mt-sm-2 p-3">
+            <div class="modal-content m-0 p-0">
+                <div class="modal-body m-0 p-0 pt-xl-3 pt-sm-2">
                     <div v-if="pageStore.selectedPage">
                         <TaskDetail :page="pageStore.selectedPage" :task="pageStore.selectedPage.task" />
                     </div>

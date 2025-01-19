@@ -1,11 +1,11 @@
 <template>
-    <div class="container-fluid p-0 m-0 h-100" style="max-width: 100%">
+    <div class="container-fluid p-0 m-0 h-100 w-100">
         <div class="row h-100 p-0 m-0">
             <div class="col-sm-4 col-lg-2 p-0 m-0">
                 <NavigationSidebar />
             </div>
-            <div class="col-sm-8 col-lg-10 m-0 p-0 h-100 bg-white page-panel">
-                <router-view></router-view>
+            <div class="col-sm-8 col-lg-10 m-0 p-0 h-100 d-flex flex-column bg-white page-panel">
+                <router-view class="flex-fill"></router-view>
             </div>
         </div>
     </div>

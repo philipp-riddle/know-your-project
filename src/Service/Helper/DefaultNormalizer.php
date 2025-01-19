@@ -25,7 +25,11 @@ final class DefaultNormalizer
      */
     public function normalize(User $currentUser, $object, ?int $maxDepth = null): array
     {
-        return $this->entitySerializer->serialize($currentUser, $object, maxDepth: $maxDepth ?? 5);        
+        return $this->symfonyNormalize($object);
+
+        // @todo: Bugs in the serializer caused me to use the Symfony normalizer instead...
+        // Maybe we fix it later, but it's not worth much extra time as it only saves 5ms (!) per request.
+        // return $this->entitySerializer->serialize($currentUser, $object, maxDepth: $maxDepth ?? 5);        
     }
 
     /**

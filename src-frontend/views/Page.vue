@@ -1,16 +1,14 @@
 <template>
-    <div class="p-5">
-        <div v-if="pageStore.isLoadingPage">
-            <div class="spinner-border mt-3" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
+    <div v-if="pageStore.isLoadingPage">
+        <div class="spinner-border mt-3" role="status">
+            <span class="visually-hidden">Loading...</span>
         </div>
-        <div v-else-if="pageStore.selectedPage">
-            <Page :page="pageStore.selectedPage" />
-        </div>
-        <div v-else>
-            <p>Could not load given page.</p>
-        </div>
+    </div>
+    <div v-else-if="pageStore.selectedPage">
+        <Page :page="pageStore.selectedPage" />
+    </div>
+    <div v-else>
+        <p>Could not load given page.</p>
     </div>
 </template>
 <script setup>

@@ -1,8 +1,12 @@
 <template>
-    <div class="page d-flex flex-column gap-2">
-        <div class="page-header">
-            <div class="row">
-                <div class="col-sm-12 offset-md-3 offset-lg-2 col-md-9 col-lg-10">
+    <div class="h-100 page d-flex flex-column gap-2">
+        <div class="page-header ps-5 pe-5 pt-2">
+            <div class="row page-section-container">
+                <div class="col-sm-12 col-md-3 col-lg-2 d-flex flex-row justify-content-between align-items-center m-0 p-0">
+                    <PageDeletionControl :page="page" />
+                    <PageTagControl :page="page"/>
+                </div>
+                <div class="col-sm-12 col-md-9 col-lg-10">
                     <h1 class="m-0"><input class="magic-input" v-model="props.page.name" @keyup="updatePageTitle" v-tooltip="'Edit page title'" /></h1>
                 </div>
             </div>
@@ -10,16 +14,10 @@
             <div class="d-flex flex-column gap-2 mt-4 mb-3">
                 <TaskStatusControl v-if="page.task != null" :task="page.task" />
                 <TaskDueDateControl v-if="page.task != null" :task="page.task" />
-                <PageTagControl :page="page" />
-            </div>
-
-            <div class="d-flex flex-row align-items-center gap-4 mb-3">
-                <p class="bold m-0">CONTENT</p>
-                <hr class="w-100">
             </div>
         </div>
 
-        <div class="page-content flex-fill">
+        <div class="ps-5 pe-5 pt-2 pb-2page-content flex-fill">
             <div v-if="pageStore.isLoadingPage">
                 <div class="col-sm-12 offset-md-3 col-md-9 offset-xl-2 col-xl-10">
                     <div class="spinner-border mt-3" role="status">
@@ -85,6 +83,7 @@
     import TextArea from '@/components/Util/TextArea.vue';
     import TaskStatusControl from '@/components/Page/PageControl/TaskStatusControl.vue';
     import TaskDueDateControl from '@/components/Page/PageControl/TaskDueDateControl.vue';
+    import PageDeletionControl from '@/components/Page/PageControl/PageDeletionControl.vue';
     import PageTagControl from '@/components/Page/PageControl/PageTagControl.vue';
     import { fetchCreatePageTab } from '@/stores/fetch/PageFetcher.js';
     import { usePageStore } from '@/stores/PageStore.js';

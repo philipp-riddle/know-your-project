@@ -64,7 +64,7 @@ abstract class ApiController extends AbstractController
         return $this->createJsonResponse($this->normalize($object, $additionalData));
     }
 
-    protected function normalize(mixed $object, array $additionalData = [], int $maxDepth = 5): array|null
+    protected function normalize(mixed $object, array $additionalData = [], int $maxDepth = 999): array|null
     {   
         // merge the normalized data with the additional data
         return [

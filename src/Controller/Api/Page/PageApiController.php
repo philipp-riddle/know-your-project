@@ -8,8 +8,6 @@ use App\Entity\PageSection;
 use App\Entity\PageSectionText;
 use App\Entity\PageTab;
 use App\Entity\Project;
-use App\Entity\Tag;
-use App\Entity\User;
 use App\Form\PageForm;
 use App\Repository\PageRepository;
 use App\Service\Helper\ApiControllerHelperService;
@@ -67,7 +65,6 @@ class PageApiController extends CrudApiController
     #[Route('/{page}', name: 'api_page_delete', methods: ['DELETE'])]
     public function delete(Page $page): JsonResponse
     {
-
         return $this->crudDelete($page);
     }
 
@@ -82,6 +79,7 @@ class PageApiController extends CrudApiController
                     $page->setUser($this->getUser());
                 }
 
+                // we must initialize the page tab with some information to start
                 $pageTab = (new PageTab())
                     ->setName('Tab 1')
                     ->setEmojiIcon('📝')

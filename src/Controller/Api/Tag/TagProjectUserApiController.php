@@ -17,7 +17,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/api/tag/project-user')]
 class TagProjectUserApiController extends CrudApiController
 {
-    #[Route('', methods: ['POST'], name: 'tag_projectUser_create')]
+    #[Route('', methods: ['POST'], name: 'api_tag_projectUser_create')]
     public function create(Request $request): JsonResponse
     {
         return $this->crudUpdateOrCreate(

@@ -1,33 +1,33 @@
 <template>
     <VDropdown
         :placement="'right'"
-        :shown="showPageTagUserControl"
+        v-model:shown="isDropdownVisible"
         :triggers="[]"
     >
         <button
-            class="btn btn-sm"
-            v-tooltip="'Click to add users to this tag'"
-            @click.stop="showPageTagUserControl = !showPageTagUserControl"
+            class="btn btn-sm btn-tag"
             v-if="tagPage.users.length == 0"
+            v-tooltip="tagPage.tag.name"
+            @click.stop="isDropdownVisible = !isDropdownVisible"
+            :style="{'background-color': tagPage.tag.color}"
         >
-            <font-awesome-icon :icon="['fas', 'user-plus']" />
+            &nbsp;&nbsp;&nbsp;
         </button>
         <div
             v-else
-            @click.stop="showPageTagUserControl = !showPageTagUserControl"
-            v-tooltip="'Click to manage users in this tag'"
+            @click.stop="isDropdownVisible = !isDropdownVisible"
             class="d-flex flex-row gap-2"
         >
             <span
-                class="btn btn-sm"
-                :class="{
-                    'btn-dark': tagPageUser.projectUser.user.id == userStore.currentUser.id,
-                    'text-muted': tagPageUser.projectUser.user.id != userStore.currentUser.id
+                class="btn btn-sm btn-tag btn-tag-user p-0 d-flex flex-row justify-content-center align-items-center"
+                :style="{
+                    'background-color': tagPage.tag.color,
                 }"
                 v-for="tagPageUser in tagPage.users"
                 :key="tagPageUser.id"
+                v-tooltip="tagPage.tag.name + ': ' + tagPageUser.projectUser.user.email"
             >
-                {{ tagPageUser.projectUser.user.email }}
+                <font-awesome-icon :icon="['fas', 'user']" style="max-width: 100%; max-height: 100%;"/>
             </span>
         </div>
 
@@ -89,12 +89,13 @@
 </template>
 
 <script setup>
-    import { ref, watch, computed, onMounted } from 'vue';
+    import { ref, computed, onMounted, watch } from 'vue';
     import { fetchCreateTagPageProjectUserFromTagId, fetchDeleteTagPageProjectUser } from '@/stores/fetch/TagFetcher.js';
     import { useUserStore } from '@/stores/UserStore.js';
     import { usePageStore } from '@/stores/PageStore.js';
     import { useProjectStore } from '@/stores/ProjectStore.js';
 
+    const emit = defineEmits(['showDropdown', 'hideDropdown']);
     const props = defineProps({
         tagPage: {
             type: Object,
@@ -104,13 +105,21 @@
     const userStore = useUserStore();
     const pageStore = usePageStore();
     const projectStore = useProjectStore();
-    const showPageTagUserControl = ref(false);
     const availableProjectUsers = ref(null);
     const projectUserInput = ref(null);
+    const isDropdownVisible = ref(false);
 
     // this makes sure to reload the available tags when the component is mounted
     onMounted(async () => {
         reloadAvailableProjectUsers();
+    });
+
+    watch(() => isDropdownVisible.value, () => {
+        if (isDropdownVisible.value) {
+            emit('showDropdown');
+        } else {
+            emit('hideDropdown');
+        }
     });
 
     const tagPageUsers = computed(() => {

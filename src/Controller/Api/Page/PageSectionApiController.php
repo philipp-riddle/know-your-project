@@ -51,12 +51,13 @@ class PageSectionApiController extends CrudApiController
 
         return [
             // generate recommendations using the whole project as context
-            'recommendations' => $this->recommendationEngine->recommendSimilarContent(
-                $this->getUser(),
-                baseEntity: $entity,
-                queryEntity: $entity->getPageTab()->getPage()->getProject(),
-                excludeEntity: $entity->getPageTab()->getPage(),
-            ),
+            // @todo add again later
+            // 'recommendations' => $this->recommendationEngine->recommendSimilarContent(
+            //     $this->getUser(),
+            //     baseEntity: $entity,
+            //     queryEntity: $entity->getPageTab()->getPage()->getProject(),
+            //     excludeEntity: $entity->getPageTab()->getPage(),
+            // ),
         ];
     }
 

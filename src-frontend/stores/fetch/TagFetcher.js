@@ -2,6 +2,16 @@ import axios from "axios";
 
 const BaseService = "/api/tag";
 
+export async function fetchUpdateTag(tag) {
+    const resp = await axios.put(`${BaseService}/${tag.id}`, {
+        name: tag.name,
+        color: tag.color,
+        parent: null, // @todo later implement parent functionality
+    });
+
+    return resp.data;
+}
+
 // ==== TagPage API FUNCTIONS
 
 const BaseTagPageService = BaseService + "/page";

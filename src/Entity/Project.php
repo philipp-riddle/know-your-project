@@ -146,6 +146,17 @@ class Project extends CachedEntityVectorEmbedding implements UserPermissionInter
         return $this;
     }
 
+    public function isUserInProject(User $user): bool
+    {
+        foreach ($this->getProjectUsers() as $projectUser) {
+            if ($projectUser->getUser() === $user) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * @return Collection<int, UserInvitation>
      */
