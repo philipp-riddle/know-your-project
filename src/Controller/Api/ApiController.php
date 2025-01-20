@@ -10,7 +10,9 @@ use App\Service\Helper\DefaultNormalizer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
@@ -76,5 +78,51 @@ abstract class ApiController extends AbstractController
     protected function createJsonResponse($data): JsonResponse
     {
         return new JsonResponse($data, 200);
+    }
+
+    /**
+     * Standard function to handle a request and a form with its data.
+     * If the form submission is successful, the form is returned.
+     * If the form submission is not successful, a JSON response with the error message is returned.
+     * 
+     * @todo change the return type to FormInterface exclusively; if the form is not valid we should work with exceptions. this makes integrating this method less error-prone.
+     */
+    protected function handleFormRequest(FormInterface $form, Request $request): JsonResponse|FormInterface
+    {
+        if ($request->getContent() === '') {
+            // if the body is empty form data parts could have been sent which we can process with ->handleRequest
+            $form->handleRequest($request);
+        } else {
+            // otherwise we submit the request data by serializing the request body to an array
+            $form->submit($request->toArray());
+        }
+
+        // now check if the form submission is valid or if there are any errors
+        if (!$form->isSubmitted() || !$form->isValid()) {
+            $errorContent = [];
+
+            foreach ($form->getErrors(true, true) as $error) {
+                $errorContent[] = [
+                    'message' => $error->getMessage(),
+                    'validation' => $error->getMessageParameters(),
+                ];
+            }
+
+            // there could be no validation errors -
+            // in this case we check if the form was submitted and if the request body was empty or invalid.
+            if (\count($errorContent) === 0) {
+                if (!$form->isSubmitted()) {
+                    $errorContent = ['error' => 'Form was not submitted'];
+                } elseif (!$form->isValid()) {
+                    $errorContent = ['error' => 'Invalid form data'];
+                } else {
+                    $errorContent = ['error' => 'Invalid request body'];
+                }
+            }
+
+            return $this->json($errorContent, 400);
+        }
+
+        return $form;
     }
 }

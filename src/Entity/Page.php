@@ -219,13 +219,11 @@ implements
 
     public function getTextForEmbedding(): ?string
     {
-        return $this->getName();
-    }
-
-    
-    public function getHtmlSummary(): string
-    {
         $pageHtml = \sprintf('<h1>%s</h1>', $this->getName()); // The page name is the title of the page
+
+        foreach ($this->getTags() as $tagPage) {
+            $pageHtml .= \sprintf('<span>Has Tag %s</span>', $tagPage->getTag()->getName());
+        }
 
         foreach ($this->getPageTabs()[0]?->getPageSections() ?? [] as $section) {
             if (!$section instanceof PageSectionEmbeddedPage) {

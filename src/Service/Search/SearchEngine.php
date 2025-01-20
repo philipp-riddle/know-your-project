@@ -53,7 +53,7 @@ final class SearchEngine
      * @param string $searchTerm The search term to search for.
      * @param \Generator|array<array, UserPermissionInterface> $searchResults The  search results from the vector embedding service.
      */
-    private function parseSearchResults(User $currentUser, string $searchTerm, \Generator|array $searchResults): array
+    public function parseSearchResults(User $currentUser, string $searchTerm, \Generator|array $searchResults): array
     {
         $parsedSearchResults = [];
 

@@ -3,18 +3,27 @@
 namespace App\Service\Search;
 
 use App\Entity\Page;
+use App\Entity\PageSection;
 use App\Entity\PageSectionAIPrompt;
 use App\Entity\PageSectionEmbeddedPage;
 use App\Entity\PageSectionSummary;
+use App\Entity\Project;
 use App\Entity\Prompt;
-use App\Entity\Thread;
 use App\Entity\ThreadItemPrompt;
 use App\Entity\User;
 use App\Service\Integration\OpenAIIntegration;
+use App\Service\Search\Entity\EntityVectorEmbeddingInterface;
+use Qdrant\Models\Filter\Condition\Range;
 
 /**
- * This class is responsible for creating new content, based on existing context data and user prompted input.
+ * This class is responsible for creating new content or filtering existing content, based on the user prompt input.
  * It generates prompts for the AI to respond to, based on the context and what is required, e.g. summary requires different prompts than a general prompt.
+ * 
+ * Current generation possibilities:
+ *      - Answer questions (ask a question and answer using relevant context from the project)
+ *      - Page summary (summarize the content of a page)
+ *      - Page section AI prompt (answer a specific prompt in the context of a page section)
+ *      - Thread item AI prompt (refine a specific prompt in the context of a thread item)
  */
 final class GenerationEngine
 {
@@ -23,13 +32,88 @@ final class GenerationEngine
     public const USER_PROMPT_INSTRUCTION = 'Now you receive the user prompt. Make sure to not hallucinate and make sure to provide a response that is relevant to the context. Here is the prompt:';
     public const THREAD_MESSAGES_CONTEXT = 'Thread messages are the context of the thread the user is currently in.';
 
+    public const ANSWER_RELEVANCE_SCORE_TRESHOLD = 0.3;
+
     public function __construct(
         private OpenAIIntegration $openAIIntegration,
+        private EntityVectorEmbeddingService $entityVectorEmbeddingService,
+        private SearchEngine $searchEngine,
     ) { }
+
+    /** 
+     * Answer a question based on the user input and the context of the project.
+     * 
+     * @param User $user The user asking the question.
+     * @param Project $project The project the user is currently working on.
+     * @param string $question The question the user is asking.
+     * 
+     * @return array An array of search results and messages to be sent to the user.
+     */
+    public function answerQuestion(User $user, Project $project, string $question): array
+    {
+        // get relevant context (pages, page sections) project; this improves the query results
+        $searchResults = $this->entityVectorEmbeddingService->searchEmbeddedEntity($user, $project, $question, self::ANSWER_RELEVANCE_SCORE_TRESHOLD);
+        $aggregatedSearchResults = []; // after iterating over a search result add it to the item; otherwise we cannot retrieve it anymore (=> is a Generator and cannot be rewinded)
+        $relevantContext = [];
+
+        foreach ($searchResults as $searchResult) {
+            list ($searchResult, $entity) = $searchResult;
+
+            // if it's not an embedded entity or a page section, skip it
+            // we only want top-level pages and tasks in the context; this prevents confusing the LLM with duplicate content
+            if (!($entity instanceof EntityVectorEmbeddingInterface) || $entity instanceof PageSection) {
+                continue;
+            }
+
+            if (null !== $textForEmbedding = $entity->getTextForEmbedding()) {
+                $relevantContext[] = '=== CONTEXT === \n'.$textForEmbedding;
+            }
+
+            $aggregatedSearchResults[] = [$searchResult, $entity];
+        }
+
+        $messages = [
+            [
+                'role' => 'system',
+                'content' => '
+                    You will  first provided with context ("1. CONTEXT"; each context item delimited by "=== CONTEXT ===") and then the user question ("2. QUESTION").
+                    Make sure to provide a relevant answer to the question and make use of the context provided.
+                    Respond in HTML format for better readibility and start with a heading <h3> tag.
+                    The heading should concisely describe the nature of the user question.
+                ',
+            ],
+            [
+                'role' => 'user',
+                'content' => '1. CONTEXT: '.\implode("\n", $relevantContext),
+            ],
+            [
+                'role' => 'user',
+                'content' => '2. QUESTION: '.$question,
+            ],
+        ];
+
+        $prompt = (new Prompt())
+            ->initialize()
+            ->setUser($user)
+            ->setProject($project)
+            ->setPromptText($question)
+            ->setProject($project);
+
+        // call OpenAI API to generate a response with the user context and user question.
+        $this->openAIIntegration->generatePromptChatResponse($prompt, $messages);
+
+        return [
+            // use the search engine to parse the search results into a format the frontend can easily parse and understand.
+            'searchResults' => $this->searchEngine->parseSearchResults($user, $question, $aggregatedSearchResults),
+
+            // this is the answer from the assistant.
+            'answer' => $prompt->getResponseText(),
+        ];
+    }
 
     public function generatePageSummary(User $currentUser, Page $page, PageSectionSummary $summary): void
     {
-        $pageHtml = \trim($page->getHtmlSummary());
+        $pageHtml = \trim($page->getTextForEmbedding());
 
         if (\trim($pageHtml) === '') {
             return;
@@ -131,7 +215,7 @@ final class GenerationEngine
         return [
             [
                 'role' => 'user',
-                'content' => self::GENERAL_CONTEXT_INSTRUCTION.$this->getHtmlSummary($page),
+                'content' => self::GENERAL_CONTEXT_INSTRUCTION.$page->getTextForEmbedding(),
             ],
             [
                 'role' => 'user',
@@ -140,34 +224,13 @@ final class GenerationEngine
         ];
     }
 
-    // @todo implement an extensive version of the page HTML to feed into the LLM; when summarizing etc we want minimal information to not distract the LLM
-    public function getHtmlSummary(Page $page): string
-    {
-        $pageHtml = \sprintf('<h1>%s</h1>', $page->getName()); // The page name is the title of the page
-
-        foreach ($page->getTags() as $tagPage) {
-            $pageHtml .= \sprintf('<span>Has Tag %s</span>', $tagPage->getTag()->getName());
-        }
-
-        foreach ($page->getPageTabs()[0]?->getPageSections() ?? [] as $section) {
-            if (!$section instanceof PageSectionEmbeddedPage) {
-                $pageHtml .= '<section>';
-                $pageHtml .= $section->getTextForEmbedding();
-                $pageHtml .= '</section>';
-            }
-
-        }
-
-        return $pageHtml;
-    }
-
     public function getEmbeddedPageContextHTML(Page $page): string
     {
         $embeddedPageContextHTML = '';
 
         foreach ($page->getPageTabs()[0]?->getPageSections() ?? [] as $section) {
             if ($section instanceof PageSectionEmbeddedPage) {
-                $embeddedPageContextHTML .= $page->getHTML($section->getEmbeddedPage()->getPage());
+                $embeddedPageContextHTML .= $page->getTextForEmbedding();
             }
         }
 

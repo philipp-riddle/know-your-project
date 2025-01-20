@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Controller\Api;
+namespace App\Controller\Api\Task;
 
+use App\Controller\Api\CrudApiController;
 use App\Entity\Project;
 use App\Entity\Task;
 use App\Form\Task\TaskMoveForm;

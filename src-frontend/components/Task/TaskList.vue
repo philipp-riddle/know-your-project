@@ -10,7 +10,12 @@
 			<p class="text-muted m-0"><i>No tasks in this step</i></p>
 		</div>
 
-		<div ref="listArea" class="list-area d-flex flex-column gap-3 flex-fill p-0" style="min-height: 15rem;" :workflow-step="workflowStep.id">
+		<div
+			ref="listArea"
+			class="list-area d-flex flex-column gap-3 flex-fill p-0"
+			style="min-height: 15rem;"
+			:workflow-step="workflowStep.id"
+		>
 			<draggable
 				class="dragArea pb-4 m-0 d-flex gap-3 flex-column"
 				:data-workflowStep="workflowStep"
@@ -24,21 +29,21 @@
 					<TaskCard :task="element" @click="onTaskClick(element)" />
 				</template>
 			</draggable>
+		</div>
 
-			<div class="pb-4 mb-0" v-if="isAddingTask">
-				<textarea
-					cols="9"
-					rows="2"
-					style="max-width: 100%;"
-					class="form-control"
-					ref="newTaskInput"
-					v-model="newTaskName"
-					@keyup.enter="onTaskCreateClick"
-					@keyup.escape="showNewTaskInput(false)"
-					@blur="showNewTaskInput(false)"
-					:disabled="isAddingTaskRequestLoading"
-				></textarea>
-			</div>
+		<div class="pb-4 mb-0" v-if="isAddingTask">
+			<textarea
+				cols="9"
+				rows="2"
+				style="max-width: 100%;"
+				class="form-control"
+				ref="newTaskInput"
+				v-model="newTaskName"
+				@keyup.enter="onTaskCreateClick"
+				@keyup.escape="showNewTaskInput(false)"
+				@blur="showNewTaskInput(false)"
+				:disabled="isAddingTaskRequestLoading"
+			></textarea>
 		</div>
 	</div>
 	<div

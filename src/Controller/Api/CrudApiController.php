@@ -26,13 +26,6 @@ use Symfony\Component\HttpFoundation\Request;
 abstract class CrudApiController extends ApiController
 {
     /**
-     * The maximum page size for list operations.
-     * 
-     * @var int
-     */
-    public const PAGE_SIZE_MAX = 100;
-
-    /**
      * @return string The entity class name; e.g. App\Entity\Page
      */
     abstract public function getEntityClass(): string;
@@ -111,38 +104,12 @@ abstract class CrudApiController extends ApiController
             $entityForm = $this->createForm($formClass);
         }
 
-        if ($request->getContent() === '') {
-            // if the body is empty form data parts could have been sent which we can process with ->handleRequest
-            $entityForm->handleRequest($request);
-        } else {
-            // otherwise we submit the request data by serializing the request body to an array
-            $entityForm->submit($request->toArray());
-        }
+        // this submits the form and checks if it's valid; if not it throws an exception and the exception handler will return a JSON response
+        $entityForm = $this->handleFormRequest($entityForm, $request);
 
-        // now check if the form submission is valid or if there are any errors
-        if (!$entityForm->isSubmitted() || !$entityForm->isValid()) {
-            $errorContent = [];
-
-            foreach ($entityForm->getErrors(true, true) as $error) {
-                $errorContent[] = [
-                    'message' => $error->getMessage(),
-                    'validation' => $error->getMessageParameters(),
-                ];
-            }
-
-            // there could be no validation errors -
-            // in this case we check if the form was submitted and if the request body was empty or invalid.
-            if (\count($errorContent) === 0) {
-                if (!$entityForm->isSubmitted()) {
-                    $errorContent = ['error' => 'Form was not submitted'];
-                } elseif (!$entityForm->isValid()) {
-                    $errorContent = ['error' => 'Invalid form data'];
-                } else {
-                    $errorContent = ['error' => 'Invalid request body'];
-                }
-            }
-
-            return $this->json($errorContent, 400);
+        // if the handle returned a response this means that the form submission was not successful
+        if ($entityForm instanceof JsonResponse) {
+            return $entityForm;
         }
 
         $entity = $entityForm->getData();

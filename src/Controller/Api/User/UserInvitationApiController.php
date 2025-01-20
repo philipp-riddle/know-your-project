@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Api;
+namespace App\Controller\Api\User;
 
 use App\Controller\Api\CrudApiController;
 use App\Entity\Project;

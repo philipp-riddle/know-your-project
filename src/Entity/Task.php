@@ -146,11 +146,12 @@ class Task extends CachedEntityVectorEmbedding implements OrderListItemInterface
     public function getTextForEmbedding(): ?string
     {
         $lines = [
-            \sprintf('Task %s (%s)', $this->getPage()->getName(), $this->getStepType()),
+            \sprintf('<h1>%s</h1>', $this->getPage()->getName(), $this->getStepType()),
+            \sprintf('This task is in the %s step.', $this->getStepType()),
         ];
 
         if ($this->getDueDate() !== null) {
-            $lines[] = \sprintf('Due: %s', $this->getDueDate()->format('Y-m-d'));
+            $lines[] = \sprintf('This task is due on %s', $this->getDueDate()->format('Y-m-d'));
         }
 
         if ($this->isArchived) {
