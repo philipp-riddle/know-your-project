@@ -1,36 +1,29 @@
 <template>
-	<div style="min-width: 350px;" class="task-list">
-		<div class="card-header d-flex align-items-center">
+	<div style="min-width: 350px;" class="task-list d-flex flex-column gap-3 flex-fill overflow-scroll">
+		<div class="d-flex align-items-center">
 			<p class=m-0>
 				{{ workflowStep.name }}
 			</p>
 		</div>
 
-		<div v-if="isLoadingTasks">
-			<div class="spinner-border" role="status">
-				<span class="visually-hidden">Loading...</span>
-			</div>
+		<div v-if="tasks.length === 0">
+			<p class="text-muted m-0"><i>No tasks in this step</i></p>
 		</div>
-		<div v-else>
-			<div v-if="taskStore.tasks[workflowStep]?.length === 0">
-				<p>No tasks created so far.</p>
-			</div>
 
-			<div ref="listArea" class="list-area p-0" style="min-height: 150px" :workflow-step="workflowStep.id">
-				<draggable
-					class="dragArea pb-4 m-0 d-flex gap-3 flex-column"
-					:data-workflowStep="workflowStep"
-					tag="ul"
-					:list="this.taskStore.tasks[workflowStep] ?? []"
-					:group="{ name: 'tasks' }"
-					item-key="id"
-					@end="onDragEnd"
-				>
-					<template #item="{ element }">
-						<TaskCard :task="element" @click="onTaskClick(element)" />
-					</template>
-				</draggable>
-			</div>
+		<div ref="listArea" class="list-area d-flex flex-column gap-3 flex-fill p-0" style="min-height: 15rem;" :workflow-step="workflowStep.id">
+			<draggable
+				class="dragArea pb-4 m-0 d-flex gap-3 flex-column"
+				:data-workflowStep="workflowStep"
+				tag="ul"
+				:list="tasks"
+				:group="{ name: 'tasks' }"
+				item-key="id"
+				@end="onDragEnd"
+			>
+				<template #item="{ element }">
+					<TaskCard :task="element" @click="onTaskClick(element)" />
+				</template>
+			</draggable>
 
 			<div class="pb-4 mb-0" v-if="isAddingTask">
 				<textarea
@@ -47,14 +40,14 @@
 				></textarea>
 			</div>
 		</div>
-		<div
-			class="btn btn-dark btn-add-task d-flex align-items-center justify-content-center"
-			@click="showNewTaskInput(!isAddingTask)"
-			v-if="!isAddingTask && !isAddingTaskRequestLoading"
-		>
-			<p class="pe-3 m-0"><font-awesome-icon icon="fa-solid fa-plus" /></p>
-			<p class="m-0">ADD NEW TASK</p>
-		</div>
+	</div>
+	<div
+		class="btn btn-dark btn-add-task d-flex align-items-center justify-content-center"
+		@click="showNewTaskInput(!isAddingTask)"
+		v-if="!isAddingTask && !isAddingTaskRequestLoading"
+	>
+		<p class="pe-3 m-0"><font-awesome-icon icon="fa-solid fa-plus" /></p>
+		<p class="m-0">ADD NEW TASK</p>
 	</div>
 </template>
 
@@ -70,6 +63,10 @@
 
 	export default {
 		props: {
+			tasks: {
+				type: Array,
+				required: true,
+			},
 			workflowStep: {
 				type: String,
 				required: true
@@ -96,7 +93,6 @@
 			this.taskStore = useTaskStore();
 			this.pageStore = usePageStore();
 			this.router = useRouter();
-			this.loadTasks(this.workflowStep);
 		},
 		data() {
 			return {
@@ -106,20 +102,12 @@
 				taskStore: null,
 				pageStore: null,
 				router: null,
-				isLoadingTasks: true,
-
 				listArea: null,
-				// newTaskInput: null,
 			};
 		},
 		methods: {
 			onDragEnd(event) {
 				this.onTaskDrag(event); // pass it to the parent TaskBoard
-			},
-			loadTasks() {
-				this.taskStore.getTasks(this.workflowStep).then((data) => {
-					this.isLoadingTasks = false;
-				});
 			},
 			async showNewTaskInput(show) {
 				this.$data.isAddingTask = show;
@@ -163,11 +151,12 @@
 	};
 </script>
 
-<style lang="sass" scoped>
+<style lang="scss" scoped>
 	@import '@/styles/colors.scss';
 
 	.list-area {
-		max-height: 80vh;
+		// I wish this could be dropped but somehow the scroll does not work without it but does not span across the full height
+        max-height: 80vh;
         overflow-x: hidden;
         overflow-y: scroll;
         white-space: nowrap;

@@ -8,8 +8,14 @@ export async function fetchTask(taskId) {
     return resp.data;
 }
 
-export async function fetchTasks(stepType) {
-    const resp = await axios.get(`${BaseService}/list/${stepType}`);
+export async function fetchTasks(projectId, tags) {
+    var formattedTags = '';
+
+    if (tags) {
+        formattedTags = tags.join(',');
+    }
+
+    const resp = await axios.get(`${BaseService}/list/${projectId}?tags=${formattedTags}`, );
 
     return resp.data;
 }

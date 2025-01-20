@@ -2,7 +2,7 @@
 
 namespace App\Controller\Api;
 
-use App\Entity\PageSection;
+use App\Entity\Project;
 use App\Entity\Task;
 use App\Form\MoveTaskForm;
 use App\Form\TaskForm;
@@ -11,7 +11,6 @@ use App\Service\Helper\ApiControllerHelperService;
 use App\Service\OrderListHandler;
 use App\Service\PageService;
 use App\Service\TaskService;
-use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -34,12 +33,20 @@ class TaskApiController extends CrudApiController
         return $this->crudGet($task);
     }
 
-    #[Route('/list/{workflowStepType}', name: 'api_task_list', methods: ['GET'])]
-    public function getTasks(string $workflowStepType): JsonResponse
+    #[Route('/list/{project}', name: 'api_task_list', methods: ['GET'])]
+    public function getTasks(Project $project, Request $request): JsonResponse
     {
-        return $this->jsonSerialize(
-            $this->taskService->getTasks($this->getUser()->getSelectedProject(), $workflowStepType),
-        );
+        $this->checkUserAccess($project);
+
+        if ('' !== $rawTags = $request->query->get('tags', '')) {
+            $tags = \explode(',', $rawTags);
+        } else {
+            $tags = null;
+        }
+
+        $tasks = $this->taskRepository->findProjectTasks($project, $tags);
+
+        return $this->jsonSerialize($tasks);
     }
 
     #[Route('/{workflowStepType}', name: 'api_task_create', methods: ['POST'])]

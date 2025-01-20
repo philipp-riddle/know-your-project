@@ -149,6 +149,13 @@ export const usePageStore = defineStore('page', () => {
 
     function getPageList(projectId, tags) {
         return new Promise((resolve) => {
+            // use the preloaded version in the window object if available and if we want to load all pages with no tags
+            if (tags && tags.length === 0 && window.untaggedPages) {
+                addPagesAndTagsToStore(window.untaggedPages, tags);
+                resolve(window.untaggedPages);
+                return;
+            }
+
             fetchGetPageList(projectId, null, null, null, null, tags).then((pageList) => {
                 addPagesAndTagsToStore(pageList, tags);
 

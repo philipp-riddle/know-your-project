@@ -31,6 +31,7 @@
         </div>
 
         <button
+            v-if="showEditControls"
             class="btn"
             :class="{
                 'btn-tag-edit': !isEditing,
@@ -63,6 +64,11 @@
             type: String,
             required: false,
             default: '',
+        },
+        showEditControls: {
+            type: Boolean,
+            required: false,
+            default: true,
         },
     });
     const isEditing = ref(false);

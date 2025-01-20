@@ -1,41 +1,54 @@
 <template>
-    <div class="d-flex flex-row gap-3 task-overview h-100 p-5 m-2 pt-2 pb-2">
-        <div>
-            <h5 v-tooltip="'Discover and understand the problem'">Discover</h5>
-            <TaskList workflowStep="Discover" :onTaskSelect="onTaskSelect" :onTaskDrag="onTaskDrag" />
+    <div class="d-flex flex-row gap-3 task-overview h-100 overflow-scroll">
+        <div v-if="isLoadingTasks" class="p-5">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
         </div>
-        <div>
-            <h5 v-tooltip="'Define the requirements'">Define</h5>
-            <TaskList workflowStep="Define" :onTaskSelect="onTaskSelect" :onTaskDrag="onTaskDrag" />
-        </div>
-        <div>
-            <h5 v-tooltip="'Develop the solution to solve the problem'">Develop</h5>
-            <TaskList workflowStep="Develop" :onTaskSelect="onTaskSelect" :onTaskDrag="onTaskDrag" />
-        </div>
-        <div>
-            <h5 v-tooltip="'Deliver the solution, testing it out'">Deliver</h5>
-            <TaskList workflowStep="Deliver" :onTaskSelect="onTaskSelect" :onTaskDrag="onTaskDrag" />
+        <div v-else class="ps-5 pe-5 pt-3 pb-3 flex-fill d-flex flex-row gap-3">
+            <div v-for="(tooltip, step) in stepsAndTooltips" :key="step" class="d-flex flex-column gap-3">
+                <h5 class="m-0" v-tooltip="tooltip">{{ step }}</h5>
+                <TaskList
+                    :workflowStep="step"
+                    :tasks="taskStore.tasks[step] ?? []"
+                    :onTaskSelect="onTaskSelect"
+                    :onTaskDrag="onTaskDrag"
+                />
+            </div>
         </div>
     </div>
 
-    <div v-if="taskStore.tasks['Discover'] && taskStore.tasks['Define'] && taskStore.tasks['Develop'] && taskStore.tasks['Deliver']">
-        <router-view></router-view>
-    </div>
+    <router-view></router-view>
 </template>
 
 <script setup>
     import TaskList from '@/components/Task/TaskList.vue';
     import TaskDetailModal from '@/views/TaskDetailModal.vue';
+    import { useProjectStore } from '@/stores/ProjectStore.js';
     import { useTaskStore } from '@/stores/TaskStore.js';
 
-    import { ref } from 'vue';
+    import { ref, onMounted } from 'vue';
     import { useRouter } from 'vue-router';
 
+    const stepsAndTooltips = {
+        'Discover': 'Discover and understand the problem',
+        'Define': 'Define the requirements',
+        'Develop': 'Develop the solution to solve the problem',
+        'Deliver': 'Deliver the solution, testing it out',
+    };
+
+    const projectStore = useProjectStore();
     const taskStore = useTaskStore();
     const router = useRouter();
-    const discoverTasks = ref(null);
-    const developTasks = ref(null);
-    const deliverTasks = ref(null);
+    const isLoadingTasks = ref(true);
+
+    onMounted(() => {
+        projectStore.getSelectedProject().then((selectedProject) => {
+            taskStore.getTasks().then(() => {
+                isLoadingTasks.value = false;
+            });
+        })
+    })
 
     const onTaskSelect = (task) => {
         router.push({ name: 'TasksDetail', params: {id: task.id}}); // @todo rework with modal route

@@ -146,8 +146,7 @@ class Task extends CachedEntityVectorEmbedding implements OrderListItemInterface
     public function getTextForEmbedding(): ?string
     {
         $lines = [
-            \sprintf('Task (%d): %s', $this->getId(), $this->getStepType()),
-            'Order Index: ' . $this->getOrderIndex(),
+            \sprintf('Task %s (%s)', $this->getPage()->getName(), $this->getStepType()),
         ];
 
         if ($this->getDueDate() !== null) {
@@ -155,7 +154,7 @@ class Task extends CachedEntityVectorEmbedding implements OrderListItemInterface
         }
 
         if ($this->isArchived) {
-            $lines[] = 'Archived';
+            $lines[] = 'This task is archived.';
         }
 
         return \implode("\n", $lines);

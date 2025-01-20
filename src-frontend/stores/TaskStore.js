@@ -1,11 +1,13 @@
 import { defineStore } from 'pinia';
 import { usePageStore } from './PageStore';
+import { useProjectStore } from './ProjectStore';
 import { ref, watch } from 'vue';
 import { fetchTasks, fetchTask, fetchUpdateTask, fetchCreateTask, fetchDeleteTask, fetchMoveTask, fetchChangeOrder } from "@/stores/fetch/TaskFetcher.js";
 
 export const useTaskStore = defineStore('task', () => {
     const tasks = ref({});
     const pageStore = usePageStore();
+    const projectStore = useProjectStore();
 
     /**
      * If the selected page changes we need to update the respective task in the store -
@@ -31,16 +33,26 @@ export const useTaskStore = defineStore('task', () => {
         } 
     }, { deep: true }); // deep watch is needed to watch the object's nested properties
 
-    const getTasks = (stepType) => {
+    const getTasks = async (tags) => {
+        tags = tags ?? null; // if the tags were not specified we assign NULL to it
+        const selectedProject = await projectStore.getSelectedProject();
+
         return new Promise((resolve) => {
-            if (tasks.value[stepType] ?? null) { // already in the store
-                resolve(tasks.value[stepType] ?? null);
-            } else {
-                fetchTasks(stepType).then((tasks) => {
-                    setTasks(stepType, tasks);
-                    resolve(tasks);
-                });
-            }
+            fetchTasks(selectedProject.id, tags).then((fetchedTasks) => {
+                tasks.value = {}; // reset store
+                // fetch all the tasks and once and then assign them to the appropriate stepType
+                for (let i = 0; i < fetchedTasks.length; i++) {
+                    const task = fetchedTasks[i];
+
+                    if (!tasks.value[task.stepType]) {
+                        tasks.value[task.stepType] = [];
+                    }
+
+                    tasks.value[task.stepType].push(task);
+                }
+
+                resolve(fetchedTasks);
+            });
         });
     };
 
@@ -76,10 +88,6 @@ export const useTaskStore = defineStore('task', () => {
                 resolve(null);
             })
         });
-    }
-
-    function setTasks(stepType, tasksList) {
-        tasks.value[stepType] = tasksList;
     }
 
     async function changeTaskOrder(workflowStepType, order) {
@@ -196,7 +204,6 @@ export const useTaskStore = defineStore('task', () => {
         getTask,
         getTaskFromStep,
         setSelectedTask,
-        setTasks,
         changeTaskOrder,
         createTask,
         addTask,

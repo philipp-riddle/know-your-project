@@ -20,7 +20,7 @@
         <div class="ps-5 pe-5 pt-2 pb-2page-content flex-fill">
             <div v-if="pageStore.isLoadingPage">
                 <div class="col-sm-12 offset-md-3 col-md-9 offset-xl-2 col-xl-10">
-                    <div class="spinner-border mt-3" role="status">
+                    <div class="spinner-border" role="status">
                         <span class="visually-hidden">Loading...</span>
                     </div>
                 </div>

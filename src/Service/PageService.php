@@ -6,13 +6,17 @@ use App\Entity\Page;
 use App\Entity\PageSection;
 use App\Entity\PageSectionText;
 use App\Entity\PageTab;
+use App\Entity\Project;
 use App\Entity\Task;
+use App\Entity\User;
+use App\Repository\PageRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 class PageService
 {
     public function __construct(
         private EntityManagerInterface $em,
+        private PageRepository $pageRepository,
     ) { }
 
     public function createDefaultPage(Task $task, string $pageName): Page
@@ -43,5 +47,13 @@ class PageService
         $this->em->persist($pageSectionText);
 
         return $page;
+    }
+
+    /**
+     * @return Page[]
+     */
+    public function getUntaggedPages(User $user, Project $project, int $limit = 25): array
+    {
+        return $this->pageRepository->findProjectPages($user, $project, tags: [], limit: $limit);
     }
 }

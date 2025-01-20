@@ -40,6 +40,7 @@ final class SearchEngine
     public function searchProject(User $user, Project $project, string $searchTerm): array
     {
         return $this->parseSearchResults(
+            $user,
             $searchTerm,
             $this->entityVectorEmbeddingService->searchEmbeddedEntity($user, $project, $searchTerm, self::SEARCH_SCORE_THRESHOLD),
         );
@@ -52,7 +53,7 @@ final class SearchEngine
      * @param string $searchTerm The search term to search for.
      * @param \Generator|array<array, UserPermissionInterface> $searchResults The  search results from the vector embedding service.
      */
-    private function parseSearchResults(string $searchTerm, \Generator|array $searchResults): array
+    private function parseSearchResults(User $currentUser, string $searchTerm, \Generator|array $searchResults): array
     {
         $parsedSearchResults = [];
 
@@ -73,7 +74,7 @@ final class SearchEngine
                 'id' => \sprintf('%s:%s', $entityType, $entity->getId()), // unique ID for the search result; this makes it easier in Vue to keep track of the results!
                 'type' => $entityType,
                 'score' => $this->calculateScore($entity, $searchTerm, $searchResult),
-                'result' => $this->normalizer->normalize($entity),
+                'result' => $this->normalizer->normalize($currentUser, $entity),
             ];
         }
 
@@ -112,10 +113,10 @@ final class SearchEngine
                 $pageId = $entityData['pageTab']['id'];
                 $searchContainers['page_'.$pageId]['subResults'][] = $searchResult;
             } else {
-                $searchContainers[\strtolower($entityType).'_'.$entityData['id']][] = $searchResult;
+                $searchContainers[\strtolower($entityType).'_'.$entityData['id']] = $searchResult;
             }
         }
-        
+
         // now we turn the containers back into the search results format
         $searchResults = [];
 

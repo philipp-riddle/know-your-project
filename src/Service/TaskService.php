@@ -32,10 +32,10 @@ class TaskService
     /**
      * @return Task[]
      */
-    public function getTasks(Project $project, string $workflowStepType): array
+    public function getTasks(Project $project): array
     {
         return $this->taskRepository->findBy(
-            ['project' => $project, 'stepType' => $workflowStepType],
+            ['project' => $project],
             ['orderIndex' => 'ASC'],
         );
     }
