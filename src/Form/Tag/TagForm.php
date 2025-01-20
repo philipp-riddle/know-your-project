@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Form;
+namespace App\Form\Tag;
 
 use App\Entity\Project;
 use App\Entity\Tag;

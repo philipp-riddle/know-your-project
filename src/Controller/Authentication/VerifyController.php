@@ -5,7 +5,7 @@ namespace App\Controller\Authentication;
 use App\Entity\ProjectUser;
 use App\Entity\User;
 use App\Entity\UserInvitation;
-use App\Form\VerifyUserInvitationForm;
+use App\Form\User\UserInvitationVerifyForm;
 use App\Repository\UserInvitationRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -27,7 +27,7 @@ class VerifyController extends AbstractController
     #[Route(path: '/{code}', name: 'app_auth_verify')]
     public function verify(Request $request, UserPasswordHasherInterface $passwordHasher, string $code): Response
     {
-        $form = $this->createForm(VerifyUserInvitationForm::class, options: ['code' => $code]);
+        $form = $this->createForm(UserInvitationVerifyForm::class, options: ['code' => $code]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

@@ -4,7 +4,7 @@ namespace App\Controller\Api\Tag;
 
 use App\Controller\Api\CrudApiController;
 use App\Entity\Tag;
-use App\Form\TagForm;
+use App\Form\Tag\TagForm;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;

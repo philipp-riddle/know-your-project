@@ -20,7 +20,7 @@ class TaskApiControllerTest extends ApiControllerTestCase
         ]);
 
         $this->assertNotNull($createResponse['id']);
-        $this->assertSame($createResponse['name'], 'Test Task');
+        $this->assertSame($createResponse['page']['name'], 'Test Task');
         $this->assertSame($createResponse['stepType'], 'Discover');
         $this->assertSame($createResponse['project']['id'], self::$loggedInUser->getSelectedProject()->getId());
 
@@ -62,11 +62,11 @@ class TaskApiControllerTest extends ApiControllerTestCase
         ]);
 
         $updateResponse = $this->requestJsonApi('PUT', '/task/' . $createResponse['id'], [
-            'name' => 'Updated Task',
             'stepType' => 'Define',
         ]);
 
-        $this->assertSame($updateResponse['name'], 'Updated Task');
+        $this->assertSame($createResponse['id'], $updateResponse['id']);
+        $this->assertSame($updateResponse['page']['name'], 'Test Task');
         $this->assertSame($updateResponse['stepType'], 'Define');
     }
 

@@ -8,7 +8,7 @@ use App\Entity\PageSection;
 use App\Entity\PageSectionText;
 use App\Entity\PageTab;
 use App\Entity\Project;
-use App\Form\PageForm;
+use App\Form\Page\PageForm;
 use App\Repository\PageRepository;
 use App\Repository\TaskRepository;
 use App\Service\Helper\ApiControllerHelperService;

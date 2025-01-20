@@ -7,7 +7,7 @@ use App\Entity\Thread;
 use App\Entity\ThreadItem;
 use App\Entity\ThreadItemComment;
 use App\Entity\User;
-use App\Form\ThreadItemCommentForm;
+use App\Form\Thread\ThreadItemCommentForm;
 use App\Service\Helper\ApiControllerHelperService;
 use App\Service\Search\GenerationEngine;
 use Symfony\Component\Form\FormInterface;

@@ -11,7 +11,7 @@ use App\Entity\PageSectionSummary;
 use App\Entity\PageSectionText;
 use App\Entity\PageTab;
 use App\Entity\Prompt;
-use App\Form\PageSectionForm;
+use App\Form\Page\PageSectionForm;
 use App\Service\Helper\ApiControllerHelperService;
 use App\Service\OrderListHandler;
 use App\Service\Search\Entity\EntityVectorEmbeddingInterface;

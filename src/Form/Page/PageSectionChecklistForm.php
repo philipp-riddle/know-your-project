@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Form;
+namespace App\Form\Page;
 
 use App\Entity\PageSectionChecklist;
 use Symfony\Component\Form\AbstractType;

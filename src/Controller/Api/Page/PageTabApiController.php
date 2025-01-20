@@ -4,7 +4,7 @@ namespace App\Controller\Api\Page;
 
 use App\Controller\Api\CrudApiController;
 use App\Entity\PageTab;
-use App\Form\PageTabForm;
+use App\Form\Page\PageTabForm;
 use App\Repository\PageTabRepository;
 use App\Service\Helper\ApiControllerHelperService;
 use Symfony\Component\HttpFoundation\JsonResponse;

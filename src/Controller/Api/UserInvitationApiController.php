@@ -5,7 +5,7 @@ namespace App\Controller\Api;
 use App\Controller\Api\CrudApiController;
 use App\Entity\Project;
 use App\Entity\UserInvitation;
-use App\Form\UserInvitationForm;
+use App\Form\User\UserInvitationForm;
 use App\Repository\UserInvitationRepository;
 use App\Service\Helper\ApiControllerHelperService;
 use App\Service\Helper\TestEnvironment;
@@ -50,7 +50,7 @@ class UserInvitationApiController extends CrudApiController
                     $this->mailerService->sendMail(
                         $userInvitation->getEmail(),
                         'You were invited to Know Your Project',
-                        'Hi there! <br>You were invited to join Know Your Project. <br><br>Please click on the following link to register: <a href="http://127.0.0.1:8080/auth/verify/'.$userInvitation->getCode().'">Register</a>'
+                        'Hi there! <br>You were invited to join Know Your Project. <br><br>Please click on the following link to register: <a href="http://127.0.0.1:8080/auth/verify/'.$userInvitation->_getCode().'">Register</a>'
                     );
                 }
 

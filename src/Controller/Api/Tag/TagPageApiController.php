@@ -5,7 +5,7 @@ namespace App\Controller\Api\Tag;
 use App\Controller\Api\CrudApiController;
 use App\Entity\Tag;
 use App\Entity\TagPage;
-use App\Form\TagPageForm;
+use App\Form\Tag\TagPageForm;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;

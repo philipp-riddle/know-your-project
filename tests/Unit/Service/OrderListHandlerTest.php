@@ -13,11 +13,11 @@ class OrderListHandlerTest extends TestCase
     public function testAdd_noExplicitOrderIndex()
     {
         $items = [
-            (new Task())->setOrderIndex(1)->setName('name 1'), // distraction: index starts at 1; refresh will move it back to 0
-            (new Task())->setOrderIndex(2)->setName('name 1'),
-            (new Task())->setOrderIndex(3)->setName('name 1'),
+            (new Task())->setOrderIndex(1), // distraction: index starts at 1; refresh will move it back to 0
+            (new Task())->setOrderIndex(2),
+            (new Task())->setOrderIndex(3),
         ];
-        $itemToAdd = (new Task())->setName('name 4');
+        $itemToAdd = (new Task());
         
         (new OrderListHandler())->add($itemToAdd, $items);
 
@@ -31,14 +31,13 @@ class OrderListHandlerTest extends TestCase
     public function testAdd_explicitOrderIndex()
     {
         $items = [
-            (new Task())->setOrderIndex(0)->setName('name 1'),
-            (new Task())->setOrderIndex(1)->setName('name 1'),
-            (new Task())->setOrderIndex(2)->setName('name 1'),
+            (new Task())->setOrderIndex(0),
+            (new Task())->setOrderIndex(1),
+            (new Task())->setOrderIndex(2),
         ];
         $itemToAdd = (new Task())
-            ->setOrderIndex(1) // this way we need to shift
-            ->setName('name 4');
-        
+            ->setOrderIndex(1); // this way we need to shift the other items
+
         (new OrderListHandler())->add($itemToAdd, $items);
 
         $this->assertEquals(1, $itemToAdd->getOrderIndex());

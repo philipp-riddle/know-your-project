@@ -6,7 +6,7 @@ use App\Controller\Api\CrudApiController;
 use App\Entity\Thread;
 use App\Entity\ThreadItem;
 use App\Entity\ThreadItemPrompt;
-use App\Form\ThreadItemPromptForm;
+use App\Form\Thread\ThreadItemPromptForm;
 use App\Service\Helper\ApiControllerHelperService;
 use App\Service\Search\GenerationEngine;
 use Symfony\Component\Form\FormInterface;

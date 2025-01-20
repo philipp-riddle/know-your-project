@@ -7,7 +7,7 @@ use App\Entity\PageSection;
 use App\Entity\PageSectionUpload;
 use App\Entity\PageTab;
 use App\Event\CreateCrudEntityEvent;
-use App\Form\PageSectionForm;
+use App\Form\Page\PageSectionForm;
 use App\Repository\PageTabRepository;
 use App\Service\File\Uploader;
 use App\Service\Helper\ApiControllerHelperService;

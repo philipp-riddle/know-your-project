@@ -1,38 +1,35 @@
 <?php
 
-namespace App\Form;
+namespace App\Form\Tag;
 
-use App\Entity\Page;
-use App\Entity\PageTab;
+use App\Entity\ProjectUser;
+use App\Entity\TagPage;
+use App\Entity\TagPageProjectUser;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class PageTabForm extends AbstractType
+class TagPageProjectUserForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        /** @var ?PageTab */
-        $pageTab = $builder->getData();
-
         $builder
-            ->add('name')
-            ->add('emojiIcon');
-
-        // if the page tab is new we need to add the page field
-        if (null === $pageTab) {
-            $builder->add('page', EntityType::class, [
-                'class' => Page::class,
+            ->add('tagPage', EntityType::class, [
+                'class' => TagPage::class,
                 'choice_label' => 'id',
-            ]);
-        }
+            ])
+            ->add('projectUser', EntityType::class, [
+                'class' => ProjectUser::class,
+                'choice_label' => 'id',
+            ])
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => PageTab::class,
+            'data_class' => TagPageProjectUser::class,
             'csrf_protection' => false,
         ]);
     }

@@ -5,7 +5,7 @@ namespace App\Controller\Authentication;
 use App\Entity\Project;
 use App\Entity\ProjectUser;
 use App\Entity\User;
-use App\Form\RegistrationFormType;
+use App\Form\User\UserRegistrationForm;
 use App\Security\EmailVerifier;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,7 +24,7 @@ class SignupController extends AbstractController
     public function signup(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
     {
         $user = new User();
-        $form = $this->createForm(RegistrationFormType::class, $user);
+        $form = $this->createForm(UserRegistrationForm::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

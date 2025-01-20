@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Form;
+namespace App\Form\Task;
 
 use App\Entity\Task;
 use Symfony\Component\Form\AbstractType;
@@ -8,7 +8,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class MoveTaskForm extends AbstractType
+class TaskMoveForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {

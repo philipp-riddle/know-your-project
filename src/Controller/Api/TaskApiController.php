@@ -4,8 +4,8 @@ namespace App\Controller\Api;
 
 use App\Entity\Project;
 use App\Entity\Task;
-use App\Form\MoveTaskForm;
-use App\Form\TaskForm;
+use App\Form\Task\TaskMoveForm;
+use App\Form\Task\TaskForm;
 use App\Repository\TaskRepository;
 use App\Service\Helper\ApiControllerHelperService;
 use App\Service\OrderListHandler;
@@ -100,7 +100,7 @@ class TaskApiController extends CrudApiController
         return $this->crudUpdateOrCreate(
             $task,
             $request,
-            formClass: MoveTaskForm::class,
+            formClass: TaskMoveForm::class,
             onProcessEntity: function (Task $newTask) use ($task) {
                 $newStepType = $newTask->getStepType();
 

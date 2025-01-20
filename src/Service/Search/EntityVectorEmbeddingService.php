@@ -36,7 +36,7 @@ final class EntityVectorEmbeddingService
     ) { }
 
     /**
-     * Searches for entities with the given embedded entity in the given project.
+     * Searches for entities with the given search term and embedded entity in the given project.
      * 
      * @param User $user The user who is searching. Required for permission checks.
      * @param EntityVectorEmbeddingInterface $entity The entity to search for.
@@ -66,7 +66,7 @@ final class EntityVectorEmbeddingService
         return $this->getEntitySearchResults(
             $user,
             $this->qdrant->searchUserContent($search, $filter),
-            $scoreTreshold
+            $scoreTreshold,
         );
     }
 
@@ -89,7 +89,7 @@ final class EntityVectorEmbeddingService
     /**
      * Parses each search result from the vector database and converts it to a database entity.
      * 
-     * @return \Generator|array<array, UserPermissionInterface> The search results as an array of arrays with the search result and the entity.
+     * @return \Generator|array<array, UserPermissionInterface> The search results as an array of arrays with the raw search result from the Qdrant REST API and the entity.
      */
     private function getEntitySearchResults(User $user, array $searchResult, float $scoreTreshold): \Generator
     {

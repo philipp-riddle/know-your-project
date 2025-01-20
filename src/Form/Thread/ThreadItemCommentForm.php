@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Form;
+namespace App\Form\Thread;
 
 use App\Entity\Thread;
 use App\Entity\ThreadItemComment;

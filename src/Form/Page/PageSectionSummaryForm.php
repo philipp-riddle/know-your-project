@@ -1,35 +1,37 @@
 <?php
 
-namespace App\Form;
+namespace App\Form\Page;
 
-use App\Entity\PageSectionAIPrompt;
+use App\Entity\PageSectionSummary;
+use App\Form\PromptForm;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class PageSectionAIPromptForm extends AbstractType
+class PageSectionSummaryForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         parent::buildForm($builder, $options);
 
         /**
-         * @var ?PageSectionAIPrompt
+         * @var ?PageSectionSummary
          */
-        $pageSectionAIPrompt = $builder->getData();
+        $pageSectionSummary = $builder->getData();
 
         // can only set prompt
         $builder->add('prompt', PromptForm::class, [
-            'required' => null === $pageSectionAIPrompt,
-            'data' => $pageSectionAIPrompt?->getPrompt(),
+            'required' => null === $pageSectionSummary,
+            'data' => $pageSectionSummary?->getPrompt(),
         ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
+            'sanitize_html' => false,
             'csrf_protection' => false,
-            'data_class' => PageSectionAIPrompt::class,
+            'data_class' => PageSectionSummary::class,
         ]);
     }
 }

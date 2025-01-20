@@ -1,23 +1,25 @@
 <?php
 
-namespace App\Form;
+namespace App\Form\Tag;
 
 use App\Entity\Page;
+use App\Entity\ProjectUser;
 use App\Entity\Tag;
 use App\Entity\TagPage;
+use App\Entity\TagProjectUser;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class TagPageForm extends AbstractType
+class TagProjectUserForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('page', EntityType::class, [
-                'class' => Page::class,
+            ->add('projectUser', EntityType::class, [
+                'class' => ProjectUser::class,
                 'choice_label' => 'id',
             ])
         ;
@@ -47,7 +49,7 @@ class TagPageForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => TagPage::class,
+            'data_class' => TagProjectUser::class,
             'csrf_protection' => false,
         ]);
     }

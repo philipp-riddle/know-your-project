@@ -6,7 +6,7 @@ use App\Controller\Api\CrudApiController;
 use App\Entity\PageSection;
 use App\Entity\Thread;
 use App\Entity\ThreadPageSectionContext;
-use App\Form\ThreadForm;
+use App\Form\Thread\ThreadForm;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
