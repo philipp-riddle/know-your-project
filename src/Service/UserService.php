@@ -2,7 +2,7 @@
 
 namespace App\Service;
 
-use App\Entity\User;
+use App\Entity\User\User;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 

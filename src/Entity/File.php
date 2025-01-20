@@ -4,6 +4,9 @@ namespace App\Entity;
 
 use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\UserPermissionInterface;
+use App\Entity\Page\PageSectionUpload;
+use App\Entity\Project\Project;
+use App\Entity\User\User;
 use App\Repository\FileRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;

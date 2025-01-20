@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\PageSectionUpload;
+use App\Entity\Page\PageSectionUpload;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

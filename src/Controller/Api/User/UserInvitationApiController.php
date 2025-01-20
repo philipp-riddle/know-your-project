@@ -3,8 +3,8 @@
 namespace App\Controller\Api\User;
 
 use App\Controller\Api\CrudApiController;
-use App\Entity\Project;
-use App\Entity\UserInvitation;
+use App\Entity\Project\Project;
+use App\Entity\User\UserInvitation;
 use App\Form\User\UserInvitationForm;
 use App\Repository\UserInvitationRepository;
 use App\Service\Helper\ApiControllerHelperService;

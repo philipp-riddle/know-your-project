@@ -3,7 +3,7 @@
 namespace App\Controller\Api\Embedding;
 
 use App\Controller\Api\ApiController;
-use App\Entity\Project;
+use App\Entity\Project\Project;
 use App\Service\Helper\ApiControllerHelperService;
 use App\Service\Search\SearchEngine;
 use Symfony\Component\HttpFoundation\JsonResponse;

@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\User;
+use App\Entity\User\User;
 use App\Service\Helper\DefaultNormalizer;
 use App\Service\PageService;
 use Symfony\Component\Routing\Attribute\Route;

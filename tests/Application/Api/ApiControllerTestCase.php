@@ -2,9 +2,9 @@
 
 namespace App\Tests\Application\Api;
 
-use App\Entity\Project;
-use App\Entity\ProjectUser;
-use App\Entity\User;
+use App\Entity\Project\Project;
+use App\Entity\Project\ProjectUser;
+use App\Entity\User\User;
 use App\Tests\Application\ApplicationTestCase;
 
 abstract class ApiControllerTestCase extends ApplicationTestCase

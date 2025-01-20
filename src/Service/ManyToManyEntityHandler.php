@@ -2,7 +2,7 @@
 
 namespace App\Service;
 
-use App\Entity\User;
+use App\Entity\User\User;
 use App\Entity\Interface\UserPermissionInterface;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\HttpFoundation\File\Exception\AccessDeniedException;

@@ -3,7 +3,7 @@
 namespace App\Serializer;
 
 use App\Entity\Interface\UserPermissionInterface;
-use App\Entity\User;
+use App\Entity\User\User;
 use App\Serializer\Attribute\IgnoreWhenNested;
 use Doctrine\Common\Proxy\Proxy;
 use ReflectionClass;

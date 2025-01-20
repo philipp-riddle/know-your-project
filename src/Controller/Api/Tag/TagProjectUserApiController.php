@@ -3,9 +3,9 @@
 namespace App\Controller\Api\Tag;
 
 use App\Controller\Api\CrudApiController;
-use App\Entity\Tag;
-use App\Entity\TagPage;
-use App\Entity\TagProjectUser;
+use App\Entity\Tag\Tag;
+use App\Entity\Tag\TagPage;
+use App\Entity\Tag\TagProjectUser;
 use App\Form\Tag\TagPageForm;
 use App\Form\Tag\TagProjectUserForm;
 use Symfony\Component\Form\FormInterface;

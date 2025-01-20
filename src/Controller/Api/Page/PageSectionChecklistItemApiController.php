@@ -3,7 +3,7 @@
 namespace App\Controller\Api\Page;
 
 use App\Controller\Api\CrudApiController;
-use App\Entity\PageSectionChecklistItem;
+use App\Entity\Page\PageSectionChecklistItem;
 use App\Form\Page\PageSectionChecklistItemForm;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;

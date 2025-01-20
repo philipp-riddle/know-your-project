@@ -1,10 +1,12 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Thread;
 
 use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\CrudEntityValidationInterface;
 use App\Entity\Interface\UserPermissionInterface;
+use App\Entity\Project\Project;
+use App\Entity\User\User;
 use App\Repository\ThreadRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;

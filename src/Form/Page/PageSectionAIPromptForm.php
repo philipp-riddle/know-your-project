@@ -2,7 +2,7 @@
 
 namespace App\Form\Page;
 
-use App\Entity\PageSectionAIPrompt;
+use App\Entity\Page\PageSectionAIPrompt;
 use App\Form\PromptForm;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;

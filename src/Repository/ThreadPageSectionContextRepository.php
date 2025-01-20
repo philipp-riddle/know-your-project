@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\ThreadPageSectionContext;
+use App\Entity\Thread\ThreadPageSectionContext;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

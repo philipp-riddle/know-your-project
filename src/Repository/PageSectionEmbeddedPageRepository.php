@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\PageSectionEmbeddedPage;
+use App\Entity\Page\PageSectionEmbeddedPage;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

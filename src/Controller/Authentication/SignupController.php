@@ -2,9 +2,9 @@
 
 namespace App\Controller\Authentication;
 
-use App\Entity\Project;
-use App\Entity\ProjectUser;
-use App\Entity\User;
+use App\Entity\Project\Project;
+use App\Entity\Project\ProjectUser;
+use App\Entity\User\User;
 use App\Form\User\UserRegistrationForm;
 use App\Security\EmailVerifier;
 use Doctrine\ORM\EntityManagerInterface;

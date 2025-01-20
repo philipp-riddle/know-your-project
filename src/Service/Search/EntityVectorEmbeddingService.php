@@ -4,8 +4,8 @@ namespace App\Service\Search;
 
 use App\Entity\Interface\UserPermissionInterface;
 use App\Service\Search\Entity\EntityVectorEmbeddingInterface;
-use App\Entity\Project;
-use App\Entity\User;
+use App\Entity\Project\Project;
+use App\Entity\User\User;
 use App\Repository\PageRepository;
 use App\Repository\PageSectionRepository;
 use App\Repository\ProjectRepository;

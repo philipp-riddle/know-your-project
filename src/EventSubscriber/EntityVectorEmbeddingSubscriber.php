@@ -2,7 +2,7 @@
 
 namespace App\EventSubscriber;
 
-use App\Entity\PageSection;
+use App\Entity\Page\Page\PageSection;
 use App\Service\Search\Entity\EntityVectorEmbeddingInterface;
 use App\Event\CreateCrudEntityEvent;
 use App\Event\DeleteCrudEntityEvent;

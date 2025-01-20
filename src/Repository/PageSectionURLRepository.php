@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\PageSectionURL;
+use App\Entity\Page\PageSectionURL;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

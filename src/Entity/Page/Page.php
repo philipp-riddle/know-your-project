@@ -1,10 +1,14 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Page;
 
 use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\CrudEntityValidationInterface;
 use App\Entity\Interface\UserPermissionInterface;
+use App\Entity\Project\Project;
+use App\Entity\Tag\TagPage;
+use App\Entity\Task;
+use App\Entity\User\User;
 use App\Repository\PageRepository;
 use App\Serializer\Attribute\IgnoreWhenNested;
 use App\Service\File\Interface\EntityMultipleFileInterface;
@@ -65,7 +69,6 @@ implements
     {
         return $this->id;
     }
-
 
     public function getUser(): ?User
     {

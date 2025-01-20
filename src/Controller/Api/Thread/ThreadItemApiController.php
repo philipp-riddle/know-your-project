@@ -3,7 +3,7 @@
 namespace App\Controller\Api\Thread;
 
 use App\Controller\Api\CrudApiController;
-use App\Entity\ThreadItem;
+use App\Entity\Thread\ThreadItem;
 use App\Service\Helper\ApiControllerHelperService;
 use App\Service\Search\SearchEngine;
 use Symfony\Component\HttpFoundation\JsonResponse;

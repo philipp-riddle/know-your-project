@@ -4,12 +4,12 @@ namespace App\Controller\Api\Page;
 
 use App\Controller\Api\CrudApiController;
 use App\Entity\Interface\UserPermissionInterface;
-use App\Entity\PageSection;
-use App\Entity\PageSectionAIPrompt;
-use App\Entity\PageSectionEmbeddedPage;
-use App\Entity\PageSectionSummary;
-use App\Entity\PageSectionText;
-use App\Entity\PageTab;
+use App\Entity\Page\PageSection;
+use App\Entity\Page\PageSectionAIPrompt;
+use App\Entity\Page\PageSectionEmbeddedPage;
+use App\Entity\Page\PageSectionSummary;
+use App\Entity\Page\PageSectionText;
+use App\Entity\Page\PageTab;
 use App\Entity\Prompt;
 use App\Form\Page\PageSectionForm;
 use App\Service\Helper\ApiControllerHelperService;

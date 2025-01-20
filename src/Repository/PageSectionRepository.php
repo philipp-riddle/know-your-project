@@ -3,7 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Task;
-use App\Entity\PageSection;
+use App\Entity\Page\PageSection;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

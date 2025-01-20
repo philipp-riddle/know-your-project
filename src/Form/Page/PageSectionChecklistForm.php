@@ -2,7 +2,7 @@
 
 namespace App\Form\Page;
 
-use App\Entity\PageSectionChecklist;
+use App\Entity\Page\PageSectionChecklist;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;

@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Page;
 
 use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\UserPermissionInterface;
+use App\Entity\User\User;
 use App\Repository\PageSectionChecklistItemRepository;
 use Doctrine\ORM\Mapping as ORM;
 

@@ -2,9 +2,9 @@
 
 namespace App\Service\Search;
 
-use App\Entity\Page;
-use App\Entity\PageSection;
-use App\Entity\User;
+use App\Entity\Page\Page;
+use App\Entity\Page\PageSection;
+use App\Entity\User\User;
 use App\Service\Helper\DefaultNormalizer;
 use App\Service\Search\Entity\CachedEntityVectorEmbedding;
 use App\Service\Search\Entity\EntityVectorEmbeddingInterface;

@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\User;
 
 use App\Entity\Interface\UserPermissionInterface;
+use App\Entity\Project\Project;
+use App\Entity\Project\ProjectUser;
 use App\Repository\UserRepository;
 use App\Serializer\Attribute\IgnoreWhenNested;
 use Doctrine\Common\Collections\ArrayCollection;

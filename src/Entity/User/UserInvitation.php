@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\User;
 
 use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\UserPermissionInterface;
+use App\Entity\Project\Project;
 use App\Repository\UserInvitationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;

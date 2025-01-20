@@ -2,9 +2,9 @@
 
 namespace App\Controller\Authentication;
 
-use App\Entity\ProjectUser;
-use App\Entity\User;
-use App\Entity\UserInvitation;
+use App\Entity\Project\ProjectUser;
+use App\Entity\User\User;
+use App\Entity\User\UserInvitation;
 use App\Form\User\UserInvitationVerifyForm;
 use App\Repository\UserInvitationRepository;
 use App\Repository\UserRepository;

@@ -2,7 +2,7 @@
 
 namespace App\Tests\Application\Embedding;
 
-use App\Entity\Page;
+use App\Entity\Page\Page;
 use App\Service\Integration\QdrantIntegration;
 use App\Service\Search\Entity\CachedEntityVectorEmbedding;
 use App\Service\Search\SearchEngine;

@@ -2,7 +2,7 @@
 
 namespace App\Tests\Application\Api;
 
-use App\Entity\ProjectUser;
+use App\Entity\Project\ProjectUser;
 
 class ProjectUserApiControllerTest extends ApiControllerTestCase
 {

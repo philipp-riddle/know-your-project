@@ -2,8 +2,8 @@
 
 namespace App\Form\Tag;
 
-use App\Entity\Project;
-use App\Entity\Tag;
+use App\Entity\Project\Project;
+use App\Entity\Tag\Tag;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;

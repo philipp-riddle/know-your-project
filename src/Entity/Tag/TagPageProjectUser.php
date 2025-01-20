@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Tag;
 
 use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\UserPermissionInterface;
+use App\Entity\Project\ProjectUser;
+use App\Entity\User\User;
 use App\Repository\TagPageProjectUserRepository;
 use Doctrine\ORM\Mapping as ORM;
 

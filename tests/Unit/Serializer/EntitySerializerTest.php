@@ -2,13 +2,13 @@
 
 namespace App\Tests\Unit\Serializer;
 
-use App\Entity\Page;
-use App\Entity\PageSection;
-use App\Entity\PageSectionText;
-use App\Entity\PageTab;
-use App\Entity\Tag;
-use App\Entity\TagPage;
-use App\Entity\User;
+use App\Entity\Page\Page;
+use App\Entity\Page\PageSection;
+use App\Entity\Page\PageSectionText;
+use App\Entity\Page\PageTab;
+use App\Entity\Tag\Tag;
+use App\Entity\Tag\TagPage;
+use App\Entity\User\User;
 use App\Serializer\EntitySerializer;
 use App\Tests\TestCase;
 use ReflectionClass;

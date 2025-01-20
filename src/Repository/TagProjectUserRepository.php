@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\TagProjectUser;
+use App\Entity\Tag\TagProjectUser;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

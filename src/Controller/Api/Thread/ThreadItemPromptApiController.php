@@ -3,9 +3,9 @@
 namespace App\Controller\Api\Thread;
 
 use App\Controller\Api\CrudApiController;
-use App\Entity\Thread;
-use App\Entity\ThreadItem;
-use App\Entity\ThreadItemPrompt;
+use App\Entity\Thread\Thread;
+use App\Entity\Thread\ThreadItem;
+use App\Entity\Thread\ThreadItemPrompt;
 use App\Form\Thread\ThreadItemPromptForm;
 use App\Service\Helper\ApiControllerHelperService;
 use App\Service\Search\GenerationEngine;

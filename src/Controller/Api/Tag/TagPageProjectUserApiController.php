@@ -3,7 +3,7 @@
 namespace App\Controller\Api\Tag;
 
 use App\Controller\Api\CrudApiController;
-use App\Entity\TagPageProjectUser;
+use App\Entity\Tag\TagPageProjectUser;
 use App\Form\Tag\TagPageProjectUserForm;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\JsonResponse;

@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Project;
 
 use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\UserPermissionInterface;
+use App\Entity\Tag\TagProjectUser;
+use App\Entity\User\User;
 use App\Repository\ProjectUserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;

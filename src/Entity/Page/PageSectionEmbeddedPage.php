@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Page;
 
 use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\CrudEntityValidationInterface;
 use App\Entity\Interface\UserPermissionInterface;
+use App\Entity\User\User;
 use App\Repository\PageSectionEmbeddedPageRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;

@@ -2,8 +2,8 @@
 
 namespace App\Form;
 
-use App\Entity\Project;
-use App\Entity\ProjectUser;
+use App\Entity\Project\Project;
+use App\Entity\Project\ProjectUser;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;

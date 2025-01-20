@@ -3,9 +3,9 @@
 namespace App\Controller\Api\Page;
 
 use App\Controller\Api\CrudApiController;
-use App\Entity\PageSection;
-use App\Entity\PageSectionUpload;
-use App\Entity\PageTab;
+use App\Entity\Page\PageSection;
+use App\Entity\Page\PageSectionUpload;
+use App\Entity\Page\PageTab;
 use App\Event\CreateCrudEntityEvent;
 use App\Form\Page\PageSectionForm;
 use App\Repository\PageTabRepository;

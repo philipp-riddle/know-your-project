@@ -1,28 +1,28 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Page;
 
+use App\Entity\File;
 use App\Entity\Interface\UserPermissionInterface;
-use App\Repository\PageSectionTextRepository;
-use Doctrine\DBAL\Types\Types;
+use App\Entity\User\User;
+use App\Repository\PageSectionUploadRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: PageSectionTextRepository::class)]
-class PageSectionText implements UserPermissionInterface
+#[ORM\Entity(repositoryClass: PageSectionUploadRepository::class)]
+class PageSectionUpload implements UserPermissionInterface
 {
-    public const MAX_CONTENT_LENGTH = 65535;
-
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\OneToOne(inversedBy: 'pageSectionText', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(inversedBy: 'pageSectionUpload', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?PageSection $pageSection = null;
 
-    #[ORM\Column(type: Types::TEXT, length: self::MAX_CONTENT_LENGTH)]
-    private ?string $content = null;
+    #[ORM\OneToOne(inversedBy: 'pageSectionUpload', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?File $file = null;
 
     public function getId(): ?int
     {
@@ -41,20 +41,20 @@ class PageSectionText implements UserPermissionInterface
         return $this;
     }
 
-    public function getContent(): ?string
+    public function getFile(): ?File
     {
-        return $this->content;
+        return $this->file;
     }
 
-    public function setContent(string $content): static
+    public function setFile(File $file): static
     {
-        $this->content = $content;
+        $this->file = $file;
 
         return $this;
     }
 
     public function hasUserAccess(User $user): bool
     {
-        return true;
+        return $this->file->hasUserAccess($user);
     }
 }

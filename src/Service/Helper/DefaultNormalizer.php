@@ -2,7 +2,7 @@
 
 namespace App\Service\Helper;
 
-use App\Entity\User;
+use App\Entity\User\User;
 use App\Serializer\EntitySerializer;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;

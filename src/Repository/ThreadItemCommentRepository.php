@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\ThreadItemComment;
+use App\Entity\Thread\ThreadItemComment;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

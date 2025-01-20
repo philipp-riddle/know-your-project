@@ -2,8 +2,8 @@
 
 namespace App\Form\Thread;
 
-use App\Entity\Thread;
-use App\Entity\ThreadItemPrompt;
+use App\Entity\Thread\Thread;
+use App\Entity\Thread\ThreadItemPrompt;
 use App\Form\PromptForm;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;

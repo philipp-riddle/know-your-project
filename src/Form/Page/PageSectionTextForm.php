@@ -2,7 +2,7 @@
 
 namespace App\Form\Page;
 
-use App\Entity\PageSectionText;
+use App\Entity\Page\PageSectionText;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;

@@ -2,9 +2,9 @@
 
 namespace App\Form\Page;
 
-use App\Entity\Page;
-use App\Entity\Project;
-use App\Entity\User;
+use App\Entity\Page\Page;
+use App\Entity\Project\Project;
+use App\Entity\User\User;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;

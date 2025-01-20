@@ -4,6 +4,11 @@ namespace App\Entity;
 
 use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\UserPermissionInterface;
+use App\Entity\Page\PageSectionAIPrompt;
+use App\Entity\Page\PageSectionSummary;
+use App\Entity\Project\Project;
+use App\Entity\Thread\ThreadItemPrompt;
+use App\Entity\User\User;
 use App\Repository\PromptRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;

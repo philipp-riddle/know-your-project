@@ -1,8 +1,11 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Project;
 
 use App\Entity\Interface\UserPermissionInterface;
+use App\Entity\Tag\Tag;
+use App\Entity\User\User;
+use App\Entity\User\UserInvitation;
 use App\Repository\ProjectRepository;
 use App\Service\Search\Entity\CachedEntityVectorEmbedding;
 use Doctrine\Common\Collections\ArrayCollection;

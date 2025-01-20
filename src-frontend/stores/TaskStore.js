@@ -51,6 +51,11 @@ export const useTaskStore = defineStore('task', () => {
                     tasks.value[task.stepType].push(task);
                 }
 
+                // finally, sort the tasks by their orderIndex
+                for (const stepType in tasks.value) {
+                    tasks.value[stepType].sort((a, b) => a.orderIndex - b.orderIndex);
+                }
+
                 resolve(fetchedTasks);
             });
         });
@@ -178,9 +183,10 @@ export const useTaskStore = defineStore('task', () => {
                     return; // if the tasks are not loaded yet the loading will do the rest
                 }
 
+                tasks.value[originalTask.stepType].splice(tasks.value[originalTask.stepType].findIndex((t) => t.id === originalTask.id), 1);
+
                 // if the task is not draggable we need to update it in the store to reflect the change in the UI
                 if (!isDraggable) {
-                    tasks.value[originalTask.stepType].splice(tasks.value[originalTask.stepType].findIndex((t) => t.id === originalTask.id), 1);
                     tasks.value[stepType] = [
                         ...tasks.value[stepType].slice(0, index),
                         task,

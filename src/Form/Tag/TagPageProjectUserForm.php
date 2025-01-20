@@ -2,9 +2,9 @@
 
 namespace App\Form\Tag;
 
-use App\Entity\ProjectUser;
-use App\Entity\TagPage;
-use App\Entity\TagPageProjectUser;
+use App\Entity\Project\ProjectUser;
+use App\Entity\Tag\TagPage;
+use App\Entity\Tag\TagPageProjectUser;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;

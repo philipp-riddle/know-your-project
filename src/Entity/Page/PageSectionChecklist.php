@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Page;
 
 use App\Entity\Interface\UserPermissionInterface;
+use App\Entity\User\User;
 use App\Repository\PageSectionChecklistRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;

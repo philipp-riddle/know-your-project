@@ -2,7 +2,7 @@
 
 namespace App\Form\Page;
 
-use App\Entity\PageSectionURL;
+use App\Entity\Page\PageSectionURL;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;

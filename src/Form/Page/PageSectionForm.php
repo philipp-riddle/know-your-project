@@ -2,8 +2,8 @@
 
 namespace App\Form\Page;
 
-use App\Entity\PageSection;
-use App\Entity\PageTab;
+use App\Entity\Page\PageSection;
+use App\Entity\Page\PageTab;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;

@@ -3,7 +3,7 @@
 namespace App\Form\Thread;
 
 use App\Entity\PageSection;
-use App\Entity\Thread;
+use App\Entity\Thread\Thread;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;

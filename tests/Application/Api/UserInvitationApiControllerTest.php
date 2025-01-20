@@ -2,7 +2,7 @@
 
 namespace App\Tests\Application\Api;
 
-use App\Entity\UserInvitation;
+use App\Entity\User\UserInvitation;
 
 class UserInvitationApiControllerTest extends ApiControllerTestCase
 {

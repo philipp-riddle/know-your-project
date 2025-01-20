@@ -2,8 +2,8 @@
 
 namespace App\Form\Page;
 
-use App\Entity\Page;
-use App\Entity\PageSectionEmbeddedPage;
+use App\Entity\Page\Page;
+use App\Entity\Page\PageSectionEmbeddedPage;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;

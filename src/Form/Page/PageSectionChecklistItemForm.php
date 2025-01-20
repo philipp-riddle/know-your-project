@@ -2,8 +2,8 @@
 
 namespace App\Form\Page;
 
-use App\Entity\PageSectionChecklist;
-use App\Entity\PageSectionChecklistItem;
+use App\Entity\Page\PageSectionChecklist;
+use App\Entity\Page\PageSectionChecklistItem;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;

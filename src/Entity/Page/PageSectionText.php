@@ -1,26 +1,29 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Page;
 
 use App\Entity\Interface\UserPermissionInterface;
-use App\Repository\PageSectionURLRepository;
+use App\Entity\User\User;
+use App\Repository\PageSectionTextRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: PageSectionURLRepository::class)]
-class PageSectionURL implements UserPermissionInterface
+#[ORM\Entity(repositoryClass: PageSectionTextRepository::class)]
+class PageSectionText implements UserPermissionInterface
 {
+    public const MAX_CONTENT_LENGTH = 65535;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\OneToOne(inversedBy: 'pageSectionURL', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(inversedBy: 'pageSectionText', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?PageSection $pageSection = null;
 
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $url = null;
+    #[ORM\Column(type: Types::TEXT, length: self::MAX_CONTENT_LENGTH)]
+    private ?string $content = null;
 
     public function getId(): ?int
     {
@@ -39,14 +42,14 @@ class PageSectionURL implements UserPermissionInterface
         return $this;
     }
 
-    public function getUrl(): ?string
+    public function getContent(): ?string
     {
-        return $this->url;
+        return $this->content;
     }
 
-    public function setUrl(string $url): static
+    public function setContent(string $content): static
     {
-        $this->url = $url;
+        $this->content = $content;
 
         return $this;
     }

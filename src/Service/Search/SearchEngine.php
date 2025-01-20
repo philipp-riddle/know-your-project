@@ -4,8 +4,8 @@ namespace App\Service\Search;
 
 use App\Service\Search\Entity\EntityVectorEmbeddingInterface;
 use App\Entity\Interface\UserPermissionInterface;
-use App\Entity\Project;
-use App\Entity\User;
+use App\Entity\Project\Project;
+use App\Entity\User\User;
 use App\Service\Helper\DefaultNormalizer;
 
 /**

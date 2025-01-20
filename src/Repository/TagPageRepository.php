@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\TagPage;
+use App\Entity\Tag\TagPage;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

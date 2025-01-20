@@ -1,26 +1,27 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Page;
 
 use App\Entity\Interface\UserPermissionInterface;
-use App\Repository\PageSectionUploadRepository;
+use App\Entity\User\User;
+use App\Repository\PageSectionURLRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: PageSectionUploadRepository::class)]
-class PageSectionUpload implements UserPermissionInterface
+#[ORM\Entity(repositoryClass: PageSectionURLRepository::class)]
+class PageSectionURL implements UserPermissionInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\OneToOne(inversedBy: 'pageSectionUpload', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(inversedBy: 'pageSectionURL', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?PageSection $pageSection = null;
 
-    #[ORM\OneToOne(inversedBy: 'pageSectionUpload', cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?File $file = null;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $url = null;
 
     public function getId(): ?int
     {
@@ -39,20 +40,20 @@ class PageSectionUpload implements UserPermissionInterface
         return $this;
     }
 
-    public function getFile(): ?File
+    public function getUrl(): ?string
     {
-        return $this->file;
+        return $this->url;
     }
 
-    public function setFile(File $file): static
+    public function setUrl(string $url): static
     {
-        $this->file = $file;
+        $this->url = $url;
 
         return $this;
     }
 
     public function hasUserAccess(User $user): bool
     {
-        return $this->file->hasUserAccess($user);
+        return true;
     }
 }

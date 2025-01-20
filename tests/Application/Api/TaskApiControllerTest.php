@@ -2,7 +2,7 @@
 
 namespace App\Tests\Application\Api;
 
-use App\Entity\Page;
+use App\Entity\Page\Page;
 use App\Entity\Task;
 
 class TaskApiControllerTest extends ApiControllerTestCase

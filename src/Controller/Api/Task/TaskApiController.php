@@ -3,7 +3,7 @@
 namespace App\Controller\Api\Task;
 
 use App\Controller\Api\CrudApiController;
-use App\Entity\Project;
+use App\Entity\Project\Project;
 use App\Entity\Task;
 use App\Form\Task\TaskMoveForm;
 use App\Form\Task\TaskForm;

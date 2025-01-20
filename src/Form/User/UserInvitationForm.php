@@ -2,8 +2,8 @@
 
 namespace App\Form\User;
 
-use App\Entity\Project;
-use App\Entity\UserInvitation;
+use App\Entity\Project\Project;
+use App\Entity\User\UserInvitation;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;

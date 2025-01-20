@@ -3,7 +3,7 @@
 namespace App\Controller\Api\Project;
 
 use App\Controller\Api\CrudApiController;
-use App\Entity\ProjectUser;
+use App\Entity\Project\ProjectUser;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;

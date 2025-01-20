@@ -3,10 +3,10 @@
 namespace App\Controller\Api\Thread;
 
 use App\Controller\Api\CrudApiController;
-use App\Entity\Thread;
-use App\Entity\ThreadItem;
-use App\Entity\ThreadItemComment;
-use App\Entity\User;
+use App\Entity\Thread\Thread;
+use App\Entity\Thread\ThreadItem;
+use App\Entity\Thread\ThreadItemComment;
+use App\Entity\User\User;
 use App\Form\Thread\ThreadItemCommentForm;
 use App\Service\Helper\ApiControllerHelperService;
 use App\Service\Search\GenerationEngine;

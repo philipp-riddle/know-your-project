@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Tag;
 
 use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\UserPermissionInterface;
+use App\Entity\Page\Page;
+use App\Entity\User\User;
 use App\Repository\TagPageRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;

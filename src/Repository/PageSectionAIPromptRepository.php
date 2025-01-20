@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\PageSectionAIPrompt;
+use App\Entity\Page\PageSectionAIPrompt;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

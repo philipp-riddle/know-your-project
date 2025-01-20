@@ -3,7 +3,7 @@
 namespace App\Controller\Api;
 
 use App\Entity\Interface\UserPermissionInterface;
-use App\Entity\User;
+use App\Entity\User\User;
 use App\Repository\UserRepository;
 use App\Service\Helper\ApiControllerHelperService;
 use App\Service\Helper\DefaultNormalizer;

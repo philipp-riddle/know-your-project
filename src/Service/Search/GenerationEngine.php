@@ -2,15 +2,15 @@
 
 namespace App\Service\Search;
 
-use App\Entity\Page;
-use App\Entity\PageSection;
-use App\Entity\PageSectionAIPrompt;
-use App\Entity\PageSectionEmbeddedPage;
-use App\Entity\PageSectionSummary;
-use App\Entity\Project;
+use App\Entity\Page\Page;
+use App\Entity\Page\PageSection;
+use App\Entity\Page\PageSectionAIPrompt;
+use App\Entity\Page\PageSectionEmbeddedPage;
+use App\Entity\Page\PageSectionSummary;
+use App\Entity\Project\Project;
 use App\Entity\Prompt;
 use App\Entity\ThreadItemPrompt;
-use App\Entity\User;
+use App\Entity\User\User;
 use App\Service\Integration\OpenAIIntegration;
 use App\Service\Search\Entity\EntityVectorEmbeddingInterface;
 use Qdrant\Models\Filter\Condition\Range;

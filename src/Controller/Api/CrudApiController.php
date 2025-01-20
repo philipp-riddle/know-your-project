@@ -26,7 +26,7 @@ use Symfony\Component\HttpFoundation\Request;
 abstract class CrudApiController extends ApiController
 {
     /**
-     * @return string The entity class name; e.g. App\Entity\Page
+     * @return string The entity class name; e.g. App\Entity\Page\Page
      */
     abstract public function getEntityClass(): string;
 

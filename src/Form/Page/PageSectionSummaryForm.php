@@ -2,7 +2,7 @@
 
 namespace App\Form\Page;
 
-use App\Entity\PageSectionSummary;
+use App\Entity\Page\PageSectionSummary;
 use App\Form\PromptForm;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;

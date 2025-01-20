@@ -1,11 +1,14 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Page;
 
+use App\Entity\File;
 use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\CrudEntityValidationInterface;
 use App\Entity\Interface\OrderListItemInterface;
 use App\Entity\Interface\UserPermissionInterface;
+use App\Entity\Thread\ThreadPageSectionContext;
+use App\Entity\User\User;
 use App\Repository\PageSectionRepository;
 use App\Service\File\Interface\EntityFileInterface;
 use App\Service\Search\Entity\CachedEntityVectorEmbedding;

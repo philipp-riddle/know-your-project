@@ -2,9 +2,9 @@
 
 namespace App\Tests\Application\Api;
 
-use App\Entity\Page;
-use App\Entity\PageSection;
-use App\Entity\PageTab;
+use App\Entity\Page\Page;
+use App\Entity\Page\PageSection;
+use App\Entity\Page\PageTab;
 
 class PageApiControllerTest extends ApiControllerTestCase
 {

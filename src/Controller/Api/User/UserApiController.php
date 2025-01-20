@@ -3,7 +3,7 @@
 namespace App\Controller\Api\User;
 
 use App\Controller\Api\CrudApiController;
-use App\Entity\User;
+use App\Entity\User\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 

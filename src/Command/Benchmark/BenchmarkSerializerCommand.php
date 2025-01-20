@@ -2,8 +2,8 @@
 
 namespace App\Command\Benchmark;
 
-use App\Entity\Page;
-use App\Entity\User;
+use App\Entity\Page\Page;
+use App\Entity\User\User;
 use App\Repository\PageRepository;
 use App\Service\Helper\DefaultNormalizer;
 use Symfony\Component\Console\Command\Command;

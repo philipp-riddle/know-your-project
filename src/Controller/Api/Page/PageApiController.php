@@ -3,11 +3,11 @@
 namespace App\Controller\Api\Page;
 
 use App\Controller\Api\CrudApiController;
-use App\Entity\Page;
-use App\Entity\PageSection;
-use App\Entity\PageSectionText;
-use App\Entity\PageTab;
-use App\Entity\Project;
+use App\Entity\Page\Page;
+use App\Entity\Page\PageSection;
+use App\Entity\Page\PageSectionText;
+use App\Entity\Page\PageTab;
+use App\Entity\Project\Project;
 use App\Form\Page\PageForm;
 use App\Repository\PageRepository;
 use App\Repository\TaskRepository;

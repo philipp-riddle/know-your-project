@@ -2,16 +2,16 @@
 
 namespace App\Tests\Application\Api;
 
-use App\Entity\Page;
-use App\Entity\PageSection;
-use App\Entity\PageSectionChecklist;
-use App\Entity\PageSectionChecklistItem;
-use App\Entity\PageSectionEmbeddedPage;
-use App\Entity\PageSectionText;
-use App\Entity\PageSectionUpload;
-use App\Entity\PageTab;
-use App\Entity\Project;
-use App\Entity\User;
+use App\Entity\Page\Page;
+use App\Entity\Page\PageSection;
+use App\Entity\Page\PageSectionChecklist;
+use App\Entity\Page\PageSectionChecklistItem;
+use App\Entity\Page\PageSectionEmbeddedPage;
+use App\Entity\Page\PageSectionText;
+use App\Entity\Page\PageSectionUpload;
+use App\Entity\Page\PageTab;
+use App\Entity\Project\Project;
+use App\Entity\User\User;
 
 class PageSectionApiControllerTest extends ApiControllerTestCase
 {

@@ -3,7 +3,7 @@
 namespace App\Controller\Api\Page;
 
 use App\Controller\Api\CrudApiController;
-use App\Entity\PageTab;
+use App\Entity\Page\PageTab;
 use App\Form\Page\PageTabForm;
 use App\Repository\PageTabRepository;
 use App\Service\Helper\ApiControllerHelperService;

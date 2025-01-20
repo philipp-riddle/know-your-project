@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Thread;
 
 use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\UserPermissionInterface;
+use App\Entity\User\User;
 use App\Repository\ThreadItemRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;

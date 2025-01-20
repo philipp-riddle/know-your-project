@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Page;
 
 use App\Entity\Interface\UserPermissionInterface;
+use App\Entity\Prompt;
+use App\Entity\User\User;
 use App\Repository\PageSectionAIPromptRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;

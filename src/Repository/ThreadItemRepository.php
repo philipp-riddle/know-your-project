@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\ThreadItem;
+use App\Entity\Thread\ThreadItem;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

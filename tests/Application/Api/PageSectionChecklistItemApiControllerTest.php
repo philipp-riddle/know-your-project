@@ -2,12 +2,12 @@
 
 namespace App\Tests\Application\Api;
 
-use App\Entity\Page;
-use App\Entity\PageSection;
-use App\Entity\PageSectionChecklist;
-use App\Entity\PageSectionChecklistItem;
-use App\Entity\PageTab;
-use App\Entity\Project;
+use App\Entity\Page\Page;
+use App\Entity\Page\PageSection;
+use App\Entity\Page\PageSectionChecklist;
+use App\Entity\Page\PageSectionChecklistItem;
+use App\Entity\Page\PageTab;
+use App\Entity\Project\Project;
 
 class PageSectionChecklistItemApiControllerTest extends ApiControllerTestCase
 {

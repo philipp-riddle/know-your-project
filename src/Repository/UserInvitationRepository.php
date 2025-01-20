@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\UserInvitation;
+use App\Entity\User\UserInvitation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

@@ -2,7 +2,7 @@
 
 namespace App\Service;
 
-use App\Entity\Project;
+use App\Entity\Project\Project;
 use App\Entity\Task;
 use App\Repository\TaskRepository;
 
@@ -32,10 +32,16 @@ class TaskService
     /**
      * @return Task[]
      */
-    public function getTasks(Project $project): array
+    public function getTasks(Project $project, ?string $workflowStepType = null): array
     {
+        $filters = ['project' => $project];
+
+        if (null !== $workflowStepType) {
+            $filters['stepType'] = $workflowStepType;
+        }
+
         return $this->taskRepository->findBy(
-            ['project' => $project],
+            $filters,
             ['orderIndex' => 'ASC'],
         );
     }

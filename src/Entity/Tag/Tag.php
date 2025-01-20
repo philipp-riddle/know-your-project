@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Tag;
 
 use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\UserPermissionInterface;
+use App\Entity\Project\Project;
+use App\Entity\User\User;
 use App\Repository\TagRepository;
 use App\Service\Helper\RandomColorGenerator;
 use Doctrine\Common\Collections\ArrayCollection;
