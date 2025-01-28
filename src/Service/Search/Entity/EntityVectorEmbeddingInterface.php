@@ -2,6 +2,7 @@
 
 namespace App\Service\Search\Entity;
 
+use Doctrine\ORM\PersistentCollection;
 use Qdrant\Models\Filter\Filter;
 
 /**
@@ -37,4 +38,23 @@ interface EntityVectorEmbeddingInterface
      * Returns the filter instance for the vector database to search for this entity.
      */
     public function buildVectorDatabaseFilter(): Filter;
+
+    /**
+     * Returns the parent entities which should be embedded into the vector database as well.
+     * This goes along with updating; if this entity is updated, the related entities should be updated as well.
+     * 
+     * Example: PageSection: A page section should be embedded into the vector database. If the page section is updated, the page should be updated as well.
+     * 
+     * @return EntityVectorEmbeddingInterface[] The related entities which should be embedded as well.
+     */
+    public function getParentEntities(): PersistentCollection|array;
+
+    /**
+     * Returns the child entities which should be deleted when this entity is deleted.
+     * 
+     * Example: Page: A page should be embedded into the vector database. If the page is deleted, the page sections should be deleted as well.
+     * 
+     * @return EntityVectorEmbeddingInterface[] The related entities which should be deleted as well.
+     */
+    public function getChildEntities(): PersistentCollection|array;
 }

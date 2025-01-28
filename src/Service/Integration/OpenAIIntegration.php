@@ -14,7 +14,7 @@ use OpenAI\Responses\Chat\CreateResponse;
 final class OpenAIIntegration
 {
     public const TEXT_EMBEDDING_MODEL = 'text-embedding-3-small';
-    public const CHAT_MODEL = 'gpt-3.5-turbo';
+    public const CHAT_MODEL = 'gpt-4o-mini';
 
     /**
      * This function generates an array of embeddings for the given input text.

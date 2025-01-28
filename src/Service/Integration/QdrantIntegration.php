@@ -16,7 +16,7 @@ use Qdrant\Response;
 
 /**
  * This class is responsible for all operations with Qdrant.
- * Qdrant is our vector database provider and we communicate with it via a PHP library which uses the Qdrant HTTP REST API.
+ * Qdrant is our vector database provider and we communicate with it via a PHP library which uses Qdrant's HTTP REST API.
  * The OpenAI integration is used to create embeddings for the input text.
  * 
  * A lot of this code is inspired by the Qdrant PHP SDK documentation: https://github.com/hkulekci/qdrant-php

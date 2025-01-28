@@ -78,7 +78,8 @@ final class GenerationEngine
                 'content' => '
                     You will  first provided with context ("1. CONTEXT"; each context item delimited by "=== CONTEXT ===") and then the user question ("2. QUESTION").
                     Make sure to provide a relevant answer to the question and make use of the context provided.
-                    Respond in HTML format for better readibility and start with a heading <h3> tag.
+                    If there is no relevant context, you can still provide an answer BUT IT IS VERY IMPORTANT TO STATE THIS IN THE RESPONSE.
+                    Respond in HTML format for better readibility and start with a heading <h4> tag.
                     The heading should concisely describe the nature of the user question.
                 ',
             ],

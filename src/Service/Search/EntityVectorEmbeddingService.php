@@ -167,31 +167,40 @@ final class EntityVectorEmbeddingService
         $metaAttributes = $entity->getMetaAttributes();
         $metaAttributes['type'] = (new \ReflectionClass($entity))->getShortName();
 
-        $embedding = $this->qdrant->insertUserContent(
-            $this->getEntityUuid($entity),
-            $textForEmbedding,
-            $metaAttributes,
-        );
+        $embedding = $this->insertEntityContents($this->getEntityUuid($entity), $textForEmbedding, $metaAttributes);
 
         // write the embedding to the embedded entity, e.g. to  work with it in-memory for the duration of this request
         $entity->processVectorEmbedding($embedding);
     }
 
+    /**
+     * @return float[] the generated embedding
+     */
+    public function insertEntityContents(string $uuid, string $textForEmbedding, array $metaAttributes): array
+    {
+        return $this->qdrant->insertUserContent($uuid, $textForEmbedding, $metaAttributes);
+    }
+
     public function deleteEmbeddedEntity(EntityVectorEmbeddingInterface $entity, int $entityId): void
     {
-        $this->qdrant->deleteUserContent($this->getEntityUuid($entity, $entityId));
+        $this->deleteEntityContents($this->getEntityUuid($entity, $entityId));
+    }
+
+    public function deleteEntityContents(string $uuid): void
+    {
+        $this->qdrant->deleteUserContent($uuid);
     }
 
     /**
      * Returns a UUID for the given entity.
-     * This UUID is unique for the entity and can be used for embedding into the vector database and deleting it.
+     * This UUID is unique across all entities and can be used for embedding, retrieving, and deleting the entity.
      * 
      * @throws \InvalidArgumentException If the entity does not have an ID (probably because it is not persisted to the database yet).
      * @param EntityVectorEmbeddingInterface $entity The entity for which to generate the unique ID.
      * @param int|null $entityId The ID of the entity. If not provided, the ID of the entity is used.
      * @return string The unique ID.
      */
-    private function getEntityUuid(EntityVectorEmbeddingInterface $entity, ?int $entityId = null): string
+    public function getEntityUuid(EntityVectorEmbeddingInterface $entity, ?int $entityId = null): string
     {
         $entityId = $entityId ?? $entity->getId();
 

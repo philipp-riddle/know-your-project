@@ -11,6 +11,7 @@ use App\Service\Search\Entity\CachedEntityVectorEmbedding;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\PersistentCollection;
 
 #[ORM\Entity(repositoryClass: ProjectRepository::class)]
 class Project extends CachedEntityVectorEmbedding implements UserPermissionInterface
@@ -231,5 +232,17 @@ class Project extends CachedEntityVectorEmbedding implements UserPermissionInter
             'project' => $this->getId(),
             'user' => $this->getOwner()->getId(),
         ];
+    }
+
+    public function getParentEntities(): PersistentCollection|array
+    {
+        return []; // No parent entities; project is top-level
+    }
+
+    public function getChildEntities(): PersistentCollection|array
+    {
+        // @todo Implement; return all child entities which should be deleted when this project is deleted
+        // there can be quite many pages
+        return [];
     }
 }

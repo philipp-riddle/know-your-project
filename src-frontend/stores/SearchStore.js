@@ -7,6 +7,7 @@ export const useSearchStore = defineStore('search', () => {
     const isSearching = ref(false);
     const isLoading = ref(false);
     const searchResults = ref(null);
+    const searchPromise = ref(null);
     const answer = ref(null); // if a question was asked we also store the answer here
 
     const toggleIsSearching = () => {
@@ -14,27 +15,43 @@ export const useSearchStore = defineStore('search', () => {
     };
 
     const search = (project, search) => {
-        return new Promise((resolve) => {
+        const currentSearchPromise = new Promise((resolve) => {
             fetchProjectSearch(project.id, search).then((searchResultsResponse) => {
-                searchResults.value = searchResultsResponse;
-                answer.value = null;
-                isLoading.value = false;
+                if (searchPromise.value === null || searchPromise.value === currentSearchPromise) {
+                    searchResults.value = searchResultsResponse;
+                    isLoading.value = false;
+                    searchPromise.value = null;
+                    answer.value = null;
 
-                resolve(searchResults);
+                    resolve(searchResults);
+                } else {
+                    searchPromise.value.then((searchResults) => {
+                        resolve(searchResults);
+                    });
+                }
             });
         });
+        searchPromise.value = currentSearchPromise;
     };
 
     const ask = (project, search) => {
-        return new Promise((resolve) => {
+        const currentAskPromise = new Promise((resolve) => {
             fetchProjectAsk(project.id, search).then((response) => {
-                searchResults.value = response.searchResults;
-                answer.value = response.answer;
-                isLoading.value = false;
+                if (searchPromise.value === null || searchPromise.value === currentAskPromise) {
+                    searchResults.value = response.searchResults;
+                    isLoading.value = false;
+                    searchPromise.value = null;
+                    answer.value = response.answer;
 
-                resolve(searchResults);
+                    resolve(searchResults.value);
+                } else {
+                    searchPromise.value.then((searchResults) => {
+                        resolve(searchResults);
+                    });
+                }
             });
         });
+        searchPromise.value = currentAskPromise;
     }
 
     const resetStore = () => {

@@ -11,36 +11,41 @@
     >
         <div class="modal-dialog modal-fullscreen">
             <div class="modal-content">
-                <div class="modal-body mt-xl-3 mt-sm-2 p-3 d-flex flex-column gap-2">
-                    <div>
-                        <button
-                            class="btn btn-sm btn-dark d-flex flex-row align-items-center gap-2"
-                            v-tooltip="tooltip"
-                            @click="toggleForcedIsAskingQuestion"
-                        >
-                            <font-awesome-icon :icon="['fas', icon]" />
-                            <span>{{ label }}</span>
-                        </button>
+                <div class="modal-body mt-xl-3 mt-sm-2 p-3 gap-3 d-flex flex-column gap-2">
+                    <div class="d-flex flex-column gap-2">
+                        <div>
+                            <button
+                                class="btn btn-sm btn-dark d-flex flex-row align-items-center gap-2"
+                                v-tooltip="tooltip"
+                                @click="toggleForcedIsAskingQuestion"
+                            >
+                                <font-awesome-icon :icon="['fas', icon]" />
+                                <span>{{ label }}</span>
+                            </button>
+                        </div>
+                        <div class="d-flex flex-row align-items-center p-3 ps-4 pe-4 search-box">
+                            <textarea
+                                type="text"
+                                placeholder="Search or ask anything"
+                                class="magic-input"
+                                rows="1"
+                                ref="searchInput"
+                                @keyup.enter="search"
+                                @keyup.esc="hideModal"
+                                @keyup="search"
+                            ></textarea>
+                        </div>
                     </div>
-                    <input
-                        type="text"
-                        placeholder="Search or ask anything"
-                        class="form-control"
-                        ref="searchInput"
-                        @keyup.enter="search"
-                        @keyup.esc="hideModal"
-                        @keyup="search"
-                    >
 
                     <div
                         v-if="searchStore.isLoading"
                         class="d-flex flex-row justify-content-center"
                     >
-                        <div class="spinner-border mt-3" role="status">
+                        <div class="spinner-border white mt-3" role="status">
                             <span class="visually-hidden">Loading...</span>
                         </div>
                     </div>
-                    <div v-else>
+                    <div v-else class="d-flex flex-column gap-4">
                         <div v-if="searchStore.answer != null" class="card">
                             <div class="card-body">
                                 <span v-html="searchStore.answer"></span>
@@ -48,18 +53,26 @@
                         </div>
                         <div
                             v-if="searchStore.searchResults != null"
-                            class="search-results d-flex flex-column gap-3 mt-3"
+                            class="d-flex flex-column justify-content-start"
                         >
-                            <div v-if="searchStore.searchResults.length > 0" v-for="result in searchStore.searchResults" :key="result.id">
-                                <SearchResult
-                                    :result="result"
-                                    :searchTerm="searchInput.value"
-                                    @searchResultClick="hideModal"
-                                />
+                            <div v-if="searchStore.answer != null" class="d-flex flex-row justify-content-start">
+                                <span class="mt-3 btn btn-sm btn-dark d-flex flex-row align-items-center gap-2">
+                                    <font-awesome-icon :icon="['fas', 'diagram-project']" />
+                                    <span>Relevant context</span>
+                                </span>
                             </div>
-                            <div v-else class="card mt-3" role="alert">
-                                <div class="card-body p-4">
-                                    <p class="m-0">No results found.</p>
+                            <div class="d-flex flex-column gap-3 mt-3">
+                                <div v-if="searchStore.searchResults.length > 0" v-for="result in searchStore.searchResults" :key="result.id">
+                                    <SearchResult
+                                        :result="result"
+                                        :searchTerm="searchInput.value"
+                                        @searchResultClick="hideModal"
+                                    />
+                                </div>
+                                <div v-else class="card mt-3" role="alert">
+                                    <div class="card-body p-4">
+                                        <p class="m-0">No results found.</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -88,13 +101,19 @@
     const isAskingQuestion = ref(false);
 
     const tooltip = computed(() => {
-        return isForcedAskingQuestion.value || isAskingQuestion.value ? 'Clickt to search for a term instead' : 'Click to ask a question instead';
+        const isAsk = isForcedAskingQuestion.value != null ? isForcedAskingQuestion.value : isAskingQuestion.value;
+
+        return isAsk ? 'Clickt to search by a term instead' : 'Click to ask a question instead';
     });
     const label = computed(() => {
-        return isForcedAskingQuestion.value || isAskingQuestion.value ? 'Asking a question' : 'Searching for a term';
+        const isAsk = isForcedAskingQuestion.value != null ? isForcedAskingQuestion.value : isAskingQuestion.value;
+
+        return isAsk ? 'Asking a question' : 'Searching';
     });
     const icon = computed(() => {
-        return isForcedAskingQuestion.value || isAskingQuestion.value ? 'wand-magic-sparkles' : 'search';
+        const isAsk = isForcedAskingQuestion.value != null ? isForcedAskingQuestion.value : isAskingQuestion.value;
+
+        return isAsk ? 'microchip' : 'search';
     });
 
     // watch for changes in the search store and if the user is searching;
@@ -151,7 +170,14 @@
             isForcedAskingQuestion.value = !isForcedAskingQuestion.value;
         }
 
-        // @todo reload search results
+        if (isForcedAskingQuestion.value) {
+            searchInput.value.placeholder = 'Ask a question';
+        } else {
+            searchInput.value.placeholder = 'Search';
+        }
+        
+        // trigger a new search
+        search();
     }
 
     const search = () => {
@@ -163,12 +189,11 @@
 
         // split the search term into words; if it's >= 4 or if it includes a question mark we assume it's a question
         isAskingQuestion.value = searchTerm.split(' ').length >= 4 || searchTerm.includes('?');
-
-        searchStore.isLoading = true;
         debouncedSearch(projectStore.selectedProject, searchTerm);
     }
 
     const debouncedSearch = useDebounceFn((project, searchTerm) => {
+        searchStore.isLoading = true;
         var isSearch = true;
 
         if (isForcedAskingQuestion.value == null) {

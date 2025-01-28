@@ -25,12 +25,12 @@
                     <li class="nav-item">
                         <div
                             class="nav-link"
-                            :class="{active: searchStore.isSearching, inactive: !searchStore.isSearching}"
+                            :class="{inactive: !searchStore.isSearching}"
                             @click="searchStore.toggleIsSearching"
                         >
                             <div class="d-flex flex-row gap-3 align-items-center">
                                 <font-awesome-icon :icon="['fas', 'search']" />
-                                <span>Search</span>
+                                <span>Search and ask</span>
                             </div>
                         </div>
                     </li>

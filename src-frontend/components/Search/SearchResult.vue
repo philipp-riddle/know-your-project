@@ -1,14 +1,22 @@
 <template>
     <div class="card" @click.stop="onSearchResultClick">
-        <div class="card-body">
-            <p class="m-0 bold text-muted">{{ result.type }}</p>
-            <h5>{{ searchResultName }}</h5>
+        <div class="card-body d-flex flex-row justify-content-between gap-3">
+            <div class="d-flex flex-row gap-3 align-items-center justify-content-top">
+                <span class="btn btn-lg m-0 p-0">
+                    <font-awesome-icon :icon="['fas', searchResultIcon]" v-tooltip="searchResultTooltip" />
+                </span>
+                <div>
+                    <h5 class="m-0 p-0">{{ searchResultName }}</h5>
 
-            <SearchResultSummary :result="result" :searchTerm="searchTerm" />
+                    <SearchResultSummary :result="result" :searchTerm="searchTerm" />
+                </div>
+            </div>
 
-            <small v-for="tag in tags">
-                <span class="btn btn-sm me-2" :style="{'background-color': tag.color}" v-tooltip="'Tag: '+tag.name">&nbsp;&nbsp;&nbsp;</span>
-            </small>
+            <div class="d-flex flex-row gap-1 align-items-center">
+                <small v-for="tag in tags">
+                    <span class="btn btn-sm me-2" :style="{'background-color': tag.color}" v-tooltip="'Tag: '+tag.name">&nbsp;&nbsp;&nbsp;</span>
+                </small>
+            </div>
         </div>
     </div>
 
@@ -26,6 +34,7 @@
     import { useRouter } from 'vue-router';
     import NestedSearchResult from '@/components/Search/NestedSearchResult.vue';
     import SearchResultSummary from '@/components/Search/SearchResultSummary.vue';
+    import { usePageSectionAccessibilityHelper } from '@/composables/PageSectionAccessibilityHelper.js';
     import { usePageStore } from '@/stores/PageStore.js';
     import { useSearchStore } from '@/stores/SearchStore.js';
 
@@ -45,22 +54,17 @@
     const searchStore = useSearchStore();
 
     const searchResultName = computed(() => {
-        const textForEmbedding = props.result.result.textForEmbedding;
+        const type = props.result.type;
 
-        // the embeddings are sometimes in HTML format, so we need to extract the first text node to get a good title.
-        // if the HTML cannot be parsed we simply use the raw text
-        if (textForEmbedding.startsWith('<')) {
-            var htmlEmbedding = document.createElement( 'html' );
-            htmlEmbedding.innerHTML = textForEmbedding;
-
-            var firstTextNode = htmlEmbedding.querySelector('body').firstChild;
-
-            if (firstTextNode != null) {
-                return firstTextNode.textContent;
-            }
+        if (type === 'Page') {
+            return props.result.result.name;
+        } else if (type === 'Task') {
+            return props.result.result.page.name;
+        } else if (type === 'PageSection') {
+            return 'EXTRACT PAGE SECTION TITLE';
         }
 
-        return textForEmbedding;
+        return type;
     });
 
     /**
@@ -100,6 +104,28 @@
             });
         }
     };
+
+    const accessibilityHelper = usePageSectionAccessibilityHelper();
+    const searchResultIcon = computed(() => {
+        if (props.result.type === 'Page') {
+            return 'fa-file-alt';
+        } else if (props.result.type === 'Task') {
+            return 'fa-tasks';
+        } else if (props.result.type === 'PageSection') {
+            return accessibilityHelper.getIcon(props.result.result);
+        }
+    });
+    const searchResultTooltip = computed(() => {
+        if (props.result.type === 'Page') {
+            return 'Page';
+        } else if (props.result.type === 'Task') {
+            return 'Task';
+        } else if (props.result.type === 'PageSection') {
+            return accessibilityHelper.getTooltip(props.result.result);
+        } else {
+            return props.result.type;
+        }
+    });
 </script>
 
 <style scoped>

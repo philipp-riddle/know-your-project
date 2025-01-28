@@ -1,5 +1,5 @@
 <template>
-    <p class="m-0"><span v-html="markedText"></span></p>
+    <p v-if="markedText !== null" class="m-0"><span v-html="markedText"></span></p>
 </template>
 <script setup>
     import { computed } from 'vue';
@@ -21,6 +21,6 @@
     const markedText = computed(() => {
         const textForEmbedding = props.result.result.textForEmbedding;
 
-        return textMarker.generateTextMarkerHtml(props.searchTerm, textForEmbedding, maxTextLength);
+        return textMarker.generateTextMarkerHtml(props.searchTerm, textForEmbedding, maxTextLength, null);
     });
 </script>

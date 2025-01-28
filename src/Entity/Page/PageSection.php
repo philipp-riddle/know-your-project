@@ -14,6 +14,7 @@ use App\Service\File\Interface\EntityFileInterface;
 use App\Service\Search\Entity\CachedEntityVectorEmbedding;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\PersistentCollection;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 #[ORM\Entity(repositoryClass: PageSectionRepository::class)]
@@ -357,6 +358,21 @@ implements
             // merge the meta attributes from the page; this connects the sections and the page information in one space where we can later search for it
             ...$this->pageTab->getPage()->getMetaAttributes(),
         ];
+    }
+
+    public function getParentEntities(): PersistentCollection|array
+    {
+        return [
+            // the page is the related entity of the page section.
+            // this means that if the page section is updated, the page should be updated as well.
+            $this->getPageTab()->getPage(),
+        ]; 
+    }
+
+    public function getChildEntities(): PersistentCollection|array
+    {
+        // no child entities; the page section is the lowest level entity
+        return [];
     }
 
     public function getAiPrompt(): ?PageSectionAIPrompt

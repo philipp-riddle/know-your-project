@@ -103,6 +103,10 @@ hr {
     background-color: Transparent;
     overflow: auto !important;      
     cursor: pointer;
+
+    &:focus-visible, &:focus {
+        outline: none;
+    }
 }
 
 
@@ -209,13 +213,15 @@ hr {
         background-color: transparent !important;
     }
 
-    input {
-        border-radius: 2rem !important;
+    & .search-box {
+        background-color: $white-60 !important;
+        border-radius: 5rem !important;
         background-color: white !important;
         box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.6) !important;
-        min-height: 4rem;
-        font-size: 1.25em; // this is the equivalent of a h5 tag
-        padding-left: 2.5rem;
+
+        textarea {
+            font-size: 1.5em; // this is the equivalent of a h5 tag
+        }
     }
 
     .card {

@@ -17,6 +17,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\PersistentCollection;
 
 #[ORM\Entity(repositoryClass: PageRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -255,6 +256,17 @@ implements
         }
 
         return $attributes;
+    }
+
+    public function getParentEntities(): PersistentCollection|array
+    {
+        return []; // page has no parent entities; is top-level
+    }
+
+    public function getChildEntities(): PersistentCollection|array
+    {
+        // when a page is deleted, the page sections should be deleted as well from the embedding db
+        return $this->getPageTabs()[0]?->getPageSections() ?? [];
     }
 
     /**

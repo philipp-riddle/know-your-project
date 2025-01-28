@@ -13,6 +13,7 @@ use App\Repository\TaskRepository;
 use App\Service\Search\Entity\CachedEntityVectorEmbedding;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\PersistentCollection;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
@@ -167,5 +168,16 @@ class Task extends CachedEntityVectorEmbedding implements OrderListItemInterface
     public function getMetaAttributes(): array
     {
         return $this->getPage()->getMetaAttributes();
+    }
+
+    public function getParentEntities(): PersistentCollection|array
+    {
+        return []; // task has no parent entities; is top-level
+    }
+
+    public function getChildEntities(): PersistentCollection|array
+    {
+        // when a task is deleted, the page sections should be deleted as well from the embedding db
+        return $this->getPage()->getChildEntities();
     }
 }
