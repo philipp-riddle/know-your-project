@@ -34,7 +34,7 @@
                             <span>{{ taskProgress.complete }} / {{ taskProgress.total }}</span>
                         </div>
                         <small v-for="tagPage in task.page.tags">
-                            <span class="btn btn-sm me-1" :style="{'background-color': tagPage.tag.color}" v-tooltip="'Tag: '+tagPage.tag.name">&nbsp;&nbsp;&nbsp;</span>
+                            <span class="btn btn-tag btn-sm me-1" :style="{'background-color': tagPage.tag.color}" v-tooltip="'Tag: '+tagPage.tag.name">&nbsp;&nbsp;&nbsp;</span>
                         </small>
                     </div>
                 </div>
