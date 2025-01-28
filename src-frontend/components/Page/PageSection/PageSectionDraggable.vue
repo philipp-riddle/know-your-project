@@ -1,5 +1,5 @@
 <template>
-	<div style="min-width: 350px;" class="task-list">
+	<div style="min-width: 350px;">
 		<div v-if="pageSectionStore && pageSectionStore.displayedPageSections" class="list-area p-0" style="min-height: 150px" :page="page.id">
 			<draggable
 				class="dragArea pb-4 m-0 d-flex gap-4 flex-column"

@@ -5,7 +5,9 @@
                 <NavigationSidebar />
             </div>
             <div class="col-sm-8 col-lg-10 m-0 p-0 h-100 d-flex flex-column bg-white page-panel">
-                <router-view class="flex-fill"></router-view>
+                <div class="flex-fill">
+                    <router-view></router-view>
+                </div>
             </div>
         </div>
     </div>

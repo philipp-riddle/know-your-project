@@ -53,7 +53,7 @@ export const useTaskStore = defineStore('task', () => {
 
                 // finally, sort the tasks by their orderIndex
                 for (const stepType in tasks.value) {
-                    tasks.value[stepType].sort((a, b) => a.orderIndex - b.orderIndex);
+                    tasks.value[stepType] = tasks.value[stepType].sort((a, b) => a.orderIndex - b.orderIndex);
                 }
 
                 resolve(fetchedTasks);
@@ -176,29 +176,38 @@ export const useTaskStore = defineStore('task', () => {
      */
     function moveTask(originalTask, stepType, index, isDraggable) {
         return new Promise((resolve) => {
-            fetchMoveTask(originalTask, stepType, index).then((task) => {
+            fetchMoveTask(originalTask, stepType, index).then((movedTask) => {
+                if (originalTask.stepType !== stepType) {
+                    tasks.value[originalTask.stepType] = tasks.value[originalTask.stepType].filter((t) => t.id !== originalTask.id);
+                }
+
+                movedTask.orderIndex = movedTask.orderIndex - 1; // we do this to account for the 1-based index in the UI
+
+                // replace the task in the store
+                var hasTask = false;
+
                 if (!tasks.value[stepType]) {
-                    resolve(task);
+                    tasks.value[stepType] = [];
+                } else {
+                    tasks.value[movedTask.stepType] = tasks.value[movedTask.stepType].map((task) => {
+                        if (task.id === movedTask.id) {
+                            tasks.value[stepType].push(movedTask);
+                            hasTask = true;
+                            return task;
+                        }
 
-                    return; // if the tasks are not loaded yet the loading will do the rest
+                        return task;
+                    });
                 }
 
-                tasks.value[originalTask.stepType].splice(tasks.value[originalTask.stepType].findIndex((t) => t.id === originalTask.id), 1);
-
-                // if the task is not draggable we need to update it in the store to reflect the change in the UI
-                if (!isDraggable) {
-                    tasks.value[stepType] = [
-                        ...tasks.value[stepType].slice(0, index),
-                        task,
-                        ...tasks.value[stepType].slice(index),
-                    ];
+                if (!hasTask) {
+                    tasks.value[stepType].push(movedTask);
                 }
 
-                if (task.id == pageStore.selectedPage?.task?.id) {
-                    pageStore.selectedPage.task = task;
-                }
+                // now, reorder them by their order index
+                tasks.value[stepType] = tasks.value[stepType].sort((a, b) => a.orderIndex - b.orderIndex);
 
-                resolve(task);
+                resolve(movedTask);
             });
         });
     }

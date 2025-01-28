@@ -1,10 +1,12 @@
 <template>
-    <TagDialogue
-        :tags="currentPageTags"
-        @createTag="(tagName) => handleTagCreate(tagName)"
-        @addTag="(tag) => handleTagAdd(tag)"
-        @removeTag="(tag) => handleTagRemove(tag)"
-    />
+    <div>
+        <TagDialogue
+            :tags="currentPageTags"
+            @createTag="(tagName) => handleTagCreate(tagName)"
+            @addTag="(tag) => handleTagAdd(tag)"
+            @removeTag="(tag) => handleTagRemove(tag)"
+        />
+    </div>
 </template>
 
 <script setup>
@@ -13,29 +15,23 @@
     import { useUserStore } from '@/stores/UserStore.js';
     import TagDialogue from '@/components/Tag/TagDialogue.vue';
 
-    const props = defineProps({
-        page: {
-            type: Object,
-            required: true,
-        },
-    });
     const pageStore = usePageStore();
     const userStore = useUserStore();
-    const currentPageTags = ref(props.page.tags.map((tagPage) => tagPage.tag));
+    const currentPageTags = ref(pageStore.selectedPage.tags.map((tagPage) => tagPage.tag));
 
     // whenever the page tags change, the assigned page tags must change as well
-    watch(() => props.page.tags, (newPageTags) => {
+    watch(() => pageStore.selectedPage.tags, (newPageTags) => {
         currentPageTags.value = newPageTags.map((tagPage) => tagPage.tag);
     }, {deep: true});
 
     const handleTagCreate = (tagName) => {
-        pageStore.addTagToPageByName(props.page, tagName).then((pageTag) => {
+        pageStore.addTagToPageByName(pageStore.selectedPage, tagName).then((pageTag) => {
             userStore.currentUser.selectedProject.tags.push(pageTag.tag);
         });
     };
 
     const handleTagAdd = (tag) => {
-        pageStore.addTagToPageById(props.page, tag.id);
+        pageStore.addTagToPageById(pageStore.selectedPage, tag.id);
     };
 
     const handleTagRemove = (tag) => {
@@ -48,6 +44,6 @@
             return;
         }
 
-        pageStore.removeTagFromPage(props.page, tagPage);
+        pageStore.removeTagFromPage(pageStore.selectedPage, tagPage);
     };
 </script>

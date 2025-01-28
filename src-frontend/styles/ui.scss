@@ -293,6 +293,35 @@ modal-backdrop.show {
     transition: opacity 0.2s ease-in-out;
 }
 
+/* === TASK STYLES ============================================================= */
+
+.task-list {
+    width: 20em;
+    max-width: 20em;
+}
+
+.task-list-area {
+    // I wish this could be dropped but somehow the scroll does not work without it but does not span across the full height
+    max-height: 80vh;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    white-space: nowrap;
+}
+
+.task-drag-area {
+    min-height: 150px;
+    padding: 0;
+}
+
+.task-card {
+    border-width: 0 !important;
+
+    &:hover {
+        cursor: pointer;
+        border-width: 1px !important;
+    }
+}
+
 /* === IMAGE CONTAINER WITH OVERLAY ============================================================= */
 
 .img-container {

@@ -57,6 +57,12 @@
     const onTaskDrag = (event) => {
         const movedTaskToOtherList = event.from !== event.to;
         const taskId = parseInt(event.item.getAttribute('task'));
+
+        if (!taskId) {
+            console.error('Task ID not found in dragged element', event.item);
+            return;
+        }
+
         const taskOrderIndex = event.newIndex;
         const targetWorkflowStep = event.to.getAttribute('data-workflowStep');
 
