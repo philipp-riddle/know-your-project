@@ -11,6 +11,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class EntityEmbeddingQueueCommand extends Command
 {
+    public const RUNNING_TIME = 55;
+
     public function __construct(
         private EntityEmbeddingQueueService $entityEmbeddingQueueService,
         private EntityManagerInterface $em,
@@ -25,13 +27,19 @@ class EntityEmbeddingQueueCommand extends Command
             ->setDescription('Process the entity embedding queue');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): never
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         Debug::enable();
+        $startTime = \time();
         $isIdling = false; // flag to indicate if we are idling; this is useful to know on the console output
 
         while (true) {
-            $queueItems = $this->entityEmbeddingQueueService->getQueueItemsToProcess(limit: 10);
+            if ($startTime + self::RUNNING_TIME < \time()) {
+                Debug::print('Time is up! Exiting...');
+                break;
+            }
+
+            $queueItems = $this->entityEmbeddingQueueService->getQueueItemsToProcess(limit: 1);
 
             if (\count($queueItems) === 0) {
                 if (!$isIdling) {
@@ -54,5 +62,7 @@ class EntityEmbeddingQueueCommand extends Command
             // always wait 0.5 seconds before processing the next batch; this saves us CPU cycles
             \usleep(500000);
         }
+
+        return Command::SUCCESS;
     }
 }
