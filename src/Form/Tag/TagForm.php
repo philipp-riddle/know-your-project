@@ -33,7 +33,6 @@ class TagForm extends AbstractType
         // this allows the user to specify a new or a new parent tag
         $builder->add('parent', EntityType::class, [
             'required' => true,
-            'mapped' => false,
             'class' => Tag::class,
             'choice_label' => 'id',
         ]);

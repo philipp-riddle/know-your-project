@@ -32,10 +32,11 @@ class Tag implements UserPermissionInterface, CrudEntityInterface
     private ?string $color = null;
 
     #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'tags')]
+    #[ORM\JoinColumn(onDelete: 'CASCADE')]
     private ?self $parent = null;
 
     /**
-     * @var Collection<int, Tag>
+     * @var Collection<int, self>
      */
     #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class)]
     private Collection $tags;

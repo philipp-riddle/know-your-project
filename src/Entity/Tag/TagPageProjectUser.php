@@ -18,11 +18,11 @@ class TagPageProjectUser implements UserPermissionInterface, CrudEntityInterface
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?TagPage $tagPage = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?ProjectUser $projectUser = null;
 
     public function getId(): ?int

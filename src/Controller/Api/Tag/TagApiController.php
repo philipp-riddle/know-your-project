@@ -24,6 +24,12 @@ class TagApiController extends CrudApiController
         return $this->crudUpdateOrCreate($tag, $request);
     }
 
+    #[Route('/{tag}', methods: ['DELETE'], name: 'api_tag_delete')]
+    public function delete(Tag $tag): JsonResponse
+    {
+        return $this->crudDelete($tag);
+    }
+
     public function getEntityClass(): string
     {
         return Tag::class;

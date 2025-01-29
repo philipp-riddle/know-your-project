@@ -10,8 +10,10 @@
             class="btn btn-sm"
             @click="() => showPopover = !showPopover"
             :class="{
-                'btn-light-gray': !showPopover, // this makes it appear 'unselected'
-                'btn-dark-gray': showPopover, // this makes it appear 'selected'
+                'btn-dark-gray': darkMode, // in dark mode we only have one color; this ensures it can be seen
+
+                'btn-light-gray': !darkMode && !showPopover, // this makes it appear 'unselected'
+                'btn-dark-gray': !darkMode && showPopover, // this makes it appear 'selected'
             }"
         >
             <font-awesome-icon :icon="['fas', 'trash']" />
@@ -24,8 +26,8 @@
                 <p>This {{ label }} will be deleted forever.</p>
 
                 <div class="d-flex flex-row justify-content-end gap-3">
-                    <button class="btn btn-sm btn-danger" @click.stop="$emit('onConfirm')">Yes</button>
-                    <button class="btn btn-sm btn-secondary" @click="() => showPopover = false">Cancel</button>
+                    <button class="btn btn-sm btn-danger" @click.stop="onClickYes">Yes</button>
+                    <button class="btn btn-sm btn-secondary" @click.stop="onClickCancel">Cancel</button>
                 </div>
             </div>
         </template>
@@ -47,6 +49,11 @@
             required: false,
             default: true,
         },
+        darkMode: {
+            type: Boolean,
+            required: false,
+            default: false,
+        },
     });
     const showPopover = ref(false);
     const tooltip = computed(() => {
@@ -60,4 +67,13 @@
             emit('onHideDropdown');
         }
     });
+
+    const onClickYes = () => {
+        emit('onConfirm');
+        showPopover.value = false;
+    };
+
+    const onClickCancel = () => {
+        showPopover.value = false;
+    };
 </script>

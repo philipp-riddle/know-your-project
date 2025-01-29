@@ -18,11 +18,11 @@ class TagProjectUser implements UserPermissionInterface, CrudEntityInterface
     private ?int $id = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Tag $tag = null;
 
     #[ORM\ManyToOne(inversedBy: 'tags')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?ProjectUser $projectUser = null;
 
     public function getId(): ?int

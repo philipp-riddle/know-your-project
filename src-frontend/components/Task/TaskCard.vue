@@ -24,7 +24,7 @@
                             v-if="taskProgress"
                             class="badge d-flex flex-row align-items-center gap-1"
                             :class="{
-                                'bg-light': taskProgress.complete === 0,
+                                'black': taskProgress.complete === 0,
                                 'bg-success': taskProgress.complete === taskProgress.total,
                                 'bg-warning': taskProgress.complete > 0 && taskProgress.complete < taskProgress.total,
                             }"

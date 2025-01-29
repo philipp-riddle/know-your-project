@@ -5,7 +5,7 @@
 
     <div
         v-if="showCreateControls || showSearchControls"
-        class="d-flex flex-row justify-content-between gap-1"
+        class="d-flex flex-row justify-content-between gap-1 mb-3"
     >
         <input
             v-if="showSearchControls"
@@ -44,27 +44,29 @@
                 v-for="assignedTag in tags"
                 :isActive="true"
                 :tag="assignedTag"
-                tooltip="Click to remove this tag"
                 :showEditControls="showEditControls"
-                @click="$emit('removeTag', assignedTag)"
+                :showNested="false"
+                tooltip="Click to remove this tag"
+                @click="(assignedTag) => $emit('removeTag', assignedTag)"
             />
             
             <!-- all available tags which are not yet assigned to this context -->
-            <TagItem
-                v-for="tag in availableTags"
-                :tag="tag"
-                tooltip="Click to add this tag"
-                :showEditControls="showEditControls"
-                @click="$emit('addTag', tag)"
-            />
+            <div v-for="tag in availableTags" class="flex-fill w-100">
+                <TagItem
+                    :tag="tag"
+                    tooltip="Click to add this tag"
+                    :showEditControls="showEditControls"
+                    @click="(tag) => $emit('addTag', tag)"
+                />
+            </div>
         </ul>
     </div>
 </template>
 
 <script setup>
     import { computed, ref, watch, onMounted } from 'vue';
+    import TagItem from '@/components/Tag/TagItem.vue';
     import { useProjectStore } from '@/stores/ProjectStore.js';
-    import TagItem from '@/components/Page/PageControl/Tag/TagItem.vue';
 
     const emit = defineEmits(['addTag', 'removeTag', 'createTag']);
     const props = defineProps({
@@ -128,17 +130,42 @@
         projectStore.getSelectedProject().then((project) => {
             availableTags.value = project.tags;
 
-            availableTags.value = availableTags.value.filter((tag) => {
-                if (tagInput.value.value.trim().length > 0) { // filter by search query if a search term is given
-                    if (!tag.name.toLowerCase().includes(tagInput.value.value.toLowerCase())) {
-                        return false;
-                    }
+            for (var i = 0; i < availableTags.value.length; i++) {
+                const tag = availableTags.value[i];
+                if (shouldFilterTag(tag)) {
+                    availableTags.value = availableTags.value.filter((availableTag) => availableTag.id !== tag.id);
+                    i--; // we need to decrement the index because we removed an element
                 }
-
-                return !props.tags.some((existingTag) => existingTag.id === tag.id);
-            });
+            }
 
             availableTags.value = availableTags.value.sort((a, b) => b.name - a.name);
         });
+    };
+
+    const shouldFilterTag = (tag) => {
+        // if the tag has a parent we only want to show it in the parent context; not as an individual item.
+        if (tag.parent !== null) {
+            return true;
+        }
+
+        if (props.tags.some((existingTag) => existingTag.id === tag.id)) {
+            return true;
+        }
+
+        // check if any of the tags childs are already assigned
+        if (tag.tags.length > 0) {
+            for (var i = 0; i < tag.tags.length; i++) {
+                if (props.tags.some((existingTag) => existingTag.id === tag.tags[i].id)) {
+                    return true;
+                }
+            }
+        }
+
+        // search has priority over everything
+        if (tagInput.value.value.trim().length > 0) { // filter by search query if a search term is given
+            return !tag.name.toLowerCase().includes(tagInput.value.value.toLowerCase());
+        }
+
+        return false;
     };
 </script>

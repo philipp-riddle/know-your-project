@@ -211,15 +211,15 @@ export const usePageStore = defineStore('page', () => {
         }
     }
 
-    function addTagToPageByName(page, tagName) {
+    function addTagToPageByName(page, tagName, parentTagId) {
         return new Promise((resolve) => {
-            fetchCreateTagPageFromTagName(page.id, tagName).then((pageTag) => {
+            fetchCreateTagPageFromTagName(page.id, tagName, parentTagId).then((pageTag) => {
                 selectedPage.value.tags.push(pageTag);
                 
                 if (displayedPageTags.value[-1]?.includes(page.id)) {
                     displayedPageTags.value[-1] = displayedPageTags.value[-1].filter((p) => p !== page.id);
                 }
-                
+
                 // if the tag is indeed displayed on the page, we add the tag to the displayed tags in the nav
                 if (displayedPageTags.value[pageTag.tag.id]) {
                     displayedPageTags.value[pageTag.tag.id].push(page.id);   
@@ -273,6 +273,16 @@ export const usePageStore = defineStore('page', () => {
                 resolve();
             });
         });
+    }
+
+    /**
+     * Completely removes the tag from the store, i.e. in its displayed page and displayed page lists + associated tags.
+     *
+     * @param {Tag} tag 
+     */
+    function removeTag(tag) {
+        selectedPage.value.tags = selectedPage.value.tags.filter((tp) => tp.tag.id !== tag.id);
+        displayedPageTags.value[tag.id] = [];
     }
 
     function updateTag(tag) {
@@ -353,6 +363,7 @@ export const usePageStore = defineStore('page', () => {
         addTagToPageByName,
         addTagToPageById,
         removeTagFromPage,
+        removeTag,
         updateTag,
         deletePage,
         removePage,

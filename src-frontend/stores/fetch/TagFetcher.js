@@ -2,12 +2,27 @@ import axios from "axios";
 
 const BaseService = "/api/tag";
 
+export async function fetchCreateTag(projectId, name, parentTagId) {
+    const resp = await axios.post(`${BaseService}`, {
+        project: projectId,
+        name: name,
+        parent: parentTagId ?? null,
+    });
+
+    return resp.data;
+}
+
 export async function fetchUpdateTag(tag) {
     const resp = await axios.put(`${BaseService}/${tag.id}`, {
         name: tag.name,
         color: tag.color,
-        parent: null, // @todo later implement parent functionality
     });
+
+    return resp.data;
+}
+
+export async function fetchDeleteTag(tag) {
+    const resp = await axios.delete(`${BaseService}/${tag.id}`);
 
     return resp.data;
 }

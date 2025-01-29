@@ -57,7 +57,7 @@ export function  usePageSectionAccessibilityHelper() {
         } else if (icon === 'microchip') {
             return 'AI Prompt';
         } else if (icon === 'arrow-up-right-from-square') {
-            return 'Embedded Page';
+            return 'Connected page';
         } else if (icon === 'list-check') {
             return 'Checklist';
         } else if (icon === 'image') {
@@ -75,7 +75,7 @@ export function  usePageSectionAccessibilityHelper() {
         } else if (icon === 'file-csv') {
             return 'CSV';
         } else if (icon === 'file-upload') {
-            return 'File Upload';
+            return 'File upload';
         } else if (icon === 'book') {
             return 'Summary';
         }
