@@ -7,6 +7,7 @@ use App\Service\Search\EntityEmbeddingQueueService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class EntityEmbeddingQueueCommand extends Command
@@ -24,12 +25,17 @@ class EntityEmbeddingQueueCommand extends Command
     {
         $this
             ->setName('queue:entity-embedding')
-            ->setDescription('Process the entity embedding queue');
+            ->setDescription('Process the entity embedding queue')
+            ->addOption('debug', mode: InputOption::VALUE_NONE, description: 'Enable debug mode')
+        ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        Debug::enable();
+        if ($input->getOption('debug')) {
+            Debug::enable();
+        }
+
         $startTime = \time();
         $isIdling = false; // flag to indicate if we are idling; this is useful to know on the console output
 
