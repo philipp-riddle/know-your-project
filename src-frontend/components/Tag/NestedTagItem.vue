@@ -12,14 +12,20 @@
 </template>
 
 <script setup>
-    import { defineProps } from 'vue';
+    import { computed } from 'vue';
     import TagItem from '@/components/Tag/TagItem.vue';
+    import { useTagStore } from '@/stores/TagStore.js';
 
     const emit = defineEmits(['click', 'add', 'remove']);
     const props = defineProps({
         tag: {
             type: Object,
-            required: true,
+            required: false,
+        },
+        tagId: {
+            type: Number,
+            required: false,
+            default: 0,
         },
         tooltip: {
             type: String,
@@ -37,6 +43,8 @@
             default: true,
         },
     });
+    const tagStore = useTagStore();
+    const tag = computed(() => props.tag ?? tagStore.tags.find((tag) => tag.id === props.tagId));
 
     const onClick = (tag) => {
         emit('click', tag);

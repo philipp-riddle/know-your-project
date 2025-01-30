@@ -1,7 +1,13 @@
 <template>
     <ul class="nav nav-pills nav-fill d-flex flex-column p-0 m-0">
+        <!-- display all the nested tags for this page list; recursive embedding of this component (PageList) -->
+        <NestedPageList
+            v-for="tagId in tagStore.nestedTagIdMap[tag?.id ?? -1] ?? []"
+            :key="tagId"
+            :tagId="tagId"
+        />
         <li
-            v-for="page in pageStore.displayedPageTags[tag?.id ?? -1]"
+            v-for="page in tagStore.tagPages[tag?.id ?? -1]"
             :key="page"
             class="nav-item d-flex flex-row align-items-center"
         >
@@ -18,7 +24,9 @@
 <script setup>
     import { computed, ref, onMounted, onUnmounted } from 'vue';
     import PageListItem from '@/components/Page/Explorer/PageListItem.vue';
+    import NestedPageList from '@/components/Page/Explorer/NestedPageList.vue';
     import { usePageStore } from '@/stores/PageStore.js';
+    import { useTagStore } from '@/stores/TagStore.js';
     import { useUserStore } from '@/stores/UserStore.js';
 
     const props = defineProps({
@@ -34,6 +42,7 @@
         },
     });
     const pageStore = usePageStore();
+    const tagStore = useTagStore();
     const userStore = useUserStore();
 
     onMounted(async () => {
@@ -50,7 +59,7 @@
     });
 
     onUnmounted(() => {
-        delete pageStore.displayedPageTags[props.tag?.id ?? -1];
+        delete tagStore.tagPages[props.tag?.id ?? -1];
     });
 
     const onPageDelete = async (page) => {

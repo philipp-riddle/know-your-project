@@ -110,7 +110,7 @@ export const useTaskStore = defineStore('task', () => {
                 createdTaskObject.task = createdTask; // because of serialisation we need to add the task to the page object
 
                 addTask(createdTask);
-                pageStore.addPagesAndTagsToStore([createdTaskObject], []); // pass [] as tags to add the tag to the uncategorized list
+                pageStore.addPagesToStore([createdTaskObject], []); // pass [] as tags to add the tag to the uncategorized list
                 resolve(createdTask);
             });
         });

@@ -2,60 +2,158 @@
 
 namespace App\Tests\Application\Embedding;
 
-use App\Entity\Page\Page;
-use App\Service\Integration\QdrantIntegration;
-use App\Service\Search\Entity\CachedEntityVectorEmbedding;
+use App\Entity\Page\PageSection;
+use App\Entity\Page\PageSectionText;
+use App\Entity\Page\PageTab;
+use App\Entity\Task;
 use App\Service\Search\SearchEngine;
-use App\Tests\Application\ApplicationTestCase;
-use Qdrant\Exception\InvalidArgumentException;
-use Qdrant\Models\Filter\Condition\MatchInt;
-use Qdrant\Models\Filter\Filter;
+use App\Tests\Application\Api\ApiControllerTestCase;
 
-class SearchEngineTest extends ApplicationTestCase
+class SearchEngineTest extends ApiControllerTestCase
 {
-    public function testSearch_default()
+    public static array $entityClassesToClear = [
+        PageSection::class,
+        PageTab::class,
+        PageSectionText::class,
+    ];
+
+    public function testGroupSearchResults_onePage()
     {
-        $this->markTestIncomplete('This test has not been implemented yet.');
+        $pageTab = $this->getPageTab();
+        $page = $pageTab->getPage();
 
-        // try {
-        //     $this->getQdrantIntegration()->createCollection(QdrantIntegration::COLLECTION_USERDATA);
-        // } catch (InvalidArgumentException $ex) {} // ignore exception that the collection already exists
+        $searchResults = [
+            [
+                'id' => 'Page:'.$page->getId(),
+                'type' => 'Page',
+                'result' => [
+                    'id' => $page->getId(),
+                ],
+            ],
+        ];
 
-        // $mockedEmbeddedEntity = $this->getMockedEmbeddedEntity(Page::class, 'Guidelines');
-        // $embeddingService = $this->getEmbeddingService();
-        // $embeddingService->updateEmbeddedEntity($mockedEmbeddedEntity);
+        $groupedSearchResults = $this->getSearchEngine()->groupSearchResults($searchResults);
+
+        $this->assertSame($searchResults, $groupedSearchResults);
     }
 
-    private function getMockedEmbeddedEntity(string $entityClass, string $embeddedText, array $metaAttributes = []): CachedEntityVectorEmbedding
+    public function testGroupSearchResults_pageAndPageSection()
     {
-        $mock = $this->createMock(CachedEntityVectorEmbedding::class);
+        $pageTab = $this->getPageTab();
+        $page = $pageTab->getPage();
+        $page->setName('API security checkup');
+        $pageSection = (new PageSection())
+            ->setAuthor(self::$loggedInUser)
+            ->setOrderIndex(0)
+            ->initialize();
+        $pageSectionText = (new PageSectionText())
+            ->setContent('API security checkup is important for all applications.');
+        $pageSection->setPageSectionText($pageSectionText);
+        $pageTab->addPageSection($pageSection);
 
-        $randomId = \random_int(1, 100000000);
-        $mock
-            ->method('getId')
-            ->willReturn($randomId);
+        self::$em->persist($pageSection);
+        self::$em->persist($pageSectionText);
+        self::$em->flush();
 
-        $mock
-            ->method('getTextForEmbedding')
-            ->willReturn($embeddedText);
+        $searchResults = [
+            [
+                'id' => 'Page:'.$page->getId(),
+                'type' => 'Page',
+                'result' => [
+                    'id' => $page->getId(),
+                ],
+            ],
+            [
+                'id' => 'PageSection:'.$pageSection->getId(),
+                'type' => 'PageSection',
+                'result' => [
+                    'id' => $pageSection->getId(),
+                    'pageTab' => [
+                        'id' => $pageTab->getId(),
+                        'page' => [
+                            'id' => $page->getId(),
+                        ],
+                    ]
+                ],
+            ],
+        ];
 
-        $mock
-            ->method('buildVectorDatabaseFilter')
-            ->willReturn((new Filter())->addMust(new MatchInt(\strtolower((new \ReflectionClass($entityClass))->getShortName()), $randomId)));
+        $groupedSearchResults = $this->getSearchEngine()->groupSearchResults($searchResults);
 
-        $mock
-            ->method('getMetaAttributes')
-            ->willReturn($metaAttributes);
+        $this->assertCount(1, $groupedSearchResults);
+        $this->assertSame('Page:'.$page->getId(), $groupedSearchResults[0]['id']);
+        $this->assertSame('Page', $groupedSearchResults[0]['type']);
+        $this->assertSame($page->getId(), $groupedSearchResults[0]['result']['id']);
 
-        return $mock;
+        $this->assertCount(1, $groupedSearchResults[0]['subResults']);
+        $this->assertSame('PageSection:'.$pageSection->getId(), $groupedSearchResults[0]['subResults'][0]['id']);
+        $this->assertSame('PageSection', $groupedSearchResults[0]['subResults'][0]['type']);
     }
 
-    private function getQdrantIntegration(): QdrantIntegration
+    public function testGroupSearchResults_taskAndPageSection()
     {
-        return self::$client->getContainer()->get(QdrantIntegration::class);
+        $pageTab = $this->getPageTab();
+        $page = $pageTab->getPage();
+        $page->setName('API security checkup');
+        $task = (new Task())
+            ->setStepType('Discover')
+            ->setPage($page)
+            ->setProject($page->getProject())
+            ->setOrderIndex(0)
+            ->initialize();
+        $pageSection = (new PageSection())
+            ->setAuthor(self::$loggedInUser)
+            ->setOrderIndex(0)
+            ->initialize();
+        $pageSectionText = (new PageSectionText())
+            ->setContent('API security checkup is important for all applications.');
+        $pageSection->setPageSectionText($pageSectionText);
+        $pageTab->addPageSection($pageSection);
+
+        self::$em->persist($task);
+        self::$em->persist($pageSection);
+        self::$em->persist($pageSectionText);
+        self::$em->flush();
+
+        $searchResults = [
+            [
+                'id' => 'Task:'.$task->getId(),
+                'type' => 'Task',
+                'result' => [
+                    'id' => $task->getId(),
+                    'page' => [
+                        'id' => $page->getId(),
+                    ],
+                ],
+            ],
+            [
+                'id' => 'PageSection:'.$pageSection->getId(),
+                'type' => 'PageSection',
+                'result' => [
+                    'id' => $pageSection->getId(),
+                    'pageTab' => [
+                        'id' => $pageTab->getId(),
+                        'page' => [
+                            'id' => $page->getId(),
+                        ],
+                    ]
+                ],
+            ],
+        ];
+
+        $groupedSearchResults = $this->getSearchEngine()->groupSearchResults($searchResults);
+
+        $this->assertCount(1, $groupedSearchResults);
+        $this->assertSame('Task:'.$task->getId(), $groupedSearchResults[0]['id']);
+        $this->assertSame('Task', $groupedSearchResults[0]['type']);
+        $this->assertSame($task->getId(), $groupedSearchResults[0]['result']['id']);
+
+        $this->assertCount(1, $groupedSearchResults[0]['subResults']);
+        $this->assertSame('PageSection:'.$pageSection->getId(), $groupedSearchResults[0]['subResults'][0]['id']);
+        $this->assertSame('PageSection', $groupedSearchResults[0]['subResults'][0]['type']);
     }
 
-    private function getEmbeddingService(): SearchEngine
+    private function getSearchEngine(): SearchEngine
     {
         return self::$client->getContainer()->get(SearchEngine::class);
     }

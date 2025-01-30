@@ -307,8 +307,10 @@ implements
             }
         }
 
-        if ($pageSectionTypesNotNull === 0) {
-            throw new BadRequestHttpException('A page section must have only one content type');
+        $this->embeddedPage?->validate();
+
+        if ($pageSectionTypesNotNull !== 1) {
+            throw new BadRequestHttpException('A page section must have exactly one content type');
         }
 
         if ($pageSectionTypesNull === \count($propertiesToCheckForNull)) {

@@ -7,16 +7,17 @@ export const useUserStore = defineStore('user', () => {
     const userProjectInvitations = ref([]);
     const currentPromise = ref(null); // used to store the promise of the current fetchCurrentUser call to avoid multiple calls
 
+    function setup() {
+        // use the prefetched value from the window object if it exists
+        if (window.currentUser) {
+            currentUser.value = window.currentUser;
+        }
+    }
+
     async function getCurrentUser() {
         return new Promise((resolve) => {
             if (currentUser.value) {
                 resolve(currentUser.value);
-            }
-
-            // use the prefetched value from the window object if it exists
-            if (window.currentUser) {
-                currentUser.value = window.currentUser;
-                resolve(window.currentUser);
                 return;
             }
 
@@ -68,8 +69,9 @@ export const useUserStore = defineStore('user', () => {
 
     return {
         currentUser,
-        getCurrentUser,
         userProjectInvitations,
+        setup,
+        getCurrentUser,
         getUserProjectInvitations,
         createUserProjectInvitation,
         deleteUserProjectInvitation

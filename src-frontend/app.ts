@@ -32,4 +32,13 @@ const app = createApp(App)
 app.component('font-awesome-icon', FontAwesomeIcon)
 app.component('Pinia', createPinia());
 
+// before mounting the app we setup the stores with data from the window and default data
+import { useProjectStore } from '@/stores/ProjectStore';
+import { useUserStore } from '@/stores/UserStore';
+import { useTagStore } from '@/stores/TagStore';
+
+useProjectStore().setup();
+useUserStore().setup();
+useTagStore().setup();
+
 app.mount('#app');

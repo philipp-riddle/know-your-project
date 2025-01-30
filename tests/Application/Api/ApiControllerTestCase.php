@@ -2,6 +2,8 @@
 
 namespace App\Tests\Application\Api;
 
+use App\Entity\Page\Page;
+use App\Entity\Page\PageTab;
 use App\Entity\Project\Project;
 use App\Entity\Project\ProjectUser;
 use App\Entity\User\User;
@@ -58,39 +60,24 @@ abstract class ApiControllerTestCase extends ApplicationTestCase
 
     // helper functions to quickly create entities in test
 
-    protected function createUser(?Project $selectedProject = null): User
+    protected function getPageTab(?User $user = null): PageTab
     {
-        $user = (new User())
-            ->setEmail('test' . \uniqid() . '@test.io')
-            ->setPassword('password')
-            ->setRoles(['ROLE_USER'])
-            ->setCreatedAt(new \DateTimeImmutable())
-            ->setVerified(true);
-        self::$em->persist($user);
-        self::$em->flush();
+        // fetch a managed version of the project entity
+        $project = self::$em->getRepository(Project::class)->find(($user ?? self::$loggedInUser)->getSelectedProject()->getId());
+        $page = (new Page())
+            ->setName('Test Page')
+            ->setProject($project)
+            ->setCreatedAt(new \DateTime());
+        self::$em->persist($page);
 
-        if (null === $selectedProject) {
-            $selectedProject = (new Project())
-                ->setName('Test Project')
-                ->setOwner($user)
-                ->setCreatedAt(new \DateTimeImmutable());
-            $user->setSelectedProject($selectedProject);
-            self::$em->persist($selectedProject);    
-        } else {
-            // the passed $selectedProject could be unmanaged; thus, fetch a new managed instance from Doctrine.
-            $selectedProject = self::$em->getRepository(Project::class)->find($selectedProject->getId());
-        }
-
-        if ($selectedProject->getProjectUser($user) === null) {
-            $projectUser = (new ProjectUser())
-                ->setUser($user)
-                ->setCreatedAt(new \DateTime());
-            $selectedProject->addProjectUser($projectUser);
-            self::$em->persist($projectUser);
-        }
+        $pageTab = (new PageTab())
+            ->setName('Test Tab')
+            ->setPage($page)
+            ->setCreatedAt(new \DateTime());
+        self::$em->persist($pageTab);
 
         self::$em->flush();
 
-        return $user;
+        return $pageTab;
     }
 }

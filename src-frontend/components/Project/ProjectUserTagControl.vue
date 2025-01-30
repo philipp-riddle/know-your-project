@@ -36,6 +36,7 @@
     import TagDialogue from '@/components/Tag/TagDialogue.vue';
     import { fetchCreateTagProjectUserFromTagId, fetchCreateTagProjectUserFromTagName, fetchDeleteTagProjectUser } from '@/stores/fetch/TagFetcher.js';
     import { useProjectStore } from '@/stores/ProjectStore.js';
+    import { useTagStore } from '@/stores/TagStore.js';
 
     const emit = defineEmits(['updateProjectUser']);
     const props = defineProps({
@@ -52,6 +53,7 @@
         return tagInput.value?.value ?? '';
     });
     const projectStore = useProjectStore();
+    const tagStore = useTagStore();
     const currentUserTags = ref(props.projectUser.tags.map((tagProjectUser) => tagProjectUser.tag));
     
     // whenever the project user tags changes, the assigned page tags must change as well
@@ -61,7 +63,7 @@
 
     const handleTagCreate = (tagName) => {
         fetchCreateTagProjectUserFromTagName(props.projectUser.id, tagName).then((tagProjectUser) => {
-            projectStore.selectedProject.tags.push(tagProjectUser.tag);
+            tagStore.addTag(tagProjectUser.tag);
             props.projectUser.tags.push(tagProjectUser);
             emit('updateProjectUser', props.projectUser);
         });

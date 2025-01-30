@@ -66,11 +66,11 @@
 <script setup>
     import { computed, ref, watch, onMounted } from 'vue';
     import TagItem from '@/components/Tag/TagItem.vue';
-    import { useProjectStore } from '@/stores/ProjectStore.js';
+    import { useTagStore } from '@/stores/TagStore.js';
 
     const emit = defineEmits(['addTag', 'removeTag', 'createTag']);
     const props = defineProps({
-        // The tags that are already assigned to the given context
+        // The tags that are assigned to the given tag context
         tags: {
             type: Array,
             required: true,
@@ -91,7 +91,7 @@
             default: true,
         },
     });
-    const projectStore = useProjectStore();
+    const tagStore = useTagStore();
     const availableTags = ref(null);
     const tagInput = ref(null);
     const isTagInputButtonDisabled = ref(true);
@@ -101,8 +101,8 @@
         reloadAvailableTags();
     });
 
-    // this makes sure to always filter the available tags when the selected page changes
-    watch (() => projectStore.selectedProject?.tags, () => {
+    // this makes sure to always filter the available tags when any of the tagStore's tags changes
+    watch (() => tagStore.tags, () => {
         reloadAvailableTags();
     });
 
@@ -127,19 +127,22 @@
     };
 
     const reloadAvailableTags = () => {
-        projectStore.getSelectedProject().then((project) => {
-            availableTags.value = project.tags;
+        // first, read out the available tags from the tag store
+        var tags = tagStore.tags;
 
-            for (var i = 0; i < availableTags.value.length; i++) {
-                const tag = availableTags.value[i];
-                if (shouldFilterTag(tag)) {
-                    availableTags.value = availableTags.value.filter((availableTag) => availableTag.id !== tag.id);
-                    i--; // we need to decrement the index because we removed an element
-                }
+        // then filter out the tags that are already assigned to this context OR
+        // that not match the search query (if one is given)
+        for (var i = 0; i < tags.length; i++) {
+            const tag = tags[i];
+            if (shouldFilterTag(tag)) {
+                tags = tags.filter((availableTag) => availableTag.id !== tag.id);
+                i--; // we need to decrement the index because we removed an element
             }
+        }
 
-            availableTags.value = availableTags.value.sort((a, b) => b.name - a.name);
-        });
+        tags = tags.sort((a, b) => b.name - a.name);
+
+        availableTags.value = tags;
     };
 
     const shouldFilterTag = (tag) => {

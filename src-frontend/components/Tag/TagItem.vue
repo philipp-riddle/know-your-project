@@ -79,8 +79,8 @@
 
         <NestedTagItem
             v-if="showNested"
-            v-for="childTag in tag.tags"
-            :tag="childTag"
+            v-for="childTagId in tagStore.nestedTagIdMap[tag.id] ?? []"
+            :tagId="childTagId"
             :tooltip="tooltip"
             :showEditControls="showEditControls"
             @add="onAdd"

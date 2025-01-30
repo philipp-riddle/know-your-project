@@ -95,7 +95,7 @@ final class SearchEngine
      * @param array $searchResults The search results to group.
      * @return array The grouped search results.
      */
-    private function groupSearchResults(array $searchResults): array
+    public function groupSearchResults(array $searchResults): array
     {
         $searchContainers = [];
 
@@ -103,14 +103,22 @@ final class SearchEngine
             $entityType = $searchResult['type'];
             $entityData = $searchResult['result'];
 
-            if ($entityType === 'Page') {
-                $searchContainers['page_'.$entityData['id']] = [
-                    ...$searchContainers['page_'.$entityData['id']] ?? [],
+            // we want to map task and page into the same container as they are the same +
+            // we do not want to display both of them at the same time! A task appears a task (with an attached page), a page as a page in the search results.
+            if ($entityType === 'Page' || $entityType === 'Task') {
+                $pageId = $entityData['id'];
+
+                if ($entityType === 'Task') {
+                    $pageId = $entityData['page']['id'];
+                }
+
+                $searchContainers['page_'.$pageId] = [
+                    ...$searchContainers['page_'.$pageId] ?? [],
                     ...$searchResult,
                 ];
             } elseif ($entityType === 'PageSection') {
                 // sections are nested in the navigation; add them as sub-results to the page
-                $pageId = $entityData['pageTab']['id'];
+                $pageId = $entityData['pageTab']['page']['id'];
                 $searchContainers['page_'.$pageId]['subResults'][] = $searchResult;
             } else {
                 $searchContainers[\strtolower($entityType).'_'.$entityData['id']] = $searchResult;

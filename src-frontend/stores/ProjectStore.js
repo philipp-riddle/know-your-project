@@ -9,17 +9,17 @@ export const useProjectStore = defineStore('project', () => {
     const selectedProjectPromise = ref(null); // used to store the promise of the current getProject call to avoid multiple calls at the same time
     const userStore = useUserStore();
 
+    function setup() {
+        // use the prefetched value from the window object if it exists
+        if (window.selectedProject) {
+            selectedProject.value = window.selectedProject;
+        }
+    }
+
     async function getSelectedProject() {
         return new Promise(async (resolve) => {
             if (selectedProject.value) {
                 resolve(selectedProject.value);
-                return;
-            }
-
-            // use the prefetched value from the window object if it exists
-            if (window.selectedProject) {
-                selectedProject.value = window.selectedProject;
-                resolve(window.selectedProject);
                 return;
             }
 
@@ -69,8 +69,9 @@ export const useProjectStore = defineStore('project', () => {
 
     return {
         projects,
-        getSelectedProject,
         selectedProject,
+        setup,
+        getSelectedProject,
         getProject,
         deleteProjectUser
     };

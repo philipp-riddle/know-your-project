@@ -15,7 +15,7 @@ abstract class CachedEntityVectorEmbedding implements EntityVectorEmbeddingInter
     /**
      * @return float[]|null The cached embedding of the entity if already generated
      */
-    public function getCachedEmbedding(): ?array
+    public function _getCachedEmbedding(): ?array
     {
         return $this->cachedEmbedding;
     }

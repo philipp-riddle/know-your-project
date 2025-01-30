@@ -30,7 +30,9 @@ class EntityEmbeddingQueueSubscriber implements EventSubscriberInterface
 
             // also add all parent entities via the queue; e.g. page section => page
             foreach ($entity->getParentEntities() as $parentEntity) {
-                $this->entityEmbeddingQueueService->addToQueue($parentEntity);
+                if (null !== $parentEntity->getTextForEmbedding()) { // only add the parent item to the queue if it embeds text
+                    $this->entityEmbeddingQueueService->addToQueue($parentEntity);
+                }
             }
         }
     }

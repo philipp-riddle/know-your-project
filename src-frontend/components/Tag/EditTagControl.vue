@@ -39,7 +39,7 @@
 <script setup>
     import { onMounted, ref, watch } from 'vue';
     import { useDebounceFn } from '@vueuse/core';
-    import { usePageStore } from '@/stores/PageStore.js';
+    import { useTagStore } from '@/stores/TagStore';
 
     const emit = defineEmits(['enter']);
     const props = defineProps({
@@ -52,7 +52,7 @@
             required: true,
         },
     });
-    const pageStore = usePageStore();
+    const tagStore = useTagStore();
     const tag = ref(props.tag);
     const tagNameInput = ref(null);
     const tagColorInput = ref(null);
@@ -68,7 +68,7 @@
     }, {deep: true})
 
     const debouncedTagUpdate = useDebounceFn((tag) => {
-        pageStore.updateTag(tag);
+        tagStore.updateTag(tag);
     }, 300);
 
     const toggleColorpicker = () => {

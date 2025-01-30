@@ -41,7 +41,7 @@ final class RecommendationEngine
         $filter = $queryEntity->buildVectorDatabaseFilter();
         $filter->addMustNot(new MatchInt($excludeEntityShortName, $excludeEntity->getId()));
 
-        if ($baseEntity instanceof CachedEntityVectorEmbedding && null !== $cachedEmbedding = $baseEntity->getCachedEmbedding()) {
+        if ($baseEntity instanceof CachedEntityVectorEmbedding && null !== $cachedEmbedding = $baseEntity->_getCachedEmbedding()) {
             $searchResults = $this->entityVectorEmbeddingService->searchWithVectorEmbedding(
                 $user,
                 $cachedEmbedding,

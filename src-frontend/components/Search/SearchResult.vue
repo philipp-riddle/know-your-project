@@ -22,11 +22,6 @@
 
     <!-- there are sub results; e.g. if the page title and a section match -->
     <div v-if="result.subResults" class="ps-5 ms-3 pt-2">
-        <NestedSearchResult
-            :subResults="result.subResults"
-            @searchResultClick="(data) => $emit('searchResultClick', evt)"
-            :searchTerm="searchTerm"
-        />
     </div>
 </template>
 <script setup>
@@ -61,7 +56,7 @@
         } else if (type === 'Task') {
             return props.result.result.page.name;
         } else if (type === 'PageSection') {
-            return 'EXTRACT PAGE SECTION TITLE';
+            return props.result.result.pageTab.page.name;
         }
 
         return type;
@@ -117,11 +112,11 @@
     });
     const searchResultTooltip = computed(() => {
         if (props.result.type === 'Page') {
-            return 'Page';
+            return 'Found in page';
         } else if (props.result.type === 'Task') {
-            return 'Task';
+            return 'Found in task';
         } else if (props.result.type === 'PageSection') {
-            return accessibilityHelper.getTooltip(props.result.result);
+            return 'Found in page section: ' + accessibilityHelper.getTooltip(props.result.result);
         } else {
             return props.result.type;
         }
