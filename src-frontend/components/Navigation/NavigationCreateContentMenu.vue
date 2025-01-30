@@ -39,6 +39,7 @@
     import { useRoute, useRouter } from 'vue-router';
     import { usePageStore } from '@/stores/PageStore.js';
     import { useUserStore } from '@/stores/UserStore.js';
+    import { useTaskStore } from '@/stores/TaskStore.js';
 
     const props = defineProps({
         page: {
@@ -60,12 +61,19 @@
             description: 'Accessible by everyone in your project',
             'icon': 'file',
         },
+        {
+            mode: 'task',
+            name: 'list-check',
+            description: 'New item for the Kanban board',
+            'icon': 'list-check',
+        },
     ];
     const currentRoute = useRoute();
+    const pageStore = usePageStore();
     const userStore = useUserStore();
+    const taskStore = useTaskStore();
     const currentUser = ref(null)
     const router = useRouter();
-    const pageStore = usePageStore();
     const showPopover = ref(false);
     const tooltip = computed(() => {
         return 'Create page - for you, for others?';
@@ -83,6 +91,15 @@
 
     const onCreateClick = (event, createMode) => {
         event.preventDefault();
+
+        if (createMode === 'task') {
+            taskStore.createTask('Discover', 'New task').then((task) => {
+                router.push({ name: 'TasksDetail', params: {id: task.id}});
+            });
+
+            return;
+        }
+
         let pageObject = {
             name: 'New ' + createMode,
             project: currentUser.value.selectedProject.id,
@@ -99,6 +116,6 @@
             });
         });
 
-        return true;
+        return;
     };
 </script>
