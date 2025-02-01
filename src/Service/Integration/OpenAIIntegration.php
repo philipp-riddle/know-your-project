@@ -38,9 +38,9 @@ final class OpenAIIntegration
      * Requests a chat response from OpenAI based on the given context and prompt.
      * Writes the response and the spent tokens to the given prompt.
      */
-    public function generatePromptChatResponse(Prompt &$prompt, array $messages): void
+    public function generatePromptChatResponse(Prompt &$prompt, array $messages, ?array $responseFormat = null): void
     {
-        $createResponse = $this->getChatResponse($messages);
+        $createResponse = $this->getChatResponse($messages, $responseFormat);
         $prompt->setResponseText($createResponse->choices[0]->message->content);
         $prompt->setPromptTokens($createResponse->usage->promptTokens);
         $prompt->setCompletionTokens($createResponse->usage->completionTokens);
@@ -50,7 +50,7 @@ final class OpenAIIntegration
     /**
      * @return CreateResponse The chat response from OpenAI based on the given prompt
      */
-    public function getChatResponse(array $messages = []): CreateResponse
+    public function getChatResponse(array $messages = [], ?array $responseFormat = null): CreateResponse
     {
         $messages = [
             [
@@ -59,13 +59,17 @@ final class OpenAIIntegration
             ],
             ...$messages,
         ];
-
-
-        $client = $this->getClient();
-        $response = $client->chat()->create([
+        $chatOptions = [
             'model' => self::CHAT_MODEL,
             'messages' => $messages,
-        ]);
+        ];
+
+        if (null !== $responseFormat) {
+            $chatOptions['response_format'] = $responseFormat;
+        }
+
+        $client = $this->getClient();
+        $response = $client->chat()->create($chatOptions);
 
         return $response;
     }

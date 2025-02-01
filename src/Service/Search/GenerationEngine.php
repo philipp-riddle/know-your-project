@@ -9,17 +9,22 @@ use App\Entity\Page\PageSectionEmbeddedPage;
 use App\Entity\Page\PageSectionSummary;
 use App\Entity\Project\Project;
 use App\Entity\Prompt;
-use App\Entity\ThreadItemPrompt;
+use App\Entity\Tag\Tag;
+use App\Entity\Task;
+use App\Entity\Thread\ThreadItemPrompt;
 use App\Entity\User\User;
+use App\Repository\TagRepository;
+use App\Service\Helper\DefaultNormalizer;
 use App\Service\Integration\OpenAIIntegration;
 use App\Service\Search\Entity\EntityVectorEmbeddingInterface;
-use Qdrant\Models\Filter\Condition\Range;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * This class is responsible for creating new content or filtering existing content, based on the user prompt input.
  * It generates prompts for the AI to respond to, based on the context and what is required, e.g. summary requires different prompts than a general prompt.
  * 
  * Current generation possibilities:
+ *      - Starter points for creating new pages, tasks, and recommending relevant content (=> returning title, content, and suggested tag)
  *      - Answer questions (ask a question and answer using relevant context from the project)
  *      - Page summary (summarize the content of a page)
  *      - Page section AI prompt (answer a specific prompt in the context of a page section)
@@ -38,10 +43,145 @@ final class GenerationEngine
         private OpenAIIntegration $openAIIntegration,
         private EntityVectorEmbeddingService $entityVectorEmbeddingService,
         private SearchEngine $searchEngine,
+        private DefaultNormalizer $defaultNormalizer,
+        private TagRepository $tagRepository,
     ) { }
 
+    public function generateCreationPrompt(User $user, Page $page, string $prompt): array
+    {
+        // get relevant context (pages, page sections) project; this improves the query results
+        $searchResults = $this->entityVectorEmbeddingService->searchEmbeddedEntity($user, $page->getProject(), $prompt, self::ANSWER_RELEVANCE_SCORE_TRESHOLD);
+        $aggregatedSearchResults = []; // after iterating over a search result add it to the item; otherwise we cannot retrieve it anymore (=> is a Generator and cannot be rewinded)
+        $relevantContext = [];
+        $recommendedTag = null;
+
+        foreach ($searchResults as $searchResult) {
+            list ($searchResult, $entity) = $searchResult;
+
+            // if it's not an embedded entity or a page section, skip it
+            // we only want top-level pages and tasks in the context; this prevents confusing the LLM with duplicate content
+            if (!($entity instanceof EntityVectorEmbeddingInterface) || $entity instanceof PageSection) {
+                continue;
+            }
+
+            if (null !== $textForEmbedding = $entity->getTextForEmbedding()) {
+                $relevantContext[] = '=== CONTEXT === \n'.$textForEmbedding;
+
+                // get the first tag of the entity to recommend it to the user
+                if (null === $recommendedTag) {
+                    if ($entity instanceof Page) {
+                        $recommendedTag = @$entity->getTags()[0]?->getTag();
+                    } elseif ($entity instanceof PageSection) {
+                        $recommendedTag = @$entity->getPageTab()->getPage()->getTags()[0]?->getTag();
+                    } elseif ($entity instanceof Task) {
+                        $recommendedTag = @$entity->getPage()->getTags()[0]?->getTag();
+                    }
+                }
+            }
+
+            $aggregatedSearchResults[] = [$searchResult, $entity];
+        }
+
+        // helper variables which help us contextualize the response and make sure the AI knows what to do with the prompt.
+        $typeMessageHint = $page->getTask() === null ? 'page' : 'task';
+
+        if (null === $page->getTask()) {
+            $contentDescription = '
+                The content should include a brief introduction about the topic and a brief overview of what needs to be done.
+                Add up to five checklist items to the response that aim to work on the requirements of the page.
+            ';
+        } else {
+            $contentDescription = '
+                The content should include a brief introduction about the topic and a brief overview of what needs to be done.
+                Add up to five checklist items to the response that aim to work on the requirements of the task.
+            ';
+        }
+
+        // the messages which are sent to the AI.
+        // these act as an assistant and guidelines to help the AI generate a response.
+        $messages = [
+            [
+                'role' => 'system',
+                'content' => \sprintf('
+                    You are an assistant to help with creating a %s.
+                    You will  first provided with context ("1. CONTEXT"; each context item delimited by "=== CONTEXT ===") and then the user question ("2. QUESTION").
+                    If the user prompt is disrespectful or has bad intentions, troll the user by creating a page about boredom.
+
+                    Respond in JSON format, adhering to the provided JSON schema.
+                    Return a title, describing the nature of the creation, and content in HTML format for better readibility.
+                    DO NOT start with a <h4> tag and DO NOT repeat the title in the content.
+                ', $typeMessageHint,),
+            ],
+            [
+                'role' => 'user',
+                'content' => '1. CONTEXT: '.\implode("\n", $relevantContext),
+            ],
+            [
+                'role' => 'user',
+                'content' => '2. PROMPT: '.$prompt,
+            ],
+        ];
+        // this format dictates in which format the AI should respond.
+        // this makes it more reliable and we can extract the response in a structured way.
+        $responseJsonFormat = [
+            'type' => 'json_schema',
+            'json_schema' => [
+                'name' => \ucfirst($typeMessageHint),
+                'strict' => true,
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'title' => [
+                            'type' => 'string',
+                            'description' => 'Title for the content, precise maximum three words summary',
+                        ],
+                        'content' => [
+                            'type' => 'string',
+                            'description' => 'The content ',
+                        ],
+                    ],
+                    'required' => ['title', 'content'],
+                    'additionalProperties' => false,
+                ],
+            ],
+        ];
+
+        // if it is a task we must slightly adjust the JSON schema to include a checklist.
+        if (null !== $page->getTask()) {
+            $responseJsonFormat['json_schema']['schema']['properties']['checklist'] = [
+                'type' => 'array',
+                'items' => [
+                    'type' => 'string',
+                ],
+                'description' => 'Checklist items to work on the content provided before.',
+            ];
+            $responseJsonFormat['json_schema']['schema']['required'][] = 'checklist';
+        }
+
+        $promptEntity = (new Prompt())
+            ->initialize()
+            ->setUser($user)
+            ->setProject($page->getProject())
+            ->setPromptText($prompt);
+
+        // call OpenAI API to generate a response with the user context and user question.
+        $this->openAIIntegration->generatePromptChatResponse($promptEntity, $messages, $responseJsonFormat);
+        $answer = \json_decode($promptEntity->getResponseText(), true);
+        // add the previously found recommended tag to the answer
+        $answer['tag'] = $recommendedTag ? $this->defaultNormalizer->normalize($user, $recommendedTag) : null;
+
+        return [
+            // use the search engine to parse the search results into a format the frontend can easily parse and understand.
+            'searchResults' => $this->searchEngine->parseSearchResults($user, $prompt, $aggregatedSearchResults),
+
+            // this is the JSON answer from the assistant.
+            // decode it to an array and pass it to the frontend to start.
+            'answer' => $answer,
+        ];
+    }
+
     /** 
-     * Answer a question based on the user input and the context of the project.
+     * Generates an answer based on the user question and the context of the project.
      * 
      * @param User $user The user asking the question.
      * @param Project $project The project the user is currently working on.
@@ -49,7 +189,7 @@ final class GenerationEngine
      * 
      * @return array An array of search results and messages to be sent to the user.
      */
-    public function answerQuestion(User $user, Project $project, string $question): array
+    public function generateAnswer(User $user, Project $project, string $question): array
     {
         // get relevant context (pages, page sections) project; this improves the query results
         $searchResults = $this->entityVectorEmbeddingService->searchEmbeddedEntity($user, $project, $question, self::ANSWER_RELEVANCE_SCORE_TRESHOLD);
@@ -97,8 +237,7 @@ final class GenerationEngine
             ->initialize()
             ->setUser($user)
             ->setProject($project)
-            ->setPromptText($question)
-            ->setProject($project);
+            ->setPromptText($question);
 
         // call OpenAI API to generate a response with the user context and user question.
         $this->openAIIntegration->generatePromptChatResponse($prompt, $messages);

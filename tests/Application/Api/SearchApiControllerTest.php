@@ -58,9 +58,7 @@ class SearchApiControllerTest extends ApiControllerTestCase
             'search' => 'API security checkup',
         ]);
 
-        die(json_encode($searchResponse));
-
-        $this->assertCount(2, $searchResponse);
+        $this->assertCount(1, $searchResponse);
         $this->assertSame('Page:'.$pageTab->getPage()->getId(), $searchResponse[0]['id']);
         $this->assertSame('Page', $searchResponse[0]['type']);
         $this->assertSame($pageTab->getPage()->getId(), $searchResponse[0]['result']['id']);

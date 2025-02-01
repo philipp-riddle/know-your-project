@@ -293,6 +293,29 @@ modal-backdrop.show {
     transition: opacity 0.2s ease-in-out;
 }
 
+.page-creation-assistant {
+    .card {
+        max-width: 30rem;
+
+        &.card-setup {
+            // generated with https://mycolor.space/gradient
+            background-image: linear-gradient(to bottom, #272829, #10404c, #005b59, #007549, #46891b);
+    
+            input, textarea { 
+                color: black !important;
+            }
+    
+            .card {
+                color: black !important;
+            }
+    
+            .card-head, .card-label, h4, label {
+                color: white !important;
+            }
+        }
+    }
+}
+
 /* === TASK STYLES ============================================================= */
 
 .task-list {

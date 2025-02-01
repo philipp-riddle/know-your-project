@@ -2,13 +2,17 @@
     <div class="card" @click.stop="onSearchResultClick">
         <div class="card-body d-flex flex-row justify-content-between gap-3">
             <div class="d-flex flex-row gap-3 align-items-center justify-content-top">
-                <span class="btn btn-lg m-0 p-0">
+                <span
+                    class="btn m-0 p-0"
+                    :class="{'btn-sm': condensed, 'btn-lg': !condensed}"
+                >
                     <font-awesome-icon :icon="['fas', searchResultIcon]" v-tooltip="searchResultTooltip" />
                 </span>
                 <div>
-                    <h5 class="m-0 p-0">{{ searchResultName }}</h5>
+                    <p v-if="condensed" class="m-0 p-0 black">{{ searchResultName }}</p>
+                    <h5 v-else class="m-0 p-0 black">{{ searchResultName }}</h5>
 
-                    <SearchResultSummary :result="result" :searchTerm="searchTerm" />
+                    <SearchResultSummary v-if="!condensed" :result="result" :searchTerm="searchTerm" />
                 </div>
             </div>
 
@@ -42,6 +46,11 @@
         searchTerm: {
             type: String,
             required: true
+        },
+        condensed: {
+            type: Boolean,
+            required: false,
+            default: false,
         },
     });
     const router = useRouter();

@@ -3,12 +3,19 @@
 namespace App\Controller\Api\Embedding;
 
 use App\Controller\Api\ApiController;
+use App\Entity\Page\Page;
 use App\Entity\Project\Project;
+use App\Entity\Tag\Tag;
 use App\Form\Embedding\GenerationAskForm;
+use App\Form\Embedding\GenerationCreateForm;
+use App\Form\Embedding\GenerationSaveForm;
 use App\Service\Helper\ApiControllerHelperService;
+use App\Service\Page\PageGenerationService;
 use App\Service\Search\GenerationEngine;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/api/generation')]
@@ -17,6 +24,7 @@ class GenerationApiController extends ApiController
     public function __construct(
         ApiControllerHelperService $apiControllerHelperService,
         private GenerationEngine $generationEngine,
+        private PageGenerationService $pageGenerationService,
     ) {
         parent::__construct($apiControllerHelperService);
     }
@@ -37,7 +45,60 @@ class GenerationApiController extends ApiController
         $question = $form->get('question')->getData();
 
         return $this->createJsonResponse(
-            $this->generationEngine->answerQuestion($this->getUser(), $project, $question),
+            $this->generationEngine->generateAnswer($this->getUser(), $project, $question),
+        );
+    }
+
+    #[Route('/create/{page}', methods: ['POST'], name: 'api_generation_create')]
+    public function create(Page $page, Request $request): JsonResponse
+    {
+        $this->checkUserAccess($page);
+
+        $form = $this->createForm(GenerationCreateForm::class);
+        $form = $this->handleFormRequest($form, $request);
+
+        // if the handle returns a response this means that the form submission was not valid
+        if ($form instanceof JsonResponse) {
+            return $form;
+        }
+
+        $intro = \trim($form->get('intro')->getData() ?? '');
+
+        if ($intro === '') {
+            throw new BadRequestHttpException('The intro field is required');
+        }
+
+        return $this->createJsonResponse(
+            $this->generationEngine->generateCreationPrompt($this->getUser(), $page, $intro),
+        );
+    }
+
+    #[Route('/save/{page}', methods: ['POST'], name: 'api_generation_save')]
+    public function save(Page $page, Request $request): JsonResponse
+    {
+        $this->checkUserAccess($page);
+
+        $form = $this->createForm(GenerationSaveForm::class);
+        $form = $this->handleFormRequest($form, $request);
+
+        // if the handle returns a response this means that the form submission was not valid
+        if ($form instanceof JsonResponse) {
+            return $form;
+        }
+
+        $title = \trim($form->get('title')->getData() ?? '');
+        $content = \trim($form->get('content')->getData() ?? '');
+        $checklistItems = $form->get('checklistItems')->getData();
+
+        /** @var ?Tag */
+        $tag = $form->get('tag')->getData();
+
+        if (null !== $tag && !$tag->hasUserAccess($this->getUser())) {
+            throw new AccessDeniedHttpException('You do not have access to this tag');
+        }
+
+        return $this->jsonSerialize(
+            $this->pageGenerationService->generatePage($this->getUser(), $page, $title, $content, $tag, $checklistItems),
         );
     }
 }

@@ -8,6 +8,9 @@
                 <div v-if="pageSectionStore.isCreatingPageSection" class="spinner-border" role="status">
                     <span class="visually-hidden">Loading...</span>
                 </div>
+                <div v-else>
+                    <PageCreationAssistant :page="page" :pageTab="pageTab" />
+                </div>
             </div>
         </div>
 
@@ -20,6 +23,7 @@
 </template>
 
 <script setup>
+    import PageCreationAssistant from '@/components/Page/Assistant/PageCreationAssistant.vue';
     import PageSectionCreateButton from '@/components/Page/PageSection/PageSectionCreateButton.vue';
     import PageSectionDraggable from '@/components/Page/PageSection/PageSectionDraggable.vue';
     import { usePageSectionStore } from '@/stores/PageSectionStore.js';

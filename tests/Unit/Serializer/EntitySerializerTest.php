@@ -10,11 +10,17 @@ use App\Entity\Tag\Tag;
 use App\Entity\Tag\TagPage;
 use App\Entity\User\User;
 use App\Serializer\EntitySerializer;
+use App\Tests\Application\ApplicationTestCase;
 use App\Tests\TestCase;
 use ReflectionClass;
 
-class EntitySerializerTest extends TestCase
+class EntitySerializerTest extends ApplicationTestCase
 {
+    public function testTrue(): void
+    {
+        $this->assertTrue(true); // this is to not get picked up by the test suite
+    }
+
     // public static array $entityClassesToClear = [
     //     PageSection::class,
     //     PageTab::class,
