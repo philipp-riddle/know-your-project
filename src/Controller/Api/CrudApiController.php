@@ -72,7 +72,7 @@ abstract class CrudApiController extends ApiController
         $this->em->remove($userPermissionInterface);
         $this->em->flush();
 
-        $this->eventDispatcher->dispatch(new DeleteCrudEntityEvent($userPermissionInterface, $entityId));
+        $this->eventDispatcher->dispatch(new DeleteCrudEntityEvent($userPermissionInterface, $this->getUser(), $entityId));
         $this->em->flush();
 
         return $this->json(['success' => true]);
@@ -142,9 +142,9 @@ abstract class CrudApiController extends ApiController
         // Dispatch the event after the entity has been persisted to the database.
         // We do this to ensure that all contents are saved, even when the events and their subscribed services fail the operation.
         if (null === $userPermissionInterface)  {
-            $this->eventDispatcher->dispatch(new CreateCrudEntityEvent($entity));
+            $this->eventDispatcher->dispatch(new CreateCrudEntityEvent($entity, $this->getUser()));
         } else {
-            $this->eventDispatcher->dispatch(new UpdateCrudEntityEvent($entity, $originalEntity));
+            $this->eventDispatcher->dispatch(new UpdateCrudEntityEvent($entity, $this->getUser(), $originalEntity));
         }
 
         // flush after the event has been dispatched to ensure that all changes made in event subscribers are saved to the database 

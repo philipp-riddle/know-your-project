@@ -32,8 +32,16 @@ class PageGenerationService
         }
 
         $pageSection = $pageTab->getPageSections()[0];
+        $pageSectionText = $pageSection->getPageSectionText()?->getContent();
 
-        return $pageSection->getPageSectionText()?->getContent() === '';
+        if (null === $pageSectionText) {
+            return false; // if the first page section is anyything other than text the page is not empty
+        }
+
+        // trim \n and \r from the content
+        $content = \trim($pageSectionText);
+
+        return '' === $content || '<p></p>' === $content;
     }
 
     /**

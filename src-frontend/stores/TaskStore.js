@@ -126,6 +126,15 @@ export const useTaskStore = defineStore('task', () => {
         }
 
         tasks.value[task.stepType].push(task);
+
+        // make sure the task is deleted from all other steps
+        for (const stepType in tasks.value) {
+            if (stepType === task.stepType) {
+                continue;
+            }
+
+            tasks.value[stepType] = tasks.value[stepType].filter((t) => t.id !== task.id);
+        }
     }
 
     function updateTask(task) {

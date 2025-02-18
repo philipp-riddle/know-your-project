@@ -6,6 +6,7 @@ use App\Controller\Api\ApiController;
 use App\Entity\Page\Page;
 use App\Entity\Project\Project;
 use App\Entity\Tag\Tag;
+use App\Event\UpdateCrudEntityEvent;
 use App\Form\Embedding\GenerationAskForm;
 use App\Form\Embedding\GenerationCreateForm;
 use App\Form\Embedding\GenerationSaveForm;
@@ -96,6 +97,9 @@ class GenerationApiController extends ApiController
         if (null !== $tag && !$tag->hasUserAccess($this->getUser())) {
             throw new AccessDeniedHttpException('You do not have access to this tag');
         }
+
+        // dispatch an event to also update it for other users via Mercure
+        $this->eventDispatcher->dispatch(new UpdateCrudEntityEvent($page, $this->getUser(), $page));
 
         return $this->jsonSerialize(
             $this->pageGenerationService->generatePage($this->getUser(), $page, $title, $content, $tag, $checklistItems),

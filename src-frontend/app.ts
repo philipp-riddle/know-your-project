@@ -41,4 +41,8 @@ useProjectStore().setup();
 useUserStore().setup();
 useTagStore().setup();
 
+// setup the mercure event subscriber and the connection to Mercure
+import { useMercureEventSubscriber } from '@/events/MercureEventSubscriber';
+useMercureEventSubscriber().setup(window.mercureConfig); // use the config from the window object for the setup
+
 app.mount('#app');

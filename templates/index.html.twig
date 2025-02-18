@@ -8,6 +8,7 @@
         var currentUser = {{ user|json_encode|raw }};
         var selectedProject = {{ project|json_encode|raw }};
         var untaggedPages = {{ untaggedPages|json_encode|raw }};
+        var mercureConfig = {{ mercureConfig|json_encode|raw }};
     </script>
     {{ encore_entry_script_tags('app') }}
 {% endblock %}
