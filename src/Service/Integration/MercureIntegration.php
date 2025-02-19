@@ -43,15 +43,17 @@ class MercureIntegration
         return $token->toString();
     }
 
-    public function publishEntityEvent(object $entity, MercureEntityEvent $entityEvent, User $user): void
+    public function publishEntityEvent(object $entity, MercureEntityEvent $entityEvent, User $user, ?int $entityId = null): void
     {   
         $endpointName = (new \ReflectionClass($entity))->getShortName();
+        $serializedEntity = $this->defaultNormalizer->normalize($user, $entity);
+        $serializedEntity['id'] = $entityId ?? $entity->getId();
 
         // @todo this could be improved: getting the user's selected project is reliable as long as the user does not switch the project context in another browser session.
         // as soon as we allow switching the project context we should improve this.
         $this->publish($user->getSelectedProject(), $endpointName, [
             'action' => MercureEntityEvent::getName($entityEvent),
-            'entity' => $this->defaultNormalizer->normalize($user, $entity),
+            'entity' => $serializedEntity,
             'user' => $user->getId(), // issuing event user; only ID is sufficient here to avoid handling events twice if the receiving user is the same as the issuing user.
         ]);
     }

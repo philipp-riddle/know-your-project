@@ -28,7 +28,7 @@ class MercureSubscriber implements EventSubscriberInterface
 
     public function onDelete(DeleteCrudEntityEvent $deleteEvent): void
     {
-        $this->mercureIntegration->publishEntityEvent($deleteEvent->getEntity(), MercureEntityEvent::DELETE, $deleteEvent->getUser());
+        $this->mercureIntegration->publishEntityEvent($deleteEvent->getEntity(), MercureEntityEvent::DELETE, $deleteEvent->getUser(), entityId: $deleteEvent->getEntityId());
     }
 
     public static function getSubscribedEvents()

@@ -1,3 +1,5 @@
+#!/bin/bash
+
 echo "=== DEPLOYING ==="
 
 echo "Backend installations..."
