@@ -4,6 +4,7 @@ namespace App\EventSubscriber;
 
 use App\Event\CreateCrudEntityEvent;
 use App\Event\DeleteCrudEntityEvent;
+use App\Event\OrderCrudEntitiesEvent;
 use App\Event\UpdateCrudEntityEvent;
 use App\Service\Integration\MercureEntityEvent;
 use App\Service\Integration\MercureIntegration;
@@ -26,6 +27,11 @@ class MercureSubscriber implements EventSubscriberInterface
         $this->mercureIntegration->publishEntityEvent($updateEvent->getEntity(), MercureEntityEvent::UPDATE, $updateEvent->getUser());
     }
 
+    public function onOrder(OrderCrudEntitiesEvent $orderEvent): void
+    {
+        $this->mercureIntegration->publishEntityCollectionEvent($orderEvent->getItemsToOrder(), MercureEntityEvent::ORDER, $orderEvent->getUser(), $orderEvent->getOrderListName());
+    }
+
     public function onDelete(DeleteCrudEntityEvent $deleteEvent): void
     {
         $this->mercureIntegration->publishEntityEvent($deleteEvent->getEntity(), MercureEntityEvent::DELETE, $deleteEvent->getUser(), entityId: $deleteEvent->getEntityId());
@@ -36,6 +42,7 @@ class MercureSubscriber implements EventSubscriberInterface
         return [
             CreateCrudEntityEvent::class => 'onCreate',
             UpdateCrudEntityEvent::class => 'onUpdate',
+            OrderCrudEntitiesEvent::class => 'onOrder',
             DeleteCrudEntityEvent::class => 'onDelete',
         ];
     }

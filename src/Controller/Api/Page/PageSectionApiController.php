@@ -170,7 +170,11 @@ class PageSectionApiController extends CrudApiController
     #[Route('/order/{pageTab}', name: 'api_page_section_changeOrder', methods: ['PUT'])]
     public function changeOrder(PageTab $pageTab, Request $request, OrderListHandler $orderListHandler): JsonResponse
     {
-        return $this->crudChangeOrder($request, $orderListHandler, \iterator_to_array($pageTab->getPageSections()));
+        return $this->crudChangeOrder(
+            $request,
+            $orderListHandler,
+            itemsToOrder: \iterator_to_array($pageTab->getPageSections()),
+        );
     }
 
     public function getEntityClass(): string

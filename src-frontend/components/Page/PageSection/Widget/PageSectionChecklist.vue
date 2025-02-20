@@ -56,13 +56,13 @@
     import PageSectionChecklistItem from '@/components/Page/PageSection/Widget/PageSectionChecklistItem.vue';
     import { usePageSectionStore } from '@/stores/PageSectionStore.js';
     import { usePageSectionChecklistItemStore } from '@/stores/PageSectionChecklistItemStore.js';
-    import { computed, ref, onMounted, nextTick } from 'vue';
+    import { computed, ref, onMounted, nextTick, watch } from 'vue';
     import { useDebounceFn } from '@vueuse/core'
 
     const props = defineProps({
         pageSection: { // this prop is only set if we have an already existing section
             type: Object,
-            required: false,
+            required: true,
         },
         onPageSectionSubmit: {
             type: Function,

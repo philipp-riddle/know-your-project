@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Interface\AccessContext;
 use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Entity\Page\PageSectionUpload;
@@ -145,9 +146,19 @@ class File implements UserPermissionInterface, CrudEntityInterface
         return $this;
     }
 
-    public function hasUserAccess(User $user): bool
+    public function hasUserAccess(User $user, AccessContext $accessContext = AccessContext::READ): bool
     {
-        return $this->getUser() === $user && ($this->getProject()?->hasUserAccess($user) ?? true);
+        if (null !== $this->getProject() && !$this->getProject()->hasUserAccess($user, $accessContext)) {
+            return false;
+        }
+
+        // anyone in the project can download the file
+        if ($accessContext === AccessContext::DOWNLOAD) {
+            return true;
+        }
+
+        // everything else (on the file-basis) is limited to the project owner and the user, such as deleting
+        return $user === $this->getProject()?->getOwner() || $this->getUser() === $user;
     }
 
     public function initialize(): static

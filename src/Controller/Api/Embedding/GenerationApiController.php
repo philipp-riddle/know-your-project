@@ -3,6 +3,7 @@
 namespace App\Controller\Api\Embedding;
 
 use App\Controller\Api\ApiController;
+use App\Entity\Interface\AccessContext;
 use App\Entity\Page\Page;
 use App\Entity\Project\Project;
 use App\Entity\Tag\Tag;
@@ -53,7 +54,7 @@ class GenerationApiController extends ApiController
     #[Route('/create/{page}', methods: ['POST'], name: 'api_generation_create')]
     public function create(Page $page, Request $request): JsonResponse
     {
-        $this->checkUserAccess($page);
+        $this->checkUserAccess($page, AccessContext::CREATE);
 
         $form = $this->createForm(GenerationCreateForm::class);
         $form = $this->handleFormRequest($form, $request);
@@ -77,7 +78,7 @@ class GenerationApiController extends ApiController
     #[Route('/save/{page}', methods: ['POST'], name: 'api_generation_save')]
     public function save(Page $page, Request $request): JsonResponse
     {
-        $this->checkUserAccess($page);
+        $this->checkUserAccess($page, AccessContext::UPDATE);
 
         $form = $this->createForm(GenerationSaveForm::class);
         $form = $this->handleFormRequest($form, $request);

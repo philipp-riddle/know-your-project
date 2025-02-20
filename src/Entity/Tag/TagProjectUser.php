@@ -2,6 +2,7 @@
 
 namespace App\Entity\Tag;
 
+use App\Entity\Interface\AccessContext;
 use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Entity\Project\ProjectUser;
@@ -54,7 +55,7 @@ class TagProjectUser implements UserPermissionInterface, CrudEntityInterface
         return $this;
     }
 
-    public function hasUserAccess(User $user): bool
+    public function hasUserAccess(User $user, AccessContext $accessContext = AccessContext::READ): bool
     {
         // either the user manages the tag itself or the user is the owner of the project and manages the tags for others
         return $this->getProjectUser()->getUser() === $user || $this->getProjectUser()->getProject()->getOwner() === $user;

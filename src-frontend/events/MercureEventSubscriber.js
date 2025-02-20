@@ -3,6 +3,8 @@ import { useUserStore } from '@/stores/UserStore';
 import { ref, watch } from 'vue';
 import { EventSourcePolyfill } from 'event-source-polyfill';
 import { usePageEventHandler } from '@/events/handlers/PageEventHandler';
+import { usePageSectionEventHandler } from '@/events/handlers/PageSectionEventHandler';
+import { usePageSectionChecklistItemEventHandler } from '@/events/handlers/PageSectionChecklistItemEventHandler';
 import { useTagEventHandler } from '@/events/handlers/TagEventHandler';
 import { useTagPageEventHandler } from '@/events/handlers/TagPageEventHandler';
 import { useTaskEventHandler } from '@/events/handlers/TaskEventHandler';
@@ -14,6 +16,8 @@ export function useMercureEventSubscriber() {
 
     // event handlers - used to bundle incoming events to the appropriate store by entity type, e.g. 'Page'
     const pageEventHandler = usePageEventHandler();
+    const pageSectionEventHandler = usePageSectionEventHandler();
+    const pageSectionChecklistItemEventHandler = usePageSectionChecklistItemEventHandler();
     const tagEventHandler = useTagEventHandler();
     const tagPageEventHandler = useTagPageEventHandler();
     const taskEventHandler = useTaskEventHandler();
@@ -98,6 +102,10 @@ export function useMercureEventSubscriber() {
             
             if (data.endpoint === 'Page') {
                 pageEventHandler.handle(data);
+            } else if (data.endpoint === 'PageSection') {
+                pageSectionEventHandler.handle(data);
+            } else if (data.endpoint === 'PageSectionChecklistItem') {
+                pageSectionChecklistItemEventHandler.handle(data);
             } else if (data.endpoint === 'Task') {
                 taskEventHandler.handle(data);
             } else if (data.endpoint == 'Tag') {

@@ -2,6 +2,7 @@
 
 namespace App\Entity\Project;
 
+use App\Entity\Interface\AccessContext;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Entity\Tag\Tag;
 use App\Entity\User\User;
@@ -94,7 +95,7 @@ class Project extends CachedEntityVectorEmbedding implements UserPermissionInter
         return $this;
     }
 
-    public function hasUserAccess(User $user): bool
+    public function hasUserAccess(User $user, AccessContext $accessContext = AccessContext::READ): bool
     {
         if ($this->getOwner() === $user) {
             return true;

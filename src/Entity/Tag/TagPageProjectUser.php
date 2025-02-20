@@ -2,6 +2,7 @@
 
 namespace App\Entity\Tag;
 
+use App\Entity\Interface\AccessContext;
 use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Entity\Project\ProjectUser;
@@ -54,7 +55,7 @@ class TagPageProjectUser implements UserPermissionInterface, CrudEntityInterface
         return $this;
     }
 
-    public function hasUserAccess(User $user): bool
+    public function hasUserAccess(User $user, AccessContext $accessContext = AccessContext::READ): bool
     {
         // anyone who has access to the tag + page and is in the project can add, edit or delete any tag page project users.
         // this means anyone in the project can assign users to tasks without permission problems.

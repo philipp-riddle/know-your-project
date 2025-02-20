@@ -1,5 +1,5 @@
 <template>
-    <div class="page-section page-section-container row" :page-section="pageSection.id">
+    <div v-if="pageSection" class="page-section page-section-container row" :page-section="pageSection.id">
         <div class="col-sm-12 col-md-9 col-xl-2 m-0 p-2">
             <div
                 v-if="pageSection.id != null"
@@ -100,7 +100,7 @@
     import DeletionButton from '@/components/Util/DeletionButton.vue';
     import { usePageSectionAccessibilityHelper } from '@/composables/PageSectionAccessibilityHelper.js';
     import { usePageSectionStore } from '@/stores/PageSectionStore.js';
-    import { computed, ref } from 'vue';
+    import { computed, nextTick, ref, watch } from 'vue';
     import { useDebounceFn } from '@vueuse/core';
 
     const props = defineProps({
@@ -123,6 +123,7 @@
     });
     const pageSectionStore = usePageSectionStore();
     const pageSection = ref(props.pageSection);
+    const currentSubmitPromise = ref(null); // we can use this to choose whether to force the re-render of the page section or not.
 
     // depending on this we want to show all icons from the page section or not.
     // better UX as the icons do not disappear when the dropdown is still there.
@@ -133,11 +134,31 @@
     // this saves requests and makes the UI more responsive.
     const debouncedPageSectionSubmit = useDebounceFn((section, sectionItem) => props.onPageSectionSubmit(section, sectionItem), 300);
 
+    watch (() => props.pageSection, async (newValue) => {
+        // problem: vue does not recognize it needs to re-render the component as the ID does not change.
+        // solution: force re-render by changing the page section to null for one tick and then back to the new value.
+
+        // we have to make an exception though:
+        // if the user updated the page section we do not want a sync; this would overwrite the data the user is currenly typing / editing.
+        if (currentSubmitPromise.value) {
+            return;
+        }
+
+        pageSection.value = null;
+        await nextTick();
+        pageSection.value = newValue;
+    });
+
     const onPageSectionSubmitHandler = async (section, sectionItem) => {
         return new Promise(async (resolve) => {
-            debouncedPageSectionSubmit(section, sectionItem).then((updatedSection) => {
+            const currentPromise = currentSubmitPromise.value =debouncedPageSectionSubmit(section, sectionItem).then((updatedSection) => {
                 if (updatedSection) {
                     pageSection.value = updatedSection;
+
+                    if (currentSubmitPromise.value == currentPromise) {
+                        currentSubmitPromise.value = null; // only reset the promise here if it's still the same; could have changed while loading the requests.
+                    }
+
                     resolve(updatedSection);
                 }
             });

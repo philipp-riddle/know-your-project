@@ -153,7 +153,6 @@
         var introPrompt = introInput.value.value.trim();
 
         if (introPrompt === '') {
-            console.log('Prompt is empty');
             return;
         }
 

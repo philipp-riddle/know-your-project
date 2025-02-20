@@ -3,6 +3,7 @@
 namespace App\Controller\Api\Page;
 
 use App\Controller\Api\CrudApiController;
+use App\Entity\Interface\AccessContext;
 use App\Entity\Page\PageSection;
 use App\Entity\Page\PageSectionUpload;
 use App\Entity\Page\PageTab;
@@ -52,7 +53,7 @@ class PageSectionUploadApiController extends CrudApiController
         }
 
         // make sure the user has access to the page tab
-        $this->checkUserAccess($pageTab);
+        $this->checkUserAccess($pageTab, AccessContext::UPLOAD);
 
         // we have to check if the files are uploaded properly first; get all of the files from the request
         $files = $request->files->all();
@@ -69,7 +70,7 @@ class PageSectionUploadApiController extends CrudApiController
             $this->em->flush();
 
             // we have to dispatch the event after the page section is persisted and flushed
-            $this->eventDispatcher->dispatch(new CreateCrudEntityEvent($pageSection));
+            $this->eventDispatcher->dispatch(new CreateCrudEntityEvent($pageSection, $this->getUser()));
             $this->em->persist($pageSection);
         }
 

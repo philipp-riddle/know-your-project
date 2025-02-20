@@ -19,6 +19,9 @@ class OrderListHandler
 
         $this->shiftIndices($orderListItems, $orderListItem->getOrderIndex());
         $orderListItems[] = $orderListItem; // after shifting the value in the right place we can add it to the array
+
+        // now sort the array by the order index
+        \usort($orderListItems, fn(OrderListItemInterface $a, OrderListItemInterface $b) => $a->getOrderIndex() <=> $b->getOrderIndex());
     }
 
     /**
@@ -68,6 +71,9 @@ class OrderListHandler
             $hashmap[$orderListItemId]->setOrderIndex($i);
             $i++;
         }
+
+        // now sort te array by the order index
+        \usort($orderListItems, fn(OrderListItemInterface $a, OrderListItemInterface $b) => $a->getOrderIndex() <=> $b->getOrderIndex());
     }
 
     /**

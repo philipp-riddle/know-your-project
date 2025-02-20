@@ -43,6 +43,40 @@ class MercureIntegration
         return $token->toString();
     }
 
+    /**
+     * Publishes an entity collection event to the Mercure Hub.
+     * 
+     * @param object[] $entities the entities to publish
+     * @param MercureEntityEvent $entityEvent the event to publish; e.g. ORDER to publish an order event
+     * @param User $user the user issuing the event
+     * @param string|null $uniqueName a unique name for the event; if not set, the event name is used. E.g. tasks => 'Discover' to change the order of all tasks in this step of the double diamond
+     */
+    public function publishEntityCollectionEvent(array $entities, MercureEntityEvent $entityEvent, User $user, ?string $uniqueName = null): void
+    {
+        if (\count($entities) === 0) {
+            return;
+        }
+
+        $endpointName = (new \ReflectionClass($entities[0]))->getShortName();
+        $actionName = MercureEntityEvent::getName($entityEvent);
+        $serializedEntities = \array_map(fn ($entity) => $this->defaultNormalizer->normalize($user, $entity), $entities);
+
+        $this->publish($user->getSelectedProject(), $endpointName, [
+            'action' => $actionName,
+            'uniqueName' => $uniqueName ?? $actionName,
+            'entities' => $serializedEntities,
+            'user' => $user->getId(), // issuing event user; only ID is sufficient here to avoid handling events twice if the receiving user is the same as the issuing user.
+        ]);
+    }
+
+    /**
+     * Publishes an entity event to the Mercure Hub.
+     * 
+     * @param object $entity the entity to publish
+     * @param MercureEntityEvent $entityEvent the event to publish; e.g. CREATE to publish a create event
+     * @param User $user the user issuing the event
+     * @param int|null $entityId the ID of the entity; if not set, the entity's ID is used. Can be used to avoid NULL IDs when deleting an entity.
+     */
     public function publishEntityEvent(object $entity, MercureEntityEvent $entityEvent, User $user, ?int $entityId = null): void
     {   
         $endpointName = (new \ReflectionClass($entity))->getShortName();

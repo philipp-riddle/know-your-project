@@ -2,6 +2,7 @@
 
 namespace App\Controller\Api;
 
+use App\Entity\Interface\AccessContext;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Entity\User\User;
 use App\Repository\UserRepository;
@@ -47,7 +48,7 @@ abstract class ApiController extends AbstractController
         $this->em->flush();
     }
 
-    protected function checkUserAccess(UserPermissionInterface $userPermissionInterface): void
+    protected function checkUserAccess(UserPermissionInterface $userPermissionInterface, AccessContext $accessContext = AccessContext::READ): void
     {
         if (!$userPermissionInterface->hasUserAccess($this->getUser())) {
             throw new AccessDeniedException('You do not have access to this '.\get_class($userPermissionInterface));

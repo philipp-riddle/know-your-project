@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Interface\AccessContext;
 use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\CrudEntityValidationInterface;
 use App\Entity\Interface\OrderListItemInterface;
@@ -128,7 +129,7 @@ class Task extends CachedEntityVectorEmbedding implements OrderListItemInterface
         return $this;
     }
 
-    public function hasUserAccess(User $user): bool
+    public function hasUserAccess(User $user, AccessContext $accessContext = AccessContext::READ): bool
     {
         return $this->getProject()?->hasUserAccess($user) ?? true;
     }

@@ -32,3 +32,6 @@ user/uploads/*
 
 public/user/uploads/*
 !public/user/uploads/.gitignore
+
+### Mercure generates this file
+bin/updates.db

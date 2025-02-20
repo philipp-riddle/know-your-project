@@ -3,6 +3,7 @@
 namespace App\Entity\Page;
 
 use App\Entity\File;
+use App\Entity\Interface\AccessContext;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Entity\User\User;
 use App\Repository\PageSectionUploadRepository;
@@ -53,8 +54,10 @@ class PageSectionUpload implements UserPermissionInterface
         return $this;
     }
 
-    public function hasUserAccess(User $user): bool
+    public function hasUserAccess(User $user, AccessContext $accessContext = AccessContext::READ): bool
     {
-        return $this->file->hasUserAccess($user);
+        // do not call File::hasUserAccess directly as we need a ligher validation.
+        // only the project is validated for user authorization.
+        return $this->file->getProject()->hasUserAccess($user);
     }
 }

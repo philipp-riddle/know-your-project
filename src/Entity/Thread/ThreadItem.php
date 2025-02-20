@@ -2,6 +2,7 @@
 
 namespace App\Entity\Thread;
 
+use App\Entity\Interface\AccessContext;
 use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Entity\User\User;
@@ -95,7 +96,7 @@ class ThreadItem implements UserPermissionInterface, CrudEntityInterface
         return $this;
     }
 
-    public function hasUserAccess(User $user): bool
+    public function hasUserAccess(User $user, AccessContext $accessContext = AccessContext::READ): bool
     {
         return $this->getThread()->hasUserAccess($user);
     }

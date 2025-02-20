@@ -2,6 +2,7 @@
 
 namespace App\Entity\Page;
 
+use App\Entity\Interface\AccessContext;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Entity\Prompt;
 use App\Entity\User\User;
@@ -57,7 +58,7 @@ class PageSectionAIPrompt implements UserPermissionInterface
         return $this;
     }
 
-    public function hasUserAccess(User $user): bool
+    public function hasUserAccess(User $user, AccessContext $accessContext = AccessContext::READ): bool
     {
         return ($this->pageContext?->hasUserAccess($user) ?? true);
     }

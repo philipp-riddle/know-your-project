@@ -2,6 +2,7 @@
 
 namespace App\Entity\Page;
 
+use App\Entity\Interface\AccessContext;
 use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\CrudEntityValidationInterface;
 use App\Entity\Interface\UserPermissionInterface;
@@ -198,7 +199,7 @@ implements
 
     // === IMPLEMENTATION OF interface methods =======
 
-    public function hasUserAccess(User $user): bool
+    public function hasUserAccess(User $user, AccessContext $accessContext = AccessContext::READ): bool
     {
         return $this->user?->getId() === $user->getId() || $this->project?->hasUserAccess($user);
     }

@@ -2,6 +2,7 @@
 
 namespace App\Entity\Page;
 
+use App\Entity\Interface\AccessContext;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Entity\User\User;
 use App\Repository\PageSectionChecklistRepository;
@@ -94,8 +95,8 @@ class PageSectionChecklist implements UserPermissionInterface
         return $this;
     }
 
-    public function hasUserAccess(User $user): bool
+    public function hasUserAccess(User $user, AccessContext $accessContext = AccessContext::READ): bool
     {
-        return $this->getPageSection()->hasUserAccess($user, checkSubTypes: false);
+        return $this->getPageSection()->hasUserAccess($user, $accessContext, checkSubTypes: false);
     }
 }

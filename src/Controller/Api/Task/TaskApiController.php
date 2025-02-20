@@ -92,7 +92,12 @@ class TaskApiController extends CrudApiController
             $workflowStepType,
         );
 
-        return $this->crudChangeOrder($request, $orderListHandler, $tasks);
+        return $this->crudChangeOrder(
+            $request,
+            $orderListHandler,
+            itemsToOrder: $tasks,
+            orderListName: $workflowStepType, // this is used to differentiate the Mercure event in the frontend; it's not used in the backend
+        );
     }
 
     #[Route('/{task}/move', name: 'api_task_move', methods: ['POST'])]

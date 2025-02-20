@@ -4,6 +4,7 @@ namespace App\Controller\Api\File;
 
 use App\Controller\Api\ApiController;
 use App\Entity\File;
+use App\Entity\Interface\AccessContext;
 use App\Service\File\FileService;
 use App\Service\Helper\ApiControllerHelperService;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -23,7 +24,7 @@ class FileApiController extends ApiController
     #[Route('/download/{file}', methods: ['GET'], name: 'api_file_download')]
     public function downloadFile(File $file): BinaryFileResponse
     {
-        $this->checkUserAccess($file);
+        $this->checkUserAccess($file, AccessContext::DOWNLOAD);
 
         $fileAbsolutePath = $this->fileService->getAbsolutePath($file);
         $exportExtension = \pathinfo($fileAbsolutePath, PATHINFO_EXTENSION);

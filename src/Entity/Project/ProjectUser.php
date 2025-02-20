@@ -2,6 +2,7 @@
 
 namespace App\Entity\Project;
 
+use App\Entity\Interface\AccessContext;
 use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Entity\Tag\TagProjectUser;
@@ -82,7 +83,7 @@ class ProjectUser implements UserPermissionInterface, CrudEntityInterface
         return $this;
     }
 
-    public function hasUserAccess(User $user): bool
+    public function hasUserAccess(User $user, AccessContext $accessContext = AccessContext::READ): bool
     {
         return $this->getUser() === $user || $this->getProject()->getOwner() === $user;
     }

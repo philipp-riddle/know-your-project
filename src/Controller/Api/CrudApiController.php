@@ -3,6 +3,7 @@
 namespace App\Controller\Api;
 
 use App\Controller\Api\ApiController;
+use App\Entity\Interface\AccessContext;
 use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\CrudEntityValidationInterface;
 use App\Entity\Interface\OrderListInterface;
@@ -10,6 +11,7 @@ use App\Entity\Interface\OrderListItemInterface;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Event\CreateCrudEntityEvent;
 use App\Event\DeleteCrudEntityEvent;
+use App\Event\OrderCrudEntitiesEvent;
 use App\Event\UpdateCrudEntityEvent;
 use App\Service\OrderListHandler;
 use Doctrine\ORM\EntityRepository;
@@ -61,7 +63,7 @@ abstract class CrudApiController extends ApiController
             throw new \Exception('Entity must implement both CrudEntityInterface and UserPermissionInterface');
         }
 
-        $this->checkUserAccess($userPermissionInterface);
+        $this->checkUserAccess($userPermissionInterface, AccessContext::DELETE);
 
         if (null !== $onProcessEntity) {
             $onProcessEntity($userPermissionInterface);
@@ -92,7 +94,7 @@ abstract class CrudApiController extends ApiController
     protected function crudUpdateOrCreate(UserPermissionInterface|CrudEntityInterface|null $userPermissionInterface, Request $request, ?callable $onProcessEntity = null, ?callable $afterProcessEntity = null, ?string $formClass = null,): JsonResponse
     {
         if (null !== $userPermissionInterface) {
-            $this->checkUserAccess($userPermissionInterface);
+            $this->checkUserAccess($userPermissionInterface, AccessContext::UPDATE);
         }
 
         $originalEntity = $userPermissionInterface !== null ? clone $userPermissionInterface : null;
@@ -128,7 +130,7 @@ abstract class CrudApiController extends ApiController
 
         // initialize the entity after the form and the processing has been applied - e.g. createdAt dates
         $entity->initialize();
-        $this->checkUserAccess($entity); // check if the user has access to the entity after all fields have been initialized
+        $this->checkUserAccess($entity, AccessContext::UPDATE); // check if the user has access to the entity after all fields have been initialized
 
         // entities can implement the CrudEntityValidationInterface to validate their data before being persisted;
         // this is useful for entities that have complex validation rules that cannot be expressed in the form.
@@ -212,10 +214,13 @@ abstract class CrudApiController extends ApiController
      * @param Request $request The request object
      * @param OrderListHandler $orderListHandler The OrderListHandler service; used to apply the new order to the list
      * @param array $itemsToOrder An array of items to order; each item must implement UserPermissionInterface
+     * @param string|null $orderListName The name of the order list; optional, pass null if not needed.
+     * This is used to differentiate the Mercure event in the frontend.
+     * E.g. 'Discover' to differentiate between the order of tasks in the different steps of the double diamond.
      * 
      * @return JsonResponse JSON response containing the updated list of items
      */
-    protected function crudChangeOrder(Request $request, OrderListHandler $orderListHandler, array $itemsToOrder): JsonResponse
+    protected function crudChangeOrder(Request $request, OrderListHandler $orderListHandler, array $itemsToOrder, ?string $orderListName = null): JsonResponse
     {
         $content = $request->toArray();
         
@@ -228,11 +233,16 @@ abstract class CrudApiController extends ApiController
                 throw new \Exception('All items in the ordered list must be an instance of UserPermissionInterface');
             }
 
-            $this->checkUserAccess($itemToOrder);
+            $this->checkUserAccess($itemToOrder, AccessContext::UPDATE);
         }
 
         $idOrder = $content['idOrder'];
         $orderListHandler->applyIdOrder($itemsToOrder, $idOrder);
+        $this->em->flush();
+
+        // dispatch the event after the order has been changed;
+        // e.g. this updates the order for other users as well.
+        $this->eventDispatcher->dispatch(new OrderCrudEntitiesEvent($this->getEntityClass(), $orderListName, $itemsToOrder, $this->getUser()));
         $this->em->flush();
 
         return $this->jsonSerialize($itemsToOrder);

@@ -3,6 +3,7 @@
 namespace App\Entity\Page;
 
 use App\Entity\File;
+use App\Entity\Interface\AccessContext;
 use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\CrudEntityValidationInterface;
 use App\Entity\Interface\OrderListItemInterface;
@@ -230,12 +231,11 @@ implements
 
     // === IMPLEMENTATION OF interface methods =======
 
-    public function hasUserAccess(User $user, bool $checkSubTypes = true): bool
+    public function hasUserAccess(User $user, AccessContext $accessContext = AccessContext::READ, bool $checkSubTypes = true): bool
     {
         if (!$this->pageTab->hasUserAccess($user)) {
             return false;
         }
-
 
         if ($checkSubTypes) {
             if ($this->pageSectionText !== null && !$this->pageSectionText->hasUserAccess($user)) {

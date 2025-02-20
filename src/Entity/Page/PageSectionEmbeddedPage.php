@@ -2,6 +2,7 @@
 
 namespace App\Entity\Page;
 
+use App\Entity\Interface\AccessContext;
 use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\CrudEntityValidationInterface;
 use App\Entity\Interface\UserPermissionInterface;
@@ -55,7 +56,7 @@ class PageSectionEmbeddedPage implements UserPermissionInterface, CrudEntityInte
         return $this;
     }
 
-    public function hasUserAccess(User $user): bool
+    public function hasUserAccess(User $user, AccessContext $accessContext = AccessContext::READ): bool
     {
         return ($this->page?->hasUserAccess($user) ?? true);
     }
