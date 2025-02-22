@@ -186,7 +186,7 @@ export const useTaskStore = defineStore('task', () => {
     function moveTask(originalTask, stepType, index, isDraggable) {
         return new Promise((resolve) => {
             fetchMoveTask(originalTask, stepType, index).then((movedTask) => {
-                if (originalTask.stepType !== stepType) {
+                if (originalTask.stepType !== stepType && tasks.value[originalTask.stepType]) {
                     tasks.value[originalTask.stepType] = tasks.value[originalTask.stepType].filter((t) => t.id !== originalTask.id);
                 }
 

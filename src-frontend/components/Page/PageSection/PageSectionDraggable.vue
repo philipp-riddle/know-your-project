@@ -88,7 +88,7 @@
 					let pageSectionElement = event.to.children[i];
 
 					// @todo this is weird - in the task modal this is different than in the standalone page editor
-					if (event.to.children[i].getAttribute('data-draggable') == 'true') {
+					if (pageSectionElement.getAttribute('data-draggable') == 'true') {
 						pageSectionElement = pageSectionElement.children[0];
 					}
 

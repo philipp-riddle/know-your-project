@@ -20,13 +20,18 @@
             <div class="p-2">
                 <div class="d-flex flex-column justify-content-center">
                     <ul class="nav nav-pills nav-fill d-flex flex-column">
-                        <li class="nav-item"><p class="text-muted bold m-0 p-0">ADD CONTENT</p></li>
-                        <li class="nav-item"><button class="nav-link inactive btn btn-sm p" type="button" @click.stop="() => switchToPageSectionType('text')">Text</button></li>
-                        <li class="nav-item"><button class="nav-link inactive btn btn-sm p" type="button" @click.stop="() => switchToPageSectionType('checklist')">Checklist</button></li>
-                        <li class="nav-item"><button class="nav-link inactive btn btn-sm p" type="button" @click.stop="() => switchToPageSectionType('upload')">Upload</button></li>
-                        <li class="nav-item"><button class="nav-link inactive btn btn-sm p" type="button" @click.stop="() => switchToPageSectionType('embeddedPage')">Embed other page / task</button></li>
-                        <li class="nav-item"><button class="nav-link inactive btn btn-sm p" type="button" @click.stop="() => switchToPageSectionType('summary')">Summarize</button></li>
-                        <li class="nav-item"><button class="nav-link inactive btn btn-sm p" type="button" @click.stop="() => switchToPageSectionType('aiPrompt')">Ask assistant</button></li>
+                        <li
+                            class="nav-item"
+                            v-for="type in pageSectionTypes"
+                        >
+                            <button class="nav-link inactive btn btn-sm p d-flex flex-row gap-4" type="button" @click.stop="() => switchToPageSectionType(type)">
+                                <font-awesome-icon
+                                    :icon="['fas', PageSectionAccessibilityHelper.getIconFromTitle(type)]"
+                                    class="black"
+                                />
+                                <p class="m-0">{{ PageSectionAccessibilityHelper.getTitle(type) }}</p>
+                            </button>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -36,17 +41,21 @@
 
 <script setup>
     import { ref } from 'vue';
+    import { usePageSectionAccessibilityHelper } from '@/composables/PageSectionAccessibilityHelper.js';
     import { usePageSectionStore } from '@/stores/PageSectionStore.js';
     import { usePageTabStore } from '@/stores/PageTabStore.js';
-
-    const props = defineProps({
-        index: {
-            type: Number,
-            required: false,
-            default: null,
-        },
-    });
+    
+    const pageSectionTypes = [
+        'text',
+        'checklist',
+        'upload',
+        'url',
+        'embeddedPage',
+        'summary',
+        'aiPrompt',
+    ];
     const showPopover = ref(false);
+    const PageSectionAccessibilityHelper = usePageSectionAccessibilityHelper();
     const pageSectionStore = usePageSectionStore();
     const pageTabStore = usePageTabStore();
 
@@ -92,6 +101,12 @@
                     prompt: {
                         promptText: '',
                     },
+                },
+            };
+        } else if (type == 'url') {
+            defaultObject = {
+                pageSectionURL: {
+                    url: '',
                 },
             };
         }

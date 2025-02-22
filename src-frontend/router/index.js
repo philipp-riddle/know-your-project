@@ -14,17 +14,24 @@ const routes = [
         ],
     },
     {
-        // default route when navigating to a certain page without a tag context.
-        'path': '/page/:id',
-        name: 'Page',
-        component: () => import('@/views/Page.vue'),
-    },
-    {
-        // different route to allow the page to be opened in a tag context.
-        // if the user then refreshes the page, the tag context is not lost and can be restored => Better UX.
-        'path': '/page/:tagName/:id',
-        name: 'PageTag',
-        component: () => import('@/views/Page.vue'),
+        'path': '/wiki',
+        name: 'Wiki',
+        component: () => import('@/views/Wiki.vue'),
+        children: [
+            {
+                // default route when navigating to a certain page without a tag context.
+                'path': 'page/:id',
+                name: 'WikiPage',
+                component: () => import('@/views/Page.vue'),
+            },
+            {
+                // different route to allow the page to be opened in a tag context.
+                // if the user then refreshes the page, the tag context is not lost and can be restored => Better UX.
+                'path': 'page/:tagName/:id',
+                name: 'WikiPageTag',
+                component: () => import('@/views/Page.vue'),
+            },
+        ],
     },
     {
         'path': '/users',

@@ -44,7 +44,12 @@
                     </div>
                 </div>
                 <div class="col-md-9 ps-3">
-                    <PageSectionChecklistItem :onItemEnter="onChecklistAddItem" :resetOnUpdate="true" :displayCompleteInput="false" />
+                    <PageSectionChecklistItem
+                        :onItemEnter="onChecklistAddItem"
+                        :resetOnUpdate="true"
+                        :displayCompleteInput="false"
+                        :focusOnInit="pageSection.pageSectionChecklist.pageSectionChecklistItems.length == 0"
+                    />
                     <div></div>
                 </div>
             </div>

@@ -207,7 +207,7 @@
         } else {
             searchStore.ask(project, searchTerm);
         }
-    }, 500);
+    }, !isAskingQuestion.value && !isForcedAskingQuestion.value ? 500 : 1000); // if the user is asking a question we want to wait a bit longer as the generation of the response takes longer
 </script>
 
 <style scoped lang="sass">

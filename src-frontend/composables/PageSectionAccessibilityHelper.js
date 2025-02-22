@@ -12,6 +12,10 @@ export function  usePageSectionAccessibilityHelper() {
             return 'book';
         }
 
+        if (pageSection.pageSectionURL) {
+            return 'link';
+        }
+
         if (pageSection.embeddedPage) {
             return 'arrow-up-right-from-square';
         }
@@ -78,11 +82,55 @@ export function  usePageSectionAccessibilityHelper() {
             return 'File upload';
         } else if (icon === 'book') {
             return 'Summary';
+        } else if (icon === 'link') {
+            return 'URL';
         }
     };
+
+    const getTitle = (pageSectionType) => {
+        if (pageSectionType === 'text') {
+            return 'Text';
+        } else if (pageSectionType === 'checklist') {
+            return 'Checklist';
+        } else if (pageSectionType === 'upload') {
+            return 'Upload';
+        } else if (pageSectionType === 'embeddedPage') {
+            return 'Connect page';
+        } else if (pageSectionType === 'summary') {
+            return 'Generate summary';
+        } else if (pageSectionType === 'aiPrompt') {
+            return 'Ask AI Prompt';
+        } else if (pageSectionType === 'url') {
+            return 'URL';
+        } else {
+            return 'Unknown';
+        }
+    }
+
+    const getIconFromTitle = (pageSectionType) => {
+        if (pageSectionType === 'text') {
+            return 'font';
+        } else if (pageSectionType === 'checklist') {
+            return 'list-check';
+        } else if (pageSectionType === 'upload') {
+            return 'file-upload';
+        } else if (pageSectionType === 'embeddedPage') {
+            return 'arrow-up-right-from-square';
+        } else if (pageSectionType === 'summary') {
+            return 'book';
+        } else if (pageSectionType === 'aiPrompt') {
+            return 'microchip';
+        } else if (pageSectionType === 'url') {
+            return 'link';
+        } else {
+            return null;
+        }
+    }
 
     return {
         getIcon,
         getTooltip,
+        getTitle,
+        getIconFromTitle,
     };
 }

@@ -1,11 +1,11 @@
 <template>
-    <div class="d-flex flex-row gap-3 task-overview h-100 overflow-scroll">
+    <div class="d-flex flex-fill flex-row task-overview">
         <div v-if="isLoadingTasks" class="p-5">
             <div class="spinner-border" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
         </div>
-        <div v-else class="ps-5 pe-5 pt-3 pb-3 flex-fill d-flex flex-row gap-3">
+        <div v-else class="ps-5 pe-5 pt-3 pb-3 flex-fill d-flex flex-row justify-content-between gap-3">
             <div v-for="(tooltip, step) in stepsAndTooltips" :key="step" class="d-flex flex-column gap-3">
                 <h5 class="m-0" v-tooltip="tooltip">{{ step }}</h5>
                 <TaskList
@@ -86,15 +86,5 @@
     .task-overview {
 		overflow-x: auto !important;
 		overflow-y: hidden !important;
-    }
-
-    .outer {
-        width: 500px;
-        height: 100px;
-        white-space: nowrap;
-        position: relative;
-        overflow-x: scroll;
-        overflow-y: hidden;
-        -webkit-overflow-scrolling: touch;
     }
 </style>

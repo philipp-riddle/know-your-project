@@ -4,6 +4,7 @@ namespace App\Entity\Tag;
 
 use App\Entity\Interface\AccessContext;
 use App\Entity\Interface\CrudEntityInterface;
+use App\Entity\Interface\OrderListItemInterface;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Entity\Page\Page;
 use App\Entity\User\User;
@@ -13,7 +14,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TagPageRepository::class)]
-class TagPage implements UserPermissionInterface, CrudEntityInterface
+class TagPage implements UserPermissionInterface, CrudEntityInterface, OrderListItemInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -33,6 +34,9 @@ class TagPage implements UserPermissionInterface, CrudEntityInterface
      */
     #[ORM\OneToMany(mappedBy: 'tagPage', targetEntity: TagPageProjectUser::class, orphanRemoval: true)]
     private Collection $users;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $orderIndex = null;
 
     public function __construct()
     {
@@ -107,6 +111,18 @@ class TagPage implements UserPermissionInterface, CrudEntityInterface
                 $user->setTagPage(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getOrderIndex(): ?int
+    {
+        return $this->orderIndex;
+    }
+
+    public function setOrderIndex(?int $orderIndex): static
+    {
+        $this->orderIndex = $orderIndex;
 
         return $this;
     }

@@ -1,5 +1,8 @@
 <template>
     <div
+        :page="page.id"
+        :tag="tag?.id"
+        :name="page.name"
         class="nav-link d-flex flex-row align-items-center gap-2"
         :class="{
             'active': isActive,
@@ -19,7 +22,7 @@
         />
         <span
             class="nav-link p-1"
-            :to="{ name: 'Page', params: { id: page.id } }"
+            :to="{ name: 'WikiPage', params: { id: page.id } }"
             :class="{'active': isActive, 'inactive': !isActive}"
             @click="navigateToPage"
         >
@@ -65,9 +68,9 @@
         pageStore.setSelectedPage(props.page);
 
         if (props.tag) {
-            router.push({ name: 'PageTag', params: {id: props.page.id, tagName: props.tag.name}});
+            router.push({ name: 'WikiPageTag', params: {id: props.page.id, tagName: props.tag.name}});
         } else {
-            router.push({ name: 'Page', params: {id: props.page.id}});
+            router.push({ name: 'WikiPage', params: {id: props.page.id}});
         }
     };
 </script>

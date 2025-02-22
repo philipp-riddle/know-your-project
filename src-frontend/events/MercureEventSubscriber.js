@@ -97,8 +97,6 @@ export function useMercureEventSubscriber() {
             if (data.user == userStore.currentUser.id) {
                 return; // ignore events that were triggered by the current user
             }
-
-            console.log(data.endpoint + ' > '  + data.action + ' event');
             
             if (data.endpoint === 'Page') {
                 pageEventHandler.handle(data);

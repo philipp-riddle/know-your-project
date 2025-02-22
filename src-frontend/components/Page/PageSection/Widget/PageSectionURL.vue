@@ -1,10 +1,10 @@
 <template>
-    <div class="row">
-        <div class="col-sm-12 col-lg-4 card">
-            <div class="card-body">
-                <small class="text-muted"><strong>URL</strong></small>
+    <div class="card section-card section-card-small w-100">
+        <div class="card-body">
+            <h5><strong>URL</strong></h5>
+            <div class="d-flex flex-row gap-3">
                 <input
-                    class="form-control magic-input"
+                    class="flex-fill form-control magic-input"
                     type="text"
                     ref="urlInput"
                     placeholder="Enter URL"
@@ -12,17 +12,18 @@
                     @keyup="onURLKeyup"
                     @keyup.enter="onURLSubmit"
                 />
-                <div v-if="isValidUrl !== null">
-                    <div v-if="!isValidUrl" class="alert alert-danger" role="alert">
-                        Invalid URL
-                    </div>
-                    <div v-else>
-                        <span class="text-success">Valid URL</span>
-                    </div>
-                </div>
+                <button
+                    class="btn btn-dark"
+                    @click="onURLSubmit"
+                    v-tooltip="'Save URL'"
+                    :disabled="!isValidUrl"
+                >
+                    <font-awesome-icon :icon="['fas', 'save']" />
+                </button>
             </div>
+            <p v-if="false === isValidUrl" class="m-0 text-danger">Invalid URL</p>
         </div>
-    </div>
+    </div> 
 </template>
 
 <script setup>
@@ -59,7 +60,7 @@
     const onURLSubmit = (text) => {
         onURLKeyup();
 
-        if (isValidUrl.value === false) {
+        if (!isValidUrl.value) {
             return;
         }
 

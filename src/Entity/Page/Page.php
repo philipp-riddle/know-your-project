@@ -5,6 +5,7 @@ namespace App\Entity\Page;
 use App\Entity\Interface\AccessContext;
 use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\CrudEntityValidationInterface;
+use App\Entity\Interface\OrderListItemInterface;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Entity\Project\Project;
 use App\Entity\Tag\TagPage;
@@ -27,7 +28,8 @@ implements
     UserPermissionInterface,
     CrudEntityInterface,
     CrudEntityValidationInterface,
-    EntityMultipleFileInterface
+    EntityMultipleFileInterface,
+    OrderListItemInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -60,6 +62,9 @@ implements
      */
     #[ORM\OneToMany(mappedBy: 'page', targetEntity: TagPage::class, orphanRemoval: true)]
     private Collection $tags;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $orderIndex = null;
 
     public function __construct()
     {
@@ -193,6 +198,18 @@ implements
                 $tag->setPage(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getOrderIndex(): ?int
+    {
+        return $this->orderIndex;
+    }
+
+    public function setOrderIndex(?int $orderIndex): static
+    {
+        $this->orderIndex = $orderIndex;
 
         return $this;
     }

@@ -1,4 +1,5 @@
 import { usePageStore } from '@/stores/PageStore';
+import { useTagStore } from '@/stores/TagStore';
 import { useTaskStore } from '@/stores/TaskStore';
 
 /**
@@ -6,6 +7,7 @@ import { useTaskStore } from '@/stores/TaskStore';
  */
 export function usePageEventHandler() {
     const pageStore = usePageStore();
+    const tagStore = useTagStore();
     const taskStore = useTaskStore();
 
     const handle = (event) => {
@@ -31,6 +33,16 @@ export function usePageEventHandler() {
                     return t;
                 });
             }
+        } else if (event.action == 'order') {
+            // if the pages were reordered we know that these are the unordered pages; -1 in the tagStore.
+            // rebuild the object with the new order indices.
+            const newPagesWithOrderIndices = {};
+
+            for (const page of event.entities) {
+                newPagesWithOrderIndices[page.orderIndex] = page;
+            }
+
+            tagStore.tagPages[-1] = newPagesWithOrderIndices;
         } else if (event.action == 'delete') {
             pageStore.removePage(event.entity);
         } else {

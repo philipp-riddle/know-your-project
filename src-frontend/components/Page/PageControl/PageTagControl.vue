@@ -1,13 +1,12 @@
 <template>
-    <div
-        class="flex-fill d-flex flex-row align-items-center justify-content-end gap-4"
-        :class="{
-            // if we set this class the tags are only shown on hover.
-            // if the page is already associated with tags or one of the tag dropdowns is open we always want to show the tag controls and its buttons.
-            'section-options': !hasTags && !isDropdownVisible,
-        }"
-    >
+    <div class="flex-fill d-flex flex-row align-items-center justify-content-end p-1 gap-2">
+        <PageTagManagerControl
+            :page="page"
+            @hideDropdown="isDropdownVisible = false"
+            @showDropdown="isDropdownVisible = true"
+        />
         <div
+            v-if="pageStore.selectedPage.tags?.length > 0 | isDropdownVisible"
             class="tags-container d-flex flex-row align-items-center flex-wrap gap-2"
         >
             <PageTagUserControl
@@ -17,12 +16,6 @@
                 @showDropdown="isDropdownVisible = true"
             />
         </div>
-
-        <PageTagManagerConrol
-            :page="page"
-            @hideDropdown="isDropdownVisible = false"
-            @showDropdown="isDropdownVisible = true"
-        />
     </div>
 </template>
 
@@ -30,7 +23,7 @@
     import { computed, ref, watch } from 'vue';
     import { usePageStore } from '@/stores/PageStore.js';
     import { useUserStore } from '@/stores/UserStore.js';
-    import PageTagManagerConrol from '@/components/Page/PageControl/Tag/PageTagManagerControl.vue';
+    import PageTagManagerControl from '@/components/Page/PageControl/Tag/PageTagManagerControl.vue';
     import PageTagUserControl from '@/components/Page/PageControl/Tag/PageTagUserControl.vue';
 
     const props = defineProps({

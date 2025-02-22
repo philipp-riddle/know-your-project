@@ -9,6 +9,7 @@ use App\Entity\Page\PageSectionAIPrompt;
 use App\Entity\Page\PageSectionEmbeddedPage;
 use App\Entity\Page\PageSectionSummary;
 use App\Entity\Page\PageSectionText;
+use App\Entity\Page\PageSectionURL;
 use App\Entity\Page\PageTab;
 use App\Entity\Prompt;
 use App\Form\Page\PageSectionForm;
@@ -142,12 +143,20 @@ class PageSectionApiController extends CrudApiController
                     foreach ($pageSection->getPageSectionChecklist()->getPageSectionChecklistItems() as $item) {
                         $this->em->persist($item);
                     }
+
                 // edge case: empty page section summary
                 } else if ('' === @$requestContent['pageSectionSummary']['prompt']['promptText']) {
                     $pageSectionSummary = (new PageSectionSummary());
                     $pageSection->setPageSectionSummary($pageSectionSummary);
-
                     $this->em->persist($pageSectionSummary);
+                }
+
+                // edge case: empty page URL
+                else if ('' === @$requestContent['pageSectionURL']['url']) {
+                    $pageSectionURL = (new PageSectionURL())
+                        ->setUrl('');
+                    $pageSection->setPageSectionURL($pageSectionURL);
+                    $this->em->persist($pageSectionURL);
                 }
 
                 // == GENERATION ENGINE PART

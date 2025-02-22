@@ -40,7 +40,7 @@ class OrderListHandler
         }
 
         if (\count($idOrder) !== \count($orderListItems)) {
-            throw new BadRequestHttpException('ID order must be the same size as the ordered list itself');
+            throw new BadRequestHttpException(\sprintf('ID order must be the same size as the ordered list itself (Provided ID Order: %d, List Size: %d)', \count($idOrder), \count($orderListItems)));
         }
 
         // create a map of the items to find the items with specific IDs quicker

@@ -8,7 +8,7 @@
                 <TextEditor
                     :text="currentText"
                     :tooltip="tooltip"
-                    :focus="!isPromptLoading"
+                    :focus="!isPromptLoading && currentText === ''"
                     @onChange="currentText = $event"
                     placeholder="e.g. Summarize the page"
                 />

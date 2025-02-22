@@ -183,7 +183,7 @@
             pageStore.setSelectedPage(savedPage, true).then((selectedPage) => {
 
                 if (selectedPage.task === null) {
-                    router.push({ name: 'Page', params: { id: selectedPage.id } });
+                    router.push({ name: 'WikiPage', params: { id: selectedPage.id } });
                 } else {
                     router.push({ name: 'TasksDetail', params: { id: selectedPage.task.id } });
                 }

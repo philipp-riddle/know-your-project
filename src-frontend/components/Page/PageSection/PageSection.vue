@@ -151,7 +151,7 @@
 
     const onPageSectionSubmitHandler = async (section, sectionItem) => {
         return new Promise(async (resolve) => {
-            const currentPromise = currentSubmitPromise.value =debouncedPageSectionSubmit(section, sectionItem).then((updatedSection) => {
+            const currentPromise = currentSubmitPromise.value = debouncedPageSectionSubmit(section, sectionItem).then((updatedSection) => {
                 if (updatedSection) {
                     pageSection.value = updatedSection;
 

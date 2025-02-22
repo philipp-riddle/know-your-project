@@ -1,30 +1,17 @@
 <template>
     <VDropdown
-        :placement="'left'"
-        :triggers="[]"
         :shown="showDueDatePopover"
     >
-        <div class="row m-0 p-0" @click="showDueDatePopover = !showDueDatePopover">
-            <div class="col-sm-12 col-md-3 col-xl-2 d-flex flex-row align-items-center">
-                <button class="btn btn-sm m-0 p-0 text-muted flex-fill d-flex flex-row justify-content-end gap-4" v-tooltip="'Click to change due date'">
-                    <span class="bold">DUE DATE</span>
-                    <font-awesome-icon :icon="['fas', 'fa-calendar-check']" />
-                </button>
-            </div>
-            <div class="col-sm-12 col-md-9 col-xl-10 col-xl-8">
-                <div class="d-flex flex-row align-items-center">
-                    <div v-if="isDue" class="alert alert-danger m-0 p-2 d-flex flex-row gap-3 align-items-center" v-tooltip="'This task is overdue!'">
-                        <span class="bold">Overdue</span>
-                        <p class="m-0 text-muted">{{ displayedDueDate }}</p>
-                    </div>
-                    <div v-else-if="isDueSoon" class="alert alert-warning m-0 p-2 d-flex flex-row gap-3 align-items-center" v-tooltip="'This task is due soon!'">
-                        <span class="bold">Due soon</span>
-                        <p class="m-0 text-muted">{{ displayedDueDate }}</p>
-                    </div>
-                    <p v-else class="m-0 text-muted">{{ displayedDueDate }}</p>
-                </div>
-            </div>
-        </div>
+        <button
+            class="btn m-0 p-1 d-flex flex-row align-items-center gap-3"
+            v-tooltip="'Click to change due date'"
+        >
+            <font-awesome-icon :icon="['fas', 'fa-calendar-days']" />
+            <span
+                v-if="pageStore.selectedPage.task?.dueDate"
+                :class="{ 'text-danger': isDue, 'text-warning': isDueSoon }"
+            >{{ displayedDueDate }}</span>
+        </button>
 
         <template #popper>
             <div class="p-2 d-flex flex-row justify-content-between gap-1">
@@ -81,7 +68,7 @@
             const formattedDate = dateFormatter.formatDate(pageStore.selectedPage.task.dueDate);
             const formattedDateDistance = dateFormatter.formatDateDistance(pageStore.selectedPage.task.dueDate);
 
-            return `${formattedDateDistance} (${formattedDate} ${time})`;
+            return formattedDateDistance;
         }
 
         return 'No due date set.';

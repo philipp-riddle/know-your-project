@@ -3,7 +3,7 @@ import { useFilterStore  } from './FilterStore';
 import { usePageStore  } from './PageStore';
 import { useProjectStore } from './ProjectStore';
 import { ref } from 'vue';
-import { fetchCreateTag, fetchUpdateTag, fetchDeleteTag } from '@/stores/fetch/TagFetcher';
+import { fetchCreateTag, fetchUpdateTag, fetchDeleteTag, fetchChangeTagPageOrder, fetchChangeTagOrder } from '@/stores/fetch/TagFetcher';
 
 export const useTagStore = defineStore('tag', () => {
     const filterStore = useFilterStore();
@@ -31,15 +31,23 @@ export const useTagStore = defineStore('tag', () => {
     /**
      * Global store to save how the tags are nested.
      * This can be used to recurisvely display the tags as a tree in the frontend.
+     * Important: The order index is saved along the nested IDs to make sure the order is kept.
      */
     const nestedTagIdMap = ref({});
 
     const setup = () => {
         const project = projectStore.selectedProject;
         
-        tags.value = project.tags;
+        tags.value = project.tags.map((tag) => {
+            tag.project = project; // enrich the serialized object; otherwise it is only an ID because of circular dependencies in the entities
+
+            return tag;
+        });
+        tags.value = tags.value.sort((a, b) => a.orderIndex - b.orderIndex); // sort the tags by their order index when setting up the store
         tags.value.forEach((tag) => {
-            nestedTagIdMap.value[tag.id] = tag.tags.map((t) => t.id);
+            for (const projectTag of tag.tags) { // .tags are all the tags which are nested in the tag
+                addTagToNestedIds(tag, projectTag);   
+            }
         });
     };
 
@@ -57,46 +65,122 @@ export const useTagStore = defineStore('tag', () => {
         tags.value.push(tag);
 
         if (parentTag) {
-            if (!nestedTagIdMap.value[parentTag.id]) {
-                nestedTagIdMap.value[parentTag.id] = [];
-            }
-
-            nestedTagIdMap.value[parentTag.id].push(tag.id);
+            addTagToNestedIds(parentTag, tag);
         }
+    }
+
+    const addTagToNestedIds = (parentTag, tag) => {
+        if (!nestedTagIdMap.value[parentTag.id]) {
+            nestedTagIdMap.value[parentTag.id] = {};
+        } else if (Object.values(nestedTagIdMap.value[parentTag.id]).some((tagId) => tagId === tag.id)) {
+            console.error('return; already in nested tags');
+            return; // the tag is already included in the nested tags
+        }
+
+        nestedTagIdMap.value[parentTag.id][tag.orderIndex] = tag.id;
+        
+        // now we need to sort the nested IDs
+        const orderIndices = Object.keys(nestedTagIdMap.value[parentTag.id]).sort((a, b) => a - b);
+        let newNestedTagIds = {};
+
+        for (const orderIndex of orderIndices) {
+            newNestedTagIds[orderIndex] = nestedTagIdMap.value[parentTag.id][orderIndex];
+        }
+
+        nestedTagIdMap.value[parentTag.id] = newNestedTagIds;
     }
 
     const addPageToTags = (page, tags) => {
         const hasTags = tags && tags.length > 0;
         const tagIds = hasTags ? tags : [-1]; // -1 is the key for all pages that have no tag; this is the case if no tag was given
 
-        for (const tagId of tagIds) {   
+        for (const tag of tagIds) {
+            const tagId = tag?.tag?.id ?? tag;
+            let tagPage = typeof tag === 'object' ? tag : null;
+
+            if (tagPage) {
+                tagPage.page = page; // enrich the serialized object; otherwise it is only an ID because of circular dependencies in the entities
+            }
+
             if (!tagPages.value[tagId]) {
-                tagPages.value[tagId] = [];
-            } else if(tagPages.value[tagId].includes(page.id)) {
+                tagPages.value[tagId] = {};
+            } else if(Object.values(tagPages.value[tagId]).some((tagPageOrPage) => tagPageOrPage.id === page.id || tagPageOrPage.id === tagPage?.id)) {
                 continue; // the page is already included in the tag
             }
 
-            tagPages.value[tagId].push(page.id);
-            tagPages.value[tagId] = [...new Set(tagPages.value[tagId])]; // filter out duplicates
+            let orderIndex = tagPage?.orderIndex ?? page.orderIndex;
+
+            // there are several cases in which we want to regenerate the order index:
+            //    - when adding a page to a new tag: this means adding it to the end of the list.
+            //    - work with corrupt order indices - check if the order index is already taken or if it is null and generate a new one; this ensures that the order index is unique and all pages are displayed.
+            if (orderIndex === null || (tagPages.value[tagId][orderIndex] ?? null)) {
+                orderIndex = Math.max(0, ...Object.keys(tagPages.value[tagId] ?? {})) + 1;
+
+                if (tagPage) {
+                    tagPage.orderIndex = orderIndex;
+                } else {
+                    page.orderIndex = orderIndex;
+                }
+            }
+
+            // attach the tag page or just the page
+            tagPages.value[tagId][orderIndex] = tagPage ?? page;
+            // now sort the pages by their order index
+            sortTagPages(tagId);
         }
 
         // if the page was added to a tag we must check if it is included in the uncategorized section -
         // if so we must remove it from there.
-        if (hasTags && tagPages.value[-1]) {
-            tagPages.value[-1] = tagPages.value[-1].filter((id) => id !== page.id);
+        if (!tagIds.some((id) => id == -1) && Object.values(tagPages.value[-1] ?? {}).some((tagPageOrPage) => tagPageOrPage.pageTabs && tagPageOrPage.id === page.id)) {
+            removeTagFromPage(page, null, false);
         }
     };
 
-    const removeTagFromPage = (page, tag) => {
-        const tagId = tag.id;
+    const sortTagPages = (tagId) => {
+        const sortedTagPages = Object.values(tagPages.value[tagId]).sort((a, b) => a.orderIndex - b.orderIndex);
+        let newTagPages = {};
+
+        for (const tagPage of sortedTagPages) {
+            newTagPages[tagPage.orderIndex] = tagPage;
+        }
+
+        tagPages.value[tagId] = newTagPages;
+    }
+
+    const removeTagFromPage = (page, tag, addToUntagged=true) => {
+        const tagId = tag?.id ?? -1;
 
         if (tagPages.value[tagId]) {
-            tagPages.value[tagId] = tagPages.value[tagId].filter((id) => id !== page.id);
+            const oldLength = Object.values(tagPages.value[tagId]).length;
+            let newTagPages = {};
+
+            for (const orderIndex of Object.keys(tagPages.value[tagId])) {
+                const tagPageOrPage = tagPages.value[tagId][orderIndex];
+                const isPage = typeof tagPageOrPage.pageTabs !== undefined;
+                const isTagPage = typeof tagPageOrPage.page !== undefined;
+                
+                if (isPage && tagPageOrPage.id === page.id) {
+                    continue;
+                }
+
+                if (isTagPage && tagPageOrPage.page?.id === page.id) {
+                    console.error('remove tag page', tagPageOrPage);
+                    continue;
+                }
+
+                newTagPages[orderIndex] = tagPageOrPage;
+            }
+
+            tagPages.value[tagId] = newTagPages;
+
+            if (tagId !== -1 && oldLength === Object.values(tagPages.value[tagId]).length) {
+                console.error('Could not remove page from tag', page, tag);
+            }
         }
 
         // we must check if the page has any tags left;
         // if not we can add it to the uncategorized section.
-        if (page.tags.length === 0) {
+        if (addToUntagged && page.tags.length === 0) {
             addPageToTags(page, null);
         }
     };
@@ -104,10 +188,10 @@ export const useTagStore = defineStore('tag', () => {
     const removePageFromTagsCompletely = (page) => {
         if (page.tags.length > 0) {
             for (const tag of page.tags) {
-                tagPages.value[tag.id] = tagPages.value[tag.id].filter((id) => id !== page.id);
+                removeTagFromPage(page, tag.tag, false);
             }
         } else if (tagPages.value[-1]) {
-            tagPages.value[-1] = tagPages.value[-1].filter((id) => id !== page.id);
+            removeTagFromPage(page, -1, false);
         }
     };
 
@@ -162,9 +246,32 @@ export const useTagStore = defineStore('tag', () => {
 
             delete nestedTagIdMap.value[tag.id];
         }
-
-        console.log(tag, tags.value);
     };
+
+    const reorderTagPages = (tagId, tagPageOrPageIds) => {
+        fetchChangeTagPageOrder(projectStore.selectedProject.id, tagId, tagPageOrPageIds).then((sortedItems) => {
+            tagPages.value[tagId] = sortedItems;
+            // sortTagPages(tagId);
+        });
+    }
+
+    const reorderTags = (parentTagId, tagIdOrder) => {
+        fetchChangeTagOrder(projectStore.selectedProject.id, parentTagId, tagIdOrder).then((sortedTags) => {
+            tags.value = tags.value.map((tag) => {
+                return sortedTags.find((sortedTag) => sortedTag.id === tag.id) ?? tag;
+            });
+            tags.value = tags.value.sort((a, b) => a.orderIndex - b.orderIndex);
+
+            // also, regenerate all the nested IDs map for the parent tag
+            let newNestedTagIdMap = {};
+
+            for (const reorderedTag of sortedTags) {
+                newNestedTagIdMap[reorderedTag.orderIndex] = reorderedTag.id;
+            }
+
+            nestedTagIdMap.value[parentTagId] = newNestedTagIdMap;
+        });
+    }
 
     return {
         tags,
@@ -180,5 +287,7 @@ export const useTagStore = defineStore('tag', () => {
         updateTag,
         deleteTag,
         removeTag,
+        reorderTagPages,
+        reorderTags,
     };
 });

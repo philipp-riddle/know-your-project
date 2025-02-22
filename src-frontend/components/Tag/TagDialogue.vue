@@ -104,7 +104,11 @@
     // this makes sure to always filter the available tags when any of the tagStore's tags changes
     watch (() => tagStore.tags, () => {
         reloadAvailableTags();
-    });
+    }, {deep: true});
+
+    watch (() => tagStore.tagPages, () => {
+        reloadAvailableTags();
+    }, {deep: true});
 
     // this makes sure to reload the available tags when the tags prop changes
     watch (() => props.tags, () => {

@@ -4,6 +4,7 @@ namespace App\Entity\Tag;
 
 use App\Entity\Interface\AccessContext;
 use App\Entity\Interface\CrudEntityInterface;
+use App\Entity\Interface\OrderListItemInterface;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Entity\Project\Project;
 use App\Entity\User\User;
@@ -15,7 +16,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TagRepository::class)]
-class Tag implements UserPermissionInterface, CrudEntityInterface
+class Tag implements UserPermissionInterface, CrudEntityInterface, OrderListItemInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -44,6 +45,9 @@ class Tag implements UserPermissionInterface, CrudEntityInterface
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $createdAt = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $orderIndex = null;
 
     public function __construct()
     {
@@ -154,6 +158,18 @@ class Tag implements UserPermissionInterface, CrudEntityInterface
     {
         $this->createdAt ??= new \DateTime();
         $this->color ??= RandomColorGenerator::generateRandomColor();
+
+        return $this;
+    }
+
+    public function getOrderIndex(): ?int
+    {
+        return $this->orderIndex;
+    }
+
+    public function setOrderIndex(?int $orderIndex): static
+    {
+        $this->orderIndex = $orderIndex;
 
         return $this;
     }

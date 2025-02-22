@@ -159,7 +159,9 @@
             props.onTextChange(currentText.value);
         },
         onCreate: ({ editor }) => {
-            editor.commands.focus('end'); // this automatically sets the focus to the end of the editor when initialized / created
+            if (props.text === '') {
+                editor.commands.focus('start'); // this automatically sets the focus to the end of the editor when initialized / created
+            }
         },
         onFocus: ({ editor }) => {
             pageSectionStore.selectedPageSection = props.pageSection.id;

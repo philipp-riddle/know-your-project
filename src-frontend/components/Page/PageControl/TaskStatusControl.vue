@@ -1,19 +1,13 @@
 <template>
     <VDropdown
-        :placement="'left'"
         v-if="pageStore.selectedPage?.task !== null"
     >
-        <div class="row m-0 p-0" v-if="pageStore.selectedPage">
-            <div class="col-sm-12 col-md-3 col-xl-2 d-flex justify-content-center">
-                <button class="btn btn-sm m-0 p-0 text-muted flex-fill d-flex flex-row justify-content-end gap-4" v-tooltip="'Click to change status'">
-                    <span class="bold">STATUS</span>
-                    <font-awesome-icon :icon="['fas', 'spinner']" />
-                </button>
-            </div>
-            <div class="col-sm-12 col-md-9 col-xl-10">
-                <p class="m-0 text-muted">{{ pageStore.selectedPage.task.stepType }}</p>
-            </div>
-        </div>
+        <button
+            class="btn m-0 p-1"
+            v-tooltip="'Status: ' + task.stepType"
+        >
+            <font-awesome-icon :icon="['fas', 'spinner']" />
+        </button>
 
         <template #popper>
             <div class="p-2">
@@ -37,6 +31,13 @@
     import { ref, computed } from 'vue';
     import { usePageStore } from '@/stores/PageStore.js';
     import { useTaskStore } from '@/stores/TaskStore.js';
+
+    const props = defineProps({
+        task: {
+            type: Object,
+            required: true,
+        },
+    });
 
     const taskStore = useTaskStore();
     const pageStore = usePageStore();

@@ -27,6 +27,20 @@ export async function fetchDeleteTag(tag) {
     return resp.data;
 }
 
+export async function fetchChangeTagOrder(projectId, parentTagId, idOrder) {
+    let url = `${BaseService}/order/${projectId}`;
+
+    if (parentTagId) {
+        url += `/${parentTagId}`;
+    }
+
+    const resp = await axios.post(url, {
+        idOrder: idOrder,
+    });
+
+    return resp.data;
+}
+
 // ==== TagPage API FUNCTIONS
 
 const BaseTagPageService = BaseService + "/page";
@@ -46,6 +60,20 @@ export async function fetchCreateTagPageFromTagName(pageId, tagName, parentTagId
         page: pageId,
         tagName: tagName,
         parent: parentTagId ?? null,
+    });
+
+    return resp.data;
+}
+
+export async function fetchChangeTagPageOrder(projectId, tagPageId, idOrder) {
+    let url = `${BaseTagPageService}/order/${projectId}`;
+
+    if (tagPageId) {
+        url += `/${tagPageId}`;
+    }
+
+    const resp = await axios.post(url, {
+        idOrder: idOrder,
     });
 
     return resp.data;

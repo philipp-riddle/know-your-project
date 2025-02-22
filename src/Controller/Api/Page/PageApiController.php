@@ -12,6 +12,7 @@ use App\Form\Page\PageForm;
 use App\Repository\PageRepository;
 use App\Repository\TaskRepository;
 use App\Service\Helper\ApiControllerHelperService;
+use App\Service\OrderListHandler;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
@@ -77,11 +78,21 @@ class PageApiController extends CrudApiController
     }
 
     #[Route('', name: 'api_page_create', methods: ['POST'])]
-    public function create(Request $request): JsonResponse
+    public function create(Request $request, OrderListHandler $orderListHandler): JsonResponse
     {
-        return $this->crudUpdateOrCreate(
+        return $this->crudUpdateOrCreateOrderListItem(
             null,
             $request,
+            $orderListHandler,
+            itemsToOrder: function (Page $page) {
+                // find all untagged pages; the created page is added to the end of the ordered list.
+                return $this->pageRepository->findProjectPages(
+                    $this->getUser(),
+                    $page->getProject(),
+                    includeUserPages: true,
+                    tags: [],
+                );
+            },
             onProcessEntity: function (Page $page) {
                 if (null === $page->getProject()) {
                     $page->setUser($this->getUser());

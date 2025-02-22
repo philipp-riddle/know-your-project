@@ -9,10 +9,10 @@ export function usePageSectionEventHandler() {
     const pageSectionStore = usePageSectionStore();
 
     const handle = (event) => {
-        const page = event.entities[0].pageTab.page;
+        const page = event.entity?.pageTab.page ?? event.entities[0]?.pageTab.page;
         const isSelectedPage = page.id === pageStore.selectedPage?.id;
 
-        if (!isSelectedPage && !event.entity.task && event.action !== 'order') {
+        if (!page || (!isSelectedPage && !event.entity.task && event.action !== 'order')) {
             return; // if is not about the selected page, no task and no order event it is not relevant.
         }
 

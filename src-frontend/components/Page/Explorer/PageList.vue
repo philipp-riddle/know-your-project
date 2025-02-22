@@ -1,28 +1,34 @@
 <template>
     <ul class="nav nav-pills nav-fill d-flex flex-column p-0 m-0">
-        <!-- display all the nested tags for this page list; recursive embedding of this component (PageList) -->
         <NestedPageList
-            v-for="tagId in tagStore.nestedTagIdMap[tag?.id ?? -1] ?? []"
-            :key="tagId"
-            :tagId="tagId"
+            v-if="props.tag"
+            :tagIds="Object.values(tagStore.nestedTagIdMap[props.tag.id] ?? [])"
         />
-        <li
-            v-for="page in tagStore.tagPages[tag?.id ?? -1]"
-            :key="page"
-            class="nav-item d-flex flex-row align-items-center"
+
+        <!-- display all pages in the currently selected tag or show all untagged pages (if props.tag is NULL) -->
+        <draggable
+            class="nav nav-pills nav-fill d-flex flex-column p-0 m-0"
+            v-model="tagPages"
+            tag="ul"
+            item-key="id"
+            @end="onDragEnd"
         >
-            <PageListItem
-                v-if="pageStore.displayedPages[page]"
-                :tag="tag"
-                :page="pageStore.displayedPages[page]"
-                :onPageDelete="onPageDelete"
-            />
-            <span class="text-danger" v-else>Cannot display page {{ page }}</span>
-        </li>
+            <template #item="{ element }">
+                <li>
+                    <PageListItem
+                        :tag="tag"
+                        :page="pageStore.displayedPages[!props.tag ? element.id : element.page.id]"
+                        :onPageDelete="onPageDelete"
+                    />
+                </li>
+            </template>
+        </draggable>
     </ul>
 </template>
 <script setup>
-    import { computed, ref, onMounted, onUnmounted } from 'vue';
+	import draggable from "vuedraggable";
+
+    import { computed, ref, onMounted, onUnmounted, watch } from 'vue';
     import PageListItem from '@/components/Page/Explorer/PageListItem.vue';
     import NestedPageList from '@/components/Page/Explorer/NestedPageList.vue';
     import { usePageStore } from '@/stores/PageStore.js';
@@ -41,9 +47,14 @@
             default: null,
         },
     });
+
     const pageStore = usePageStore();
     const tagStore = useTagStore();
     const userStore = useUserStore();
+
+    // copy of tag pages - we need to use a ref here to make sure the draggable component works and can update the list;
+    // if the tag store changes, we need to update this list as well.
+    const tagPages = ref(null);
 
     onMounted(async () => {
         userStore.getCurrentUser().then((user) => {
@@ -54,7 +65,9 @@
                 return;
             }
 
-            pageStore.getPageList(selectedProject?.id, props.tag ? [props.tag.id] : []);
+            pageStore.getPageList(selectedProject?.id, props.tag ? [props.tag.id] : []).then(() => {
+                tagPages.value = Object.values(tagStore.tagPages[props.tag?.id ?? -1] ?? []);
+            });
         });
     });
 
@@ -62,8 +75,46 @@
         delete tagStore.tagPages[props.tag?.id ?? -1];
     });
 
+    watch (() => tagStore.tagPages[props.tag?.id ?? -1], (newValue) => {
+        tagPages.value = Object.values(newValue);
+    });
+
     const onPageDelete = async (page) => {
         await pageStore.deletePage(page);
     };
 
+    const onDragEnd = (event) => {
+        let pageIdOrder = [];
+        let tagPageIdOrder = [];
+
+        for (let i = 0; i < event.to.children.length; i++) {
+            let tagPageElement = event.to.children[i].children[0]; // first get the <li>, then the <PageListItem>
+            let pageId = parseInt(tagPageElement.getAttribute('page'));
+
+            if (isNaN(pageId)) {
+                console.error('Invalid page ID in PageList.vue component!', tagPageElement);
+                continue; // this is to prevent us from including any corrupted data in the list.
+            }
+
+            if (props.tag) { // dragging around tagged pages
+                const tagId = parseInt(tagPageElement.getAttribute('tag'));
+                const tagPage = Object.values(tagStore.tagPages[props.tag.id]).find((tagPage) => tagPage.tag.id == tagId && tagPage.page.id == pageId) ?? null;
+                
+                if (null === tagPage) {
+                    console.error('Invalid tag page ID in PageList.vue component!', tagPageElement);
+                    continue; // this is to prevent us from including any corrupted data in the list.
+                }
+
+                tagPageIdOrder.push(tagPage.id);
+            } else { // dragging around the untagged pages
+                pageIdOrder.push(pageId);
+            }
+        }
+
+        if (tagPageIdOrder.length > 0) {
+            tagStore.reorderTagPages(props.tag?.id, tagPageIdOrder);
+        } else if (pageIdOrder.length > 0) {
+            tagStore.reorderTagPages(null, pageIdOrder);
+        }
+    };
 </script>

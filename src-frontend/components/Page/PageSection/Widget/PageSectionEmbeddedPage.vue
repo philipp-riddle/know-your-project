@@ -5,7 +5,7 @@
                 <div class="d-flex flex-row justify-content-between align-items-center">
                     <h4 class="m-0">
                         <router-link
-                            :to="{ name: 'Page', params: { id: embeddedPage.page.id } }"
+                            :to="{ name: 'WikiPage', params: { id: embeddedPage.page.id } }"
                             v-tooltip="'Open page '"
                             @click="pageStore.setSelectedPage(embeddedPage.page)"
                         >
@@ -13,7 +13,7 @@
                         </router-link>
                         &nbsp;&nbsp;
                         <router-link
-                            :to="{ name: 'Page', params: { id: embeddedPage.page.id } }"
+                            :to="{ name: 'WikiPage', params: { id: embeddedPage.page.id } }"
                             class="btn btn-sm btn-dark"
                             target="_blank"
                             v-tooltip="'Open page in new tab'"
@@ -33,7 +33,7 @@
             </div>
             <div v-else class="d-flex flex-column gap-2">
                 <div class="d-flex flex-row justify-content-between">
-                    <p class="text-muted bold m-0">SELECT PAGE TO EMBED</p>
+                    <h5 class="bold m-0">Connect page</h5>
                     <button class="btn btn-sm m-0 p-0" @click="debouncedFetchApiForResults"><font-awesome-icon class="black" :icon="['fas', 'arrow-rotate-right']" /></button>
                 </div>
                 <h5><input

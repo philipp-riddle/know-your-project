@@ -1,13 +1,10 @@
 <template>
     <div class="container-fluid p-0 m-0 h-100 w-100">
         <div class="row h-100 p-0 m-0">
-            <div class="col-sm-4 col-lg-2 p-0 m-0">
-                <NavigationSidebar />
-            </div>
-            <div class="col-sm-8 col-lg-10 m-0 p-0 h-100 d-flex flex-column bg-white page-panel">
-                <div class="flex-fill">
-                    <router-view></router-view>
-                </div>
+            <div class="col-sm-12 d-flex flex-column gap-4">
+                <Navigation />
+
+                <router-view></router-view>
             </div>
         </div>
     </div>
@@ -19,7 +16,7 @@
 <script setup>
     import { watch,reactive, computed } from 'vue';
     import { useRoute } from 'vue-router';
-    import NavigationSidebar from '@/components/Navigation/NavigationSidebar.vue';
+    import Navigation from '@/components/Navigation/Navigation.vue';
     import SearchModal from '@/components/Search/SearchModal.vue';
     import ThreadBox from '@/components/Thread/ThreadBox.vue';
     import { usePageStore } from '@/stores/PageStore.js';
@@ -30,7 +27,7 @@
     // watch the current route and reset the store if the route is not a page.
     // this makes it more memory efficient but also avoids many bugs, e.g. page is still selected on an irrelevant page.
     watch(() => currentRoute.name, (name) => {
-        if (!name.includes('Page')) {
+        if (!name.includes('Wiki')) { // if the user is not in the wiki anymore, reset the store.
             pageStore.resetStore();
         }
     });

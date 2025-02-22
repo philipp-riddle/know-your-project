@@ -96,7 +96,7 @@
 
         if (props.result.type === 'Page') {
             pageStore.setSelectedPage(props.result.result).then((page) => {
-                router.push({ name: 'Page', params: { id: page.id } });
+                router.push({ name: 'WikiPage', params: { id: page.id } });
             });
         } else if (props.result.type === 'Task') {
             pageStore.setSelectedPage(props.result.result.page).then((page) => {
@@ -104,7 +104,7 @@
             });
         } else if (props.result.type === 'PageSection') {
             pageStore.setSelectedPage(props.result.result.pageTab.page).then((page) => {
-                router.push({ name: 'Page', params: { id: page.id } });
+                router.push({ name: 'WikiPage', params: { id: page.id } });
             });
         }
     };

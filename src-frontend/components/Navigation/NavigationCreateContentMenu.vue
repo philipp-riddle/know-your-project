@@ -4,8 +4,8 @@
         :shown="showPopover"
     >
         <!-- This will be the popover reference (for the events and position) -->
-        <button type="button" class="btn btn-primary" v-tooltip="tooltip">
-            <span class="white"><font-awesome-icon :icon="['fas', 'pencil']" /></span>
+        <button type="button" class="btn btn-sm btn-primary">
+            <span class="white"><font-awesome-icon :icon="['fas', 'plus']" /></span>
         </button>
 
         <!-- This will be the content of the popover -->
@@ -35,7 +35,7 @@
 </template>
 
 <script setup>
-    import {  ref, computed, onMounted } from 'vue';
+    import {  ref, onMounted } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
     import { usePageStore } from '@/stores/PageStore.js';
     import { useUserStore } from '@/stores/UserStore.js';
@@ -50,21 +50,15 @@
     });
     const createModes = [
         {
-            mode: 'note',
-            name: 'Note',
-            description: 'Only accessible by yourself',
-            'icon': 'lock',
-        },
-        {
             mode: 'page',
             name: 'page',
-            description: 'Accessible by everyone in your project',
+            description: 'Write documentation',
             'icon': 'file',
         },
         {
             mode: 'task',
             name: 'list-check',
-            description: 'New item for the Kanban board',
+            description: 'Track progress in the Kanban board',
             'icon': 'list-check',
         },
     ];
@@ -75,9 +69,6 @@
     const currentUser = ref(null)
     const router = useRouter();
     const showPopover = ref(false);
-    const tooltip = computed(() => {
-        return 'Create page - for you, for others?';
-    });
 
     onMounted(() => {
         userStore.getCurrentUser().then((user) => {
@@ -112,7 +103,7 @@
 
         pageStore.createPage(pageObject).then((page) => {
             pageStore.setSelectedPage(page).then(() => {
-                router.push({ name: 'Page', params: {id: page.id}});
+                router.push({ name: 'WikiPage', params: {id: page.id}});
             });
         });
 

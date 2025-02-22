@@ -1,13 +1,5 @@
 <template>
-    <div class="d-flex flex-row align-items-center gap-1">
-        <button
-            class="btn btn-sm btn-tag"
-            v-for="tag in filterStore.filterTags.slice(0, 2)"
-            :style="{'background-color': tag.color}"
-            v-tooltip="tag.name"
-        >
-            &nbsp;&nbsp;&nbsp;&nbsp;
-        </button>
+    <div class="nav-link btn-dark d-flex flex-row align-items-center gap-2">
         <VDropdown>
             <button class="btn btn-sm btn-dark-gray position-relative" v-tooltip="'Filter project'">
                 <font-awesome-icon :icon="['fas', 'filter']" />
@@ -29,6 +21,15 @@
                 </div>
             </template>
         </VDropdown>
+
+        <button
+            class="btn btn-sm btn-tag"
+            v-for="tag in filterStore.filterTags.slice(0, 2)"
+            :style="{'background-color': tag.color}"
+            v-tooltip="tag.name"
+        >
+            &nbsp;&nbsp;&nbsp;&nbsp;
+        </button>
     </div>
 </template>
 

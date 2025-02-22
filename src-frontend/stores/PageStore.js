@@ -93,7 +93,6 @@ export const usePageStore = defineStore('page', () => {
         return new Promise((resolve) => {
             fetchCreatePage(page).then((newPage) => {
                 addPage(newPage);
-                tagStore.addPageToTags(newPage, null); // add to uncategorized pages
 
                 resolve(newPage);
             });
@@ -138,13 +137,13 @@ export const usePageStore = defineStore('page', () => {
         return new Promise((resolve) => {
             // use the preloaded version in the window object if available and if we want to load all pages with no tags
             if (tags && tags.length === 0 && window.untaggedPages) {
-                addPagesToStore(window.untaggedPages, tags);
+                addPagesToStore(window.untaggedPages);
                 resolve(window.untaggedPages);
                 return;
             }
 
             fetchGetPageList(projectId, null, null, null, null, tags).then((pageList) => {
-                addPagesToStore(pageList, tags);
+                addPagesToStore(pageList);
 
                 resolve(pageList);
             });
@@ -157,7 +156,7 @@ export const usePageStore = defineStore('page', () => {
      */
     function addPagesToStore(pages, tags) {
         for (const page of pages) {
-            addPage(page, tags);
+            addPage(page);
         }
     }
 
@@ -166,7 +165,7 @@ export const usePageStore = defineStore('page', () => {
             fetchCreateTagPageFromTagName(page.id, tagName, parentTag?.id).then((pageTag) => {
                 selectedPage.value.tags.push(pageTag);
                 tagStore.addTag(pageTag.tag, parentTag);
-                tagStore.addPageToTags(page, [pageTag.tag.id]);
+                tagStore.addPageToTags(page, [pageTag]);
 
                 resolve(pageTag);
             });
@@ -177,7 +176,7 @@ export const usePageStore = defineStore('page', () => {
         return new Promise((resolve) => {
             fetchCreateTagPageFromTagId(page.id, tagId).then((pageTag) => {
                 selectedPage.value.tags.push(pageTag);
-                tagStore.addPageToTags(page, [pageTag.tag.id]);
+                tagStore.addPageToTags(page, [pageTag]);
 
                 resolve(pageTag);
             });

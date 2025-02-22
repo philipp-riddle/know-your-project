@@ -23,9 +23,7 @@ class PageRepository extends ServiceEntityRepository
      */
     public function findProjectPages(User $user, Project $project, bool $includeUserPages = true, ?string $query = null, ?int $limit = null, ?int $excludeId = null, ?array $tags = null): array
     {
-        $qb = $this->createQueryBuilder('p')
-            ->orderBy('p.user', 'DESC')
-            ->addOrderBy('p.name', 'ASC');
+        $qb = $this->createQueryBuilder('p');
 
         if ($includeUserPages) {
             $qb
