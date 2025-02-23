@@ -73,6 +73,13 @@ class PageSectionForm extends AbstractType
                 'data' => $pageSection?->getPageSectionSummary(),
             ]);
         }
+
+        if ($isNewObject || $pageSection?->getCalendarEvent()) {
+            $builder->add('calendarEvent', PageSectionCalendarEventForm::class, [
+                'required' => !$isNewObject,
+                'data' => $pageSection?->getCalendarEvent(),
+            ]);
+        }
     }
 
     public function configureOptions(OptionsResolver $resolver): void

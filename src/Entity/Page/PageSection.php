@@ -79,6 +79,9 @@ implements
     #[ORM\OneToOne(mappedBy: 'pageSection', cascade: ['persist', 'remove'])]
     private ?PageSectionSummary $pageSectionSummary = null;
 
+    #[ORM\OneToOne(mappedBy: 'pageSection', cascade: ['persist', 'remove'])]
+    private ?PageSectionCalendarEvent $calendarEvent = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -269,6 +272,10 @@ implements
             if ($this->pageSectionURL != null && !$this->pageSectionURL->hasUserAccess($user)) {
                 return false;
             }
+            
+            if ($this->calendarEvent != null && !$this->calendarEvent->hasUserAccess($user)) {
+                return false;
+            }
         }
 
         return true;
@@ -295,6 +302,7 @@ implements
             $this->embeddedPage,
             $this->aiPrompt,
             $this->pageSectionSummary,
+            $this->calendarEvent,
         ];
         $pageSectionTypesNull = 0;
         $pageSectionTypesNotNull = 0;
@@ -429,6 +437,23 @@ implements
         }
 
         $this->pageSectionSummary = $pageSectionSummary;
+
+        return $this;
+    }
+
+    public function getCalendarEvent(): ?PageSectionCalendarEvent
+    {
+        return $this->calendarEvent;
+    }
+
+    public function setCalendarEvent(PageSectionCalendarEvent $calendarEvent): static
+    {
+        // set the owning side of the relation if necessary
+        if ($calendarEvent->getPageSection() !== $this) {
+            $calendarEvent->setPageSection($this);
+        }
+
+        $this->calendarEvent = $calendarEvent;
 
         return $this;
     }

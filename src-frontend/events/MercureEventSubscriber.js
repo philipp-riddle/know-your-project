@@ -2,6 +2,7 @@ import { useMercureStore } from '@/stores/MercureStore';
 import { useUserStore } from '@/stores/UserStore';
 import { ref, watch } from 'vue';
 import { EventSourcePolyfill } from 'event-source-polyfill';
+import { useCalendarEventHandler } from '@/events/handlers/CalendarEventHandler';
 import { usePageEventHandler } from '@/events/handlers/PageEventHandler';
 import { usePageSectionEventHandler } from '@/events/handlers/PageSectionEventHandler';
 import { usePageSectionChecklistItemEventHandler } from '@/events/handlers/PageSectionChecklistItemEventHandler';
@@ -15,6 +16,7 @@ export function useMercureEventSubscriber() {
     const eventSource = ref(null);
 
     // event handlers - used to bundle incoming events to the appropriate store by entity type, e.g. 'Page'
+    const calendarEventHandler = useCalendarEventHandler();
     const pageEventHandler = usePageEventHandler();
     const pageSectionEventHandler = usePageSectionEventHandler();
     const pageSectionChecklistItemEventHandler = usePageSectionChecklistItemEventHandler();
@@ -98,7 +100,9 @@ export function useMercureEventSubscriber() {
                 return; // ignore events that were triggered by the current user
             }
             
-            if (data.endpoint === 'Page') {
+            if (data.endpoint === 'CalendarEvent') {
+                calendarEventHandler.handle(data);
+            } else if (data.endpoint === 'Page') {
                 pageEventHandler.handle(data);
             } else if (data.endpoint === 'PageSection') {
                 pageSectionEventHandler.handle(data);

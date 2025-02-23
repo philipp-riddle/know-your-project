@@ -22,7 +22,10 @@ class TaskRepository extends ServiceEntityRepository
         parent::__construct($registry, Task::class);
     }
 
-    public function findProjectTasks(Project $project, ?array $tags = null)
+    /**
+     * @return Task[]
+     */
+    public function findProjectTasks(Project $project, ?array $tags = null, ?string $dueDateFrom = null, ?string $dueDateTo = null): array
     {
         $qb = $this
             ->createQueryBuilder('task')
@@ -45,6 +48,18 @@ class TaskRepository extends ServiceEntityRepository
                     ->andWhere('tag IN (:tags)')
                     ->setParameter('tags', $tags);
             }
+        }
+
+        if (null !== $dueDateFrom) {
+            $qb
+                ->andWhere('task.dueDate >= :dueDateFrom')
+                ->setParameter('dueDateFrom', \date('Y-m-d 00:00:00', \strtotime($dueDateFrom)));
+        }
+
+        if (null !== $dueDateTo) {
+            $qb
+                ->andWhere('task.dueDate <= :dueDateTo')
+                ->setParameter('dueDateTo', \date('Y-m-d 23:59:59', \strtotime($dueDateTo)));
         }
 
         return $qb

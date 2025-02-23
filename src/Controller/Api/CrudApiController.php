@@ -204,6 +204,7 @@ abstract class CrudApiController extends ApiController
         }
 
         $entities = $this->getRepository()->findBy($filters, $orderBy, limit: 100); // limit of 100 for now - we can add pagination later
+        // die();
 
         return $this->jsonSerialize($entities);
     }

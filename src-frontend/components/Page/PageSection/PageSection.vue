@@ -76,6 +76,12 @@
                 :pageSection="pageSection"
                 :onPageSectionSubmit="(sectionItem) => onPageSectionSubmitHandler(pageSection, sectionItem)"
             />
+            <PageSectionCalendarEvent
+                v-once
+                v-else-if="pageSection.calendarEvent != null"
+                :pageSection="pageSection"
+                :onPageSectionSubmit="(sectionItem) => onPageSectionSubmitHandler(pageSection, sectionItem)"
+            />
             <div v-else class="alert alert-danger">
                 <p>Unknown section type - cannot render.</p>
             </div>
@@ -87,13 +93,14 @@
 
 <script setup>
     // we need to import all the PageSection components here to make sure they are available in the template; huge if stament bundles them all together
+    import PageSectionAIPrompt from '@/components/Page/PageSection/Widget/PageSectionAIPrompt.vue';
+    import PageSectionCalendarEvent from '@/components/Page/PageSection/Widget/PageSectionCalendarEvent.vue';
     import PageSectionChecklist from '@/components/Page/PageSection/Widget/PageSectionChecklist.vue';
     import PageSectionEmbeddedPage from '@/components/Page/PageSection/Widget/PageSectionEmbeddedPage.vue';
     import PageSectionUpload from '@/components/Page/PageSection/Widget/PageSectionUpload.vue';
     import PageSectionSummary from '@/components/Page/PageSection/Widget/PageSectionSummary.vue';
     import PageSectionText from '@/components/Page/PageSection/Widget/PageSectionText.vue';
     import PageSectionURL from '@/components/Page/PageSection/Widget/PageSectionURL.vue';
-    import PageSectionAIPrompt from '@/components/Page/PageSection/Widget/PageSectionAIPrompt.vue';
 
     import PageSectionInfo from '@/components/Page/PageSection/PageSectionInfo.vue';
     import PageSectionThreadButton from '@/components/Page/PageSection/PageSectionThreadButton.vue';

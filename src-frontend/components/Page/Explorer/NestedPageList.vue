@@ -53,7 +53,6 @@
 
     onMounted(() => {
         displayedTags.value = props.tagIds.map((tagId) => tagStore.tags.filter((tag) => tag.id == tagId)[0] ?? null);
-        console.log(displayedTags.value);
     })
 
     const toggleTag = (tagId) => {

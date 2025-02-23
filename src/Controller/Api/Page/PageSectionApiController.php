@@ -6,6 +6,7 @@ use App\Controller\Api\CrudApiController;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Entity\Page\PageSection;
 use App\Entity\Page\PageSectionAIPrompt;
+use App\Entity\Page\PageSectionCalendarEvent;
 use App\Entity\Page\PageSectionEmbeddedPage;
 use App\Entity\Page\PageSectionSummary;
 use App\Entity\Page\PageSectionText;
@@ -157,6 +158,13 @@ class PageSectionApiController extends CrudApiController
                         ->setUrl('');
                     $pageSection->setPageSectionURL($pageSectionURL);
                     $this->em->persist($pageSectionURL);
+
+                // edge case: no connected event selected
+                } else  if (\array_key_exists('calendarEvent', $requestContent['calendarEvent'] ?? []) && null === @$requestContent['calendarEvent']['calendarEvent']) {
+                    $pageSectionCalendarEvent = (new PageSectionCalendarEvent()) // initialise the calendar event with nothing
+                        ->setCalendarEvent(null);
+                    $pageSection->setCalendarEvent($pageSectionCalendarEvent);
+                    $this->em->persist($pageSectionCalendarEvent);
                 }
 
                 // == GENERATION ENGINE PART

@@ -18,6 +18,7 @@
         </div>
     </div>
 
+    <!-- nested router view for opening the tasks in a modal -->
     <router-view></router-view>
 </template>
 

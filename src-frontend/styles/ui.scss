@@ -26,12 +26,15 @@
 
     &.btn-dark-gray {
         color: $dark-gray !important;
-        transition: color 0.3s ease-in-out;
         background-color: transparent !important;
+        transition: color 0.3s ease-in-out;
+        transition: background-color 0.3s ease-in-out;
 
         &:hover {
-            color: black !important;
-            transition: color 0.3s ease-in-out;
+            color: white !important;
+            background-color: $dark-gray !important;
+            transition: color 0.5s ease-in-out;
+            transition: background-color 0.5s ease-in-out;
         }
     }
 
@@ -117,28 +120,6 @@ hr {
 /* === NAV ============================================================= */
 
 .navigation-sidebar {
-    // padding: 0;
-    // width: 50%;
-    // border-radius: 15px;
-    // position: fixed;
-    // top: 0;
-    // z-index: 10;
-    // // transform: translateX(-50%);
-
-    // :not(.navigation-sidebar-right) {
-    //     left: 0;
-    // }
-
-    // .navigation-sidebar-right {
-    //     float: right;
-    //     right: 0;
-    //     // width: 30%;
-    //     // left: auto;
-    //     left: 0;
-    //     transform: translateX(120%);
-    // }
-
-
     ul.nav {
         padding-top: 0 !important;
         padding-bottom: 0 !important;
@@ -231,7 +212,7 @@ hr {
             backdrop-filter: blur(10px) !important;
 
             border-width: 0.15rem;
-            border-color: $dark-gray;
+            border-color: $dark-gray-30;
         }
     }
 
@@ -417,5 +398,58 @@ modal-backdrop.show {
     &:hover .overlay {
         opacity: 1.0;
         transition: opacity 0.3s ease-in-out;
+    }
+}
+
+/* === CALENDAR ============================================================= */
+
+.calendar {
+    border-radius: 2rem;
+    border-width: 10rem;
+    border-color: $dark-gray;
+
+    .calendar-card {
+        border-radius: 0px;
+        min-height: 10rem;
+    }
+
+    .weekday-card {
+        border-radius: 0px;
+        border-color: transparent;
+        background-color: transparent;
+        // background-color: $light-gray-60;
+    }
+
+    .calendar-event {
+        // add border
+        border-width: 1px;
+        border-color: $dark-gray;
+        border-radius: 2rem;
+        background-color: $light-gray-60;
+    }
+
+
+    .current-day {
+        background-color: red;
+        color: white;
+        font-weight: 600;
+        padding: .5rem;
+        border-radius: 2rem;
+    }
+}
+
+.calendar-nav {
+    background-color: $dark-gray !important;
+    border-radius: 2rem !important;
+    color: white;
+    max-width: 20rem;
+
+    p, .nav-link {
+        color: white !important;
+    }
+
+    p {
+        min-width: 8rem;
+        text-align: center;
     }
 }

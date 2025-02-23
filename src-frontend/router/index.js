@@ -38,6 +38,19 @@ const routes = [
         name: 'People',
         component: () => import('@/views/People.vue'),
     },
+    {
+        'path': '/calendar',
+        name: 'Calendar',
+        component: () => import('@/views/Calendar.vue'),
+        children: [
+            {
+                // route for letting users open pages in the calendar in a modal.
+                'path': 'page/:id',
+                name: 'CalendarPage',
+                component: () => import('@/views/TaskDetailModal.vue'),
+            },
+        ],
+    }
 ];
 
 const router = createRouter({

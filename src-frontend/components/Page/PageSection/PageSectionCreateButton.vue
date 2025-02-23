@@ -50,9 +50,10 @@
         'checklist',
         'upload',
         'url',
-        'embeddedPage',
         'summary',
         'aiPrompt',
+        'embeddedPage',
+        'calendarEvent',
     ];
     const showPopover = ref(false);
     const PageSectionAccessibilityHelper = usePageSectionAccessibilityHelper();
@@ -107,6 +108,12 @@
             defaultObject = {
                 pageSectionURL: {
                     url: '',
+                },
+            };
+        } else if (type == 'calendarEvent') {
+            defaultObject = {
+                calendarEvent: {
+                    calendarEvent: null,
                 },
             };
         }

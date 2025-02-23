@@ -70,10 +70,19 @@ export function  useDateFormatter() {
         
         return (new Date(date)).toLocaleDateString('en-US', dateOptions);
     };
+
+    const formatHoursAndSeconds = (date) => {
+        const dateObj = new Date(date);
+        const hours = dateObj.getHours().toString().padStart(2, '0');
+        const minutes = dateObj.getMinutes().toString().padStart(2, '0');
+
+        return `${hours}:${minutes}`;
+    }
     
     return {
         formatDateDistance,
         formatShortDateDistance,
         formatDate,
+        formatHoursAndSeconds,
     };
 }

@@ -73,7 +73,11 @@
             return;
         }
 
-        router.push({ name: 'Tasks' });
+        if (route.name.includes('Calendar')) { // the task detail modal is also used by the calendar
+            router.push({ name: 'Calendar' });
+        } else {
+            router.push({ name: 'Tasks' });
+        }
     };
 </script>
 

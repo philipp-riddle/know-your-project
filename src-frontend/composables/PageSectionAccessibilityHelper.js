@@ -46,6 +46,10 @@ export function  usePageSectionAccessibilityHelper() {
             return 'file-upload';
         }
 
+        if (pageSection.calendarEvent) {
+            return 'calendar-day';
+        }
+
         return null;
     };
 
@@ -84,6 +88,8 @@ export function  usePageSectionAccessibilityHelper() {
             return 'Summary';
         } else if (icon === 'link') {
             return 'URL';
+        } else if (icon === 'calendar-day') {
+            return 'Calendar event';
         }
     };
 
@@ -102,6 +108,8 @@ export function  usePageSectionAccessibilityHelper() {
             return 'Ask AI Prompt';
         } else if (pageSectionType === 'url') {
             return 'URL';
+        } else if (pageSectionType === 'calendarEvent') {
+            return 'Connect calendar event';
         } else {
             return 'Unknown';
         }
@@ -122,6 +130,8 @@ export function  usePageSectionAccessibilityHelper() {
             return 'microchip';
         } else if (pageSectionType === 'url') {
             return 'link';
+        } else if (pageSectionType === 'calendarEvent') {
+            return 'calendar-day';
         } else {
             return null;
         }

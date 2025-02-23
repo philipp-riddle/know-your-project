@@ -29,7 +29,7 @@
                         :to="{ name: navigationItem.name }"
                         v-tooltip="navigationItem.name"
                     >  
-                        <font-awesome-icon :icon="['fas', navigationItem.icon]" />
+                        <font-awesome-icon :icon="['fa', navigationItem.icon]" />
                         <span v-if="isSelected(navigationItem.name) && !searchStore.isSearching" class="nav-item-name"><p class="m-0">{{ navigationItem.name }}</p></span>
                     </router-link>
                 </li>
@@ -69,6 +69,10 @@
         {
             'name': 'Tasks',
             'icon': 'list-check',
+        },
+        {
+            'name': 'Calendar',
+            'icon': 'calendar',
         },
         {
             'name': 'People',

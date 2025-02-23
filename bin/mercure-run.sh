@@ -23,7 +23,7 @@ if [ "$(uname -s)" == "Linux" ]; then
     CORS_ALLOWED_ORIGINS='https://know-your-project.philippmartini.de:443' \
     PUBLISH_ALLOWED_ORIGINS='https://know-your-project.philippmartini.de:3001' \
     USE_FORWARDED_HEADERS=1 \
-    ./mercure-executables/mercure-linux
+    ./mercure-executables/mercure-linux > /dev/null 2>&1
 fi
 
 cd $LAST_USER_DIR
