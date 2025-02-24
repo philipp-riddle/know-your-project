@@ -66,10 +66,17 @@ implements
     #[ORM\Column(nullable: true)]
     private ?int $orderIndex = null;
 
+    /**
+     * @var Collection<int, PageUser>
+     */
+    #[ORM\OneToMany(mappedBy: 'page', targetEntity: PageUser::class, orphanRemoval: true)]
+    private Collection $users;
+
     public function __construct()
     {
         $this->pageTabs = new ArrayCollection();
         $this->tags = new ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -304,5 +311,35 @@ implements
         }
 
         return $files;
+    }
+
+    /**
+     * @return Collection<int, PageUser>
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(PageUser $user): static
+    {
+        if (!$this->users->contains($user)) {
+            $this->users->add($user);
+            $user->setPage($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(PageUser $user): static
+    {
+        if ($this->users->removeElement($user)) {
+            // set the owning side to null (unless already changed)
+            if ($user->getPage() === $this) {
+                $user->setPage(null);
+            }
+        }
+
+        return $this;
     }
 }

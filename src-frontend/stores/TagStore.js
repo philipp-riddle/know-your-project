@@ -164,7 +164,6 @@ export const useTagStore = defineStore('tag', () => {
                 }
 
                 if (isTagPage && tagPageOrPage.page?.id === page.id) {
-                    console.error('remove tag page', tagPageOrPage);
                     continue;
                 }
 

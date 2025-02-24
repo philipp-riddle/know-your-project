@@ -11,11 +11,6 @@
         }"
     >
         <font-awesome-icon
-            v-if="page.user"
-            :icon="['fas', 'lock']"
-            v-tooltip="'Note - only you can see this.'"
-        />
-        <font-awesome-icon
             v-if="page.task"
             :icon="['fas', 'list-check']"
             v-tooltip="'This page belongs to a task.'"

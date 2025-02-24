@@ -16,11 +16,19 @@ export function useTagPageEventHandler() {
                 pageStore.selectedPage.tags.push(event.entity);
             }
 
+            if (pageStore.displayedPages[event.entity.page.id]) {
+                pageStore.displayedPages[event.entity.page.id].tags.push(event.entity);
+            }
+
             tagStore.addTag(event.entity.tag, event.entity.tag.parent);
             tagStore.addPageToTags(event.entity.page, [event.entity.id]);
         } else if (event.action == 'delete') {
             if (isForSelectedPage) {
                 pageStore.selectedPage.tags = pageStore.selectedPage.tags.filter((tp) => tp.tag.id !== event.entity.tag.id);
+            }
+
+            if (pageStore.displayedPages[event.entity.page.id]) {
+                pageStore.displayedPages[event.entity.page.id].tags = pageStore.displayedPages[event.entity.page.id].tags.filter((tp) => tp.tag.id !== event.entity.tag.id);
             }
 
             tagStore.removeTagFromPage(event.entity.page, event.entity.tag);

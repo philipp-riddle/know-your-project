@@ -39,9 +39,7 @@ class TagPageApiController extends CrudApiController
             $this->orderListHandler,
             itemsToOrder: function (TagPage $tagPage) {
                 return $this->pageRepository->findProjectPages(
-                    $this->getUser(),
                     $tagPage->getPage()->getProject(),
-                    includeUserPages: true,
                     tags: [$tagPage->getTag()->getId()],
                 );
             },
@@ -93,9 +91,7 @@ class TagPageApiController extends CrudApiController
 
         if (null === $tag) {
             $itemsToOrder = $this->pageRepository->findProjectPages(
-                $this->getUser(),
                 $project,
-                includeUserPages: true,
                 tags: [], // get all uncategorized pages
             );
         } else {

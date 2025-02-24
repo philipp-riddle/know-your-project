@@ -6,14 +6,13 @@
             @showDropdown="isDropdownVisible = true"
         />
         <div
-            v-if="pageStore.selectedPage.tags?.length > 0 | isDropdownVisible"
+            v-if="pageStore.selectedPage.tags?.length > 0 || isDropdownVisible"
             class="tags-container d-flex flex-row align-items-center flex-wrap gap-2"
         >
-            <PageTagUserControl
-                :tagPage="tagPage"
+            <TagBadge
                 v-for="tagPage in pageStore.selectedPage.tags"
-                @hideDropdown="isDropdownVisible = false"
-                @showDropdown="isDropdownVisible = true"
+                :tag="tagPage.tag"
+                :tagWrapperEntity="tagPage"
             />
         </div>
     </div>
@@ -24,7 +23,7 @@
     import { usePageStore } from '@/stores/PageStore.js';
     import { useUserStore } from '@/stores/UserStore.js';
     import PageTagManagerControl from '@/components/Page/PageControl/Tag/PageTagManagerControl.vue';
-    import PageTagUserControl from '@/components/Page/PageControl/Tag/PageTagUserControl.vue';
+    import TagBadge from '@/components/Tag/TagBadge.vue';
 
     const props = defineProps({
         page: {

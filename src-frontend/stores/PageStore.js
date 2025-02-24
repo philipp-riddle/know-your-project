@@ -3,11 +3,11 @@ import { useTagStore } from './TagStore';
 import { useTaskStore } from './TaskStore';
 import { usePageTabStore  } from './PageTabStore';
 import { ref } from 'vue';
-import { fetchCreatePage, fetchDeletePage, fetchUpdatePage, fetchGetPage, fetchGetPageList } from '@/stores/fetch/PageFetcher';
+import { fetchCreatePage, fetchDeletePage, fetchUpdatePage, fetchGetPage, fetchGetPageList, fetchCreatePageUser, fetchDeletePageUser } from '@/stores/fetch/PageFetcher';
 import { fetchCreateTagPageFromTagName, fetchCreateTagPageFromTagId, fetchDeleteTagPage } from '@/stores/fetch/TagFetcher';
 
 export const usePageStore = defineStore('page', () => {
-    const pages = ref({});
+    const pages = ref({}); // @todo confusion... why is this here?
     const selectedPage = ref(null);
     const tagStore = useTagStore();
     const taskStore = useTaskStore();
@@ -142,7 +142,7 @@ export const usePageStore = defineStore('page', () => {
                 return;
             }
 
-            fetchGetPageList(projectId, null, null, null, null, tags).then((pageList) => {
+            fetchGetPageList(projectId, null, null, null, tags).then((pageList) => {
                 addPagesToStore(pageList);
 
                 resolve(pageList);
@@ -203,6 +203,24 @@ export const usePageStore = defineStore('page', () => {
         selectedPage.value.tags = selectedPage.value.tags.filter((tp) => tp.tag.id !== tag.id);
     }
 
+    function addUserToPage(page, user) {
+        return new Promise((resolve) => {
+            fetchCreatePageUser(page.id, user.id).then((userPage) => {
+                selectedPage.value.users.push(userPage);
+                resolve(userPage);
+            });
+        });
+    }
+
+    function removeUserFromPage(userPage) {
+        return new Promise((resolve) => {
+            fetchDeletePageUser(userPage.id).then(() => {
+                selectedPage.value.users = selectedPage.value.users.filter((up) => up.id !== userPage.id);
+                resolve();
+            });
+        });
+    }
+
     function deletePage(page) {
         return new Promise((resolve) => {
             fetchDeletePage(page.id).then(() => {
@@ -252,6 +270,8 @@ export const usePageStore = defineStore('page', () => {
         addTagToPageById,
         removeTagFromPage,
         removeTag,
+        addUserToPage,
+        removeUserFromPage,
         deletePage,
         removePage,
     };

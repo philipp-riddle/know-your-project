@@ -2,12 +2,16 @@
     <div class="h-100 page d-flex flex-column gap-2">
         <div class="page-header ps-5 pe-5 pt-2">
             <div class="row page-section-container">
-                <div class="col-sm-12 col-md-3 col-lg-2 d-flex flex-row justify-content-between align-items-center m-0 p-0">
-                </div>
-                <div class="col-sm-12 col-md-9 col-lg-10">
-                    <div>
-                        <h1 class="m-0"><input class="magic-input" v-model="props.page.name" @keyup="updatePageTitle" v-tooltip="'Edit page title'" /></h1>
+                <div class="col-sm-12 offset-md-3 col-md-9 offset-lg-2 col-lg-10">
+                    <div class="d-flex flex-row align-items-center mb-3" v-if="!currentRoute.name.includes('Wiki')">
+                        <PageControlNavigation
+                            v-if="pageStore.selectedPage"
+                        />
                     </div>
+
+                    <h1 class="m-0"><input class="magic-input" v-model="props.page.name" @keyup="updatePageTitle" /></h1>
+
+                    <PageUserControl :page="page" />
                 </div>
             </div>
         </div>
@@ -73,6 +77,7 @@
 </template>
 
 <script setup>
+    import PageControlNavigation from '@/components/Page/PageControl/PageControlNavigation.vue';
     import PageTab from '@/components/Page/PageTab.vue';
     import CreateButton from '@/components/Util/CreateButton.vue';
     import TextArea from '@/components/Util/TextArea.vue';
@@ -80,6 +85,7 @@
     import TaskDueDateControl from '@/components/Page/PageControl/TaskDueDateControl.vue';
     import PageDeletionControl from '@/components/Page/PageControl/PageDeletionControl.vue';
     import PageTagControl from '@/components/Page/PageControl/PageTagControl.vue';
+    import PageUserControl from '@/components/Page/PageControl/PageUserControl.vue';
     import { fetchCreatePageTab } from '@/stores/fetch/PageFetcher.js';
     import { usePageStore } from '@/stores/PageStore.js';
     import { usePageTabStore } from '@/stores/PageTabStore.js';

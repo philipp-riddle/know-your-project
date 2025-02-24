@@ -91,26 +91,7 @@ export async function fetchGetTagPageList(tagId) {
     return resp.data;
 }
 
-// ==== TagPageProjectUser API FUNCTIONS
-
-const BaseTagPageProjectUserService = BaseTagPageService + "/project-user";
-
-export async function fetchCreateTagPageProjectUserFromTagId(projectUserId, tagPageId) {
-    const resp = await axios.post(`${BaseTagPageProjectUserService}`, {
-        tagPage: tagPageId,
-        projectUser: projectUserId,
-    });
-
-    return resp.data;
-}
-
-export async function fetchDeleteTagPageProjectUser(tagPageProjectUserId) {
-    const resp = await axios.delete(`${BaseTagPageProjectUserService}/${tagPageProjectUserId}`);
-
-    return resp.data;
-}
-
-// ==== TagUser API FUNCTIONS
+// ==== TagProjectUser API FUNCTIONS
 
 const BaseTagProjectUserService = BaseService + "/project-user";
 

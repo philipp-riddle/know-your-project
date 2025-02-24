@@ -35,7 +35,7 @@ class HomeController extends AbstractController
             // - untagged pages / notes
             'user' => $this->normalizer->normalize($this->getUser(), $user),
             'project' => $this->normalizer->normalize($this->getUser(), $user->getSelectedProject()),
-            'untaggedPages' => $this->normalizer->normalize($user, $this->pageService->getUntaggedPages($user, $user->getSelectedProject())),
+            'untaggedPages' => $this->normalizer->normalize($user, $this->pageService->getUntaggedPages($user->getSelectedProject())),
 
             // give the frontend context for our Mercure event integration;
             // this way changing the config in one place will update the frontend as well.

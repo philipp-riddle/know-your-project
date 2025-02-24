@@ -142,7 +142,7 @@
 
     const fetchApiForResults = () => {
         // load with the current project id, do NOT include user notes, pass on the value of the search input to filter the results, limit the results to 5, and exclude the current page in the results
-        fetchGetPageList(userStore.currentUser.selectedProject.id, false, searchInput?.value?.value ?? '', 5, pageStore.selectedPage?.id ?? '').then((foundPages) => {
+        fetchGetPageList(userStore.currentUser.selectedProject.id, searchInput?.value?.value ?? '', 5, pageStore.selectedPage?.id ?? '').then((foundPages) => {
             searchResults.value = foundPages;
         });
     }

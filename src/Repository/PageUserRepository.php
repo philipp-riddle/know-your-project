@@ -2,39 +2,39 @@
 
 namespace App\Repository;
 
-use App\Entity\Tag\TagPageProjectUser;
+use App\Entity\Page\PageUser;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<TagPageUser>
+ * @extends ServiceEntityRepository<PageUser>
  */
-class TagPageProjectUserRepository extends ServiceEntityRepository
+class PageUserRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, TagPageProjectUser::class);
+        parent::__construct($registry, PageUser::class);
     }
 
     //    /**
-    //     * @return TagPageUser[] Returns an array of TagPageUser objects
+    //     * @return PageUser[] Returns an array of PageUser objects
     //     */
     //    public function findByExampleField($value): array
     //    {
-    //        return $this->createQueryBuilder('t')
-    //            ->andWhere('t.exampleField = :val')
+    //        return $this->createQueryBuilder('p')
+    //            ->andWhere('p.exampleField = :val')
     //            ->setParameter('val', $value)
-    //            ->orderBy('t.id', 'ASC')
+    //            ->orderBy('p.id', 'ASC')
     //            ->setMaxResults(10)
     //            ->getQuery()
     //            ->getResult()
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?TagPageUser
+    //    public function findOneBySomeField($value): ?PageUser
     //    {
-    //        return $this->createQueryBuilder('t')
-    //            ->andWhere('t.exampleField = :val')
+    //        return $this->createQueryBuilder('p')
+    //            ->andWhere('p.exampleField = :val')
     //            ->setParameter('val', $value)
     //            ->getQuery()
     //            ->getOneOrNullResult()

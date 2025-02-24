@@ -30,8 +30,7 @@ export async function fetchUpdatePage(page) {
     return resp.data;
 }
 
-export async function fetchGetPageList(projectId, includeUserPages, query, limit, excludeId, tags) {
-    includeUserPages = (includeUserPages ?? true) ? '1' : '0'; // Convert boolean to string
+export async function fetchGetPageList(projectId, query, limit, excludeId, tags) {
     limit = limit ?? 100; // Default limit to 100
     excludeId = excludeId ?? ''; // Default excludeId to empty string
 
@@ -44,7 +43,7 @@ export async function fetchGetPageList(projectId, includeUserPages, query, limit
     query = encodeURIComponent(query ?? ''); // URL encode the query to be sure the query does not break the URL
 
     // @todo maybe switch to the JS URL Builder here; this is a bit messy
-    const resp = await axios.get(`${BaseService}/project-list/${projectId}?includeUserPages=${includeUserPages}&query=${query}&limit=${limit}&excludeId=${excludeId}&tags=${tags}`);
+    const resp = await axios.get(`${BaseService}/project-list/${projectId}?query=${query}&limit=${limit}&excludeId=${excludeId}&tags=${tags}`);
 
     return resp.data;
 }
@@ -163,6 +162,23 @@ export async function fetchUpdatePageSectionChecklistItem(checklistItem) {
 
 export async function fetchDeletePageSectionChecklistItem(checklistItem) {
     const resp = await axios.delete(`${BaseChecklistItemService}/${checklistItem.id}`);
+
+    return resp.data;
+}
+
+// ==== PageUser API FUNCTIONS
+
+export async function fetchCreatePageUser(pageId, userId) {
+    const resp = await axios.post(`${BaseService}/user`, {
+        page: pageId,
+        user: userId,
+    });
+
+    return resp.data;
+}
+
+export async function fetchDeletePageUser(pageUserId) {
+    const resp = await axios.delete(`${BaseService}/user/${pageUserId}`);
 
     return resp.data;
 }

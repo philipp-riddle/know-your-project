@@ -1,7 +1,7 @@
 <template>
     <div class="container-fluid p-0 m-0 h-100 w-100">
-        <div class="row h-100 p-0 m-0">
-            <div class="col-sm-12 d-flex flex-column gap-4">
+        <div class="d-flex row h-100 p-0 m-0">
+            <div class="h-100 col-sm-12 d-flex flex-column gap-4">
                 <Navigation />
 
                 <router-view></router-view>

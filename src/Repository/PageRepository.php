@@ -21,20 +21,13 @@ class PageRepository extends ServiceEntityRepository
     /**
      * @return Page[]
      */
-    public function findProjectPages(User $user, Project $project, bool $includeUserPages = true, ?string $query = null, ?int $limit = null, ?int $excludeId = null, ?array $tags = null): array
+    public function findProjectPages(Project $project, ?string $query = null, ?int $limit = null, ?int $excludeId = null, ?array $tags = null): array
     {
         $qb = $this->createQueryBuilder('p');
 
-        if ($includeUserPages) {
-            $qb
-                ->andWhere('(p.project = :project AND p.user IS NULL) OR (p.project = :project AND p.user = :user)') // find either project pages or user pages for the project
-                ->setParameter('project', $project)
-                ->setParameter('user', $user);
-        } else {
-            $qb
-                ->andWhere('p.project = :project AND p.user IS NULL') // find only project pages, no user pages
-                ->setParameter('project', $project);
-        }
+        $qb
+            ->andWhere('p.project = :project')
+            ->setParameter('project', $project);
 
         if (null !== $query) {
             $qb

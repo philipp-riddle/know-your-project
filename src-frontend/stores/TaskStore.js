@@ -25,6 +25,12 @@ export const useTaskStore = defineStore('task', () => {
                         page: page,
                     };
 
+                    const taskPage = {
+                        ...page,
+                        task: task,
+                    };
+                    pageStore.displayedPages[taskPage.id] = taskPage; // update the page in the store; only add it to the displayed pages to update with global changes
+
                     return task; // @todo does not work
                 }
 
@@ -32,6 +38,17 @@ export const useTaskStore = defineStore('task', () => {
             });
         } 
     }, { deep: true }); // deep watch is needed to watch the object's nested properties
+
+    /**
+     * Also watch if any of the displayed pages change - we need to replace the embedded pages in the store 'tasks' property.
+     */
+    watch (() => pageStore.displayedPages, (newDisplayedPages) => {
+        tasks.value = tasks.value.map((task) => {
+            if (newDisplayedPages[task.page.id]) {
+                task.page = newDisplayedPages[task.page.id];
+            }
+        })
+    });
 
     const getTasks = async (tags) => {
         tags = tags ?? null; // if the tags were not specified we assign NULL to it
@@ -49,6 +66,7 @@ export const useTaskStore = defineStore('task', () => {
                     }
 
                     tasks.value[task.stepType].push(task);
+                    pageStore.addPage(task.page); // add the page to the store; this way it is synced with the global state and can be updated in real-time as well
                 }
 
                 // finally, sort the tasks by their orderIndex

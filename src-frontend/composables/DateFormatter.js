@@ -71,6 +71,15 @@ export function  useDateFormatter() {
         return (new Date(date)).toLocaleDateString('en-US', dateOptions);
     };
 
+    // format: Feb 25
+    const formatShortDate = (date) => {
+        const dateObj = new Date(date);
+        const month = dateObj.toLocaleString('default', { month: 'short' });
+        const day = dateObj.getDate();
+
+        return `${month} ${day}`;
+    }
+
     const formatHoursAndSeconds = (date) => {
         const dateObj = new Date(date);
         const hours = dateObj.getHours().toString().padStart(2, '0');
@@ -83,6 +92,7 @@ export function  useDateFormatter() {
         formatDateDistance,
         formatShortDateDistance,
         formatDate,
+        formatShortDate,
         formatHoursAndSeconds,
     };
 }

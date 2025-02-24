@@ -18,7 +18,6 @@
 
 <script setup>
     import { ref, watch } from 'vue';
-    import PageTagUserControl from '@/components/Page/PageControl/Tag/PageTagUserControl.vue';
     import PageCreateTagControl from '@/components/Page/PageControl/Tag/PageCreateTagControl.vue';
 
     const emit = defineEmits(['showDropdown', 'hideDropdown']);

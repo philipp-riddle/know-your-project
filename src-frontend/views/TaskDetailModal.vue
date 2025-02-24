@@ -12,11 +12,6 @@
             <div class="modal-content m-0 p-0">
                 <div class="modal-body m-0 p-0 pt-xl-3 pt-sm-2">
                     <div v-if="pageStore.selectedPage">
-                        <div class="d-flex flex-row align-items-center justify-content-center p-3">
-                            <PageControlNavigation
-                                v-if="pageStore.selectedPage"
-                            />
-                        </div>
                         <TaskDetail :page="pageStore.selectedPage" :task="pageStore.selectedPage.task" />
                     </div>
                     <div v-else>
@@ -29,7 +24,6 @@
 </template>
 
 <script setup>
-    import PageControlNavigation from '@/components/Page/PageControl/PageControlNavigation.vue';
     import TaskDetail from '@/components/Task/TaskDetail.vue';
     import { useTaskStore } from '@/stores/TaskStore.js';
     import { usePageStore } from '@/stores/PageStore.js';

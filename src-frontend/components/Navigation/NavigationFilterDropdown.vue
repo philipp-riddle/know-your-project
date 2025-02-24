@@ -1,7 +1,16 @@
 <template>
     <div class="nav-link btn-dark d-flex flex-row align-items-center gap-2">
-        <VDropdown>
-            <button class="btn btn-sm btn-dark-gray position-relative" v-tooltip="'Filter project'">
+        <VDropdown
+            v-model:shown="isDropdownVisible"
+        >
+            <button
+                class="nav-link btn btn-dark position-relative"
+                v-tooltip="'Filter project'"
+                :class="{
+                    'dark-gray': isDropdownVisible || filterStore.filterTags.length > 0,
+                    'inactive': !isDropdownVisible && filterStore.filterTags.length === 0,
+                }"
+            >
                 <font-awesome-icon :icon="['fas', 'filter']" />
 
                 <span v-if="filterStore.filterTags.length > 0" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
@@ -21,15 +30,6 @@
                 </div>
             </template>
         </VDropdown>
-
-        <button
-            class="btn btn-sm btn-tag"
-            v-for="tag in filterStore.filterTags.slice(0, 2)"
-            :style="{'background-color': tag.color}"
-            v-tooltip="tag.name"
-        >
-            &nbsp;&nbsp;&nbsp;&nbsp;
-        </button>
     </div>
 </template>
 
@@ -39,6 +39,7 @@
     import { useFilterStore } from '@/stores/FilterStore.js';
 
     const filterStore = useFilterStore();
+    const isDropdownVisible = ref(false);
 
     const onTagFilterAdd = (tag) => {
         filterStore.addFilterTag(tag);

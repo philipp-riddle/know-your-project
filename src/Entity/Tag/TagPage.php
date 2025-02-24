@@ -29,12 +29,6 @@ class TagPage implements UserPermissionInterface, CrudEntityInterface, OrderList
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Page $page = null;
 
-    /**
-     * @var Collection<int, TagPageUser>
-     */
-    #[ORM\OneToMany(mappedBy: 'tagPage', targetEntity: TagPageProjectUser::class, orphanRemoval: true)]
-    private Collection $users;
-
     #[ORM\Column(nullable: true)]
     private ?int $orderIndex = null;
 
@@ -81,36 +75,6 @@ class TagPage implements UserPermissionInterface, CrudEntityInterface, OrderList
     public function setPage(?Page $page): static
     {
         $this->page = $page;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, TagPageProjectUser>
-     */
-    public function getUsers(): Collection
-    {
-        return $this->users;
-    }
-
-    public function addUser(TagPageProjectUser $user): static
-    {
-        if (!$this->users->contains($user)) {
-            $this->users->add($user);
-            $user->setTagPage($this);
-        }
-
-        return $this;
-    }
-
-    public function removeUser(TagPageProjectUser $user): static
-    {
-        if ($this->users->removeElement($user)) {
-            // set the owning side to null (unless already changed)
-            if ($user->getTagPage() === $this) {
-                $user->setTagPage(null);
-            }
-        }
 
         return $this;
     }

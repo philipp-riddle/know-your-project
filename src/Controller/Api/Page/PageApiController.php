@@ -46,9 +46,7 @@ class PageApiController extends CrudApiController
         }
 
         $projectPages = $this->pageRepository->findProjectPages(
-            $this->getUser(),
             $project,
-            $request->query->get('includeUserPages', true),
             $request->query->get('query'),
             $request->query->get('limit'),
             \intval($request->query->get('excludeId', '')),
@@ -87,16 +85,12 @@ class PageApiController extends CrudApiController
             itemsToOrder: function (Page $page) {
                 // find all untagged pages; the created page is added to the end of the ordered list.
                 return $this->pageRepository->findProjectPages(
-                    $this->getUser(),
                     $page->getProject(),
-                    includeUserPages: true,
                     tags: [],
                 );
             },
             onProcessEntity: function (Page $page) {
-                if (null === $page->getProject()) {
-                    $page->setUser($this->getUser());
-                }
+                $page->setUser($this->getUser()); // always set the user to know the author
 
                 // we must initialize the page tab with some information to start
                 $pageTab = (new PageTab())

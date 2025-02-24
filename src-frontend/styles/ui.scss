@@ -25,14 +25,18 @@
     }
 
     &.btn-dark-gray {
-        color: $dark-gray !important;
-        background-color: transparent !important;
+        color: $dark-gray;
+        background-color: transparent;
         transition: color 0.3s ease-in-out;
         transition: background-color 0.3s ease-in-out;
 
+        &.inactive {
+            color: $dark-gray-60;
+        }
+
         &:hover {
             color: white !important;
-            background-color: $dark-gray !important;
+            background-color: $dark-gray;
             transition: color 0.5s ease-in-out;
             transition: background-color 0.5s ease-in-out;
         }
@@ -123,9 +127,9 @@ hr {
     ul.nav {
         padding-top: 0 !important;
         padding-bottom: 0 !important;
-        border-radius: 2rem !important;
-        background-color: $light-gray-60 !important;
-        box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.03) !important;
+        border-radius: 2rem;
+        background-color: $light-gray-60;
+        box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.03);
     }
 }
 
@@ -282,15 +286,6 @@ modal-backdrop.show {
     overflow-y:scroll;
 }
 
-.page {
-    .page-content {
-        max-height: 100vh;
-        overflow-x: hidden;
-        overflow-y: scroll;
-        white-space: nowrap;
-    }
-}
-
 .section-options {
     opacity: 0.0 !important;
     transition: opacity 0.2s ease-in-out;
@@ -377,6 +372,17 @@ modal-backdrop.show {
     &.profile-picture-container-small {
         width: 5rem;
         height: 5rem;
+    }
+
+    &.profile-picture-container-xs {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+
+
+    &.profile-picture-container-xxs {
+        width: 2rem;
+        height: 2rem;
     }
 }
 

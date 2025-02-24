@@ -25,7 +25,7 @@
                 <font-awesome-icon :icon="['fas', 'cog']" />
             </router-link>
             <button
-                class="nav-link btn p-2 d-flex flex-row gap-3 align-items-center"
+                class="nav-link btn p-3 pt-2 pb-2 d-flex flex-row gap-3 align-items-center"
                 :class="{inactive: !searchStore.isSearching, active: searchStore.isSearching}"
                 @click="searchStore.toggleIsSearching"
             >
@@ -39,6 +39,7 @@
                 <li class="nav-item">
                     <NavigationProjectDropdown />
                 </li>
+                <!-- regular Navigation items; take user to different view -->
                 <li class="nav-item" v-for="navigationItem in navigationItems">
                     <router-link
                         class="nav-link btn btn-dark d-flex flex-row align-items-center gap-3"
@@ -65,7 +66,7 @@
         <div class="col-sm-12 col-md-4 m-0 p-0 d-flex flex-row justify-content-end align-items-center gap-2">
             <!-- inject at global navigation level to align with the main nav; this toolbar for page controls should always be shown at the top -->
             <PageControlNavigation
-                v-if="pageStore.selectedPage"
+                v-if="pageStore.selectedPage && currentRoute.name.includes('Wiki')"
             />
         </div>
     </div>

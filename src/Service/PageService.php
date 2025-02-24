@@ -52,8 +52,8 @@ class PageService
     /**
      * @return Page[]
      */
-    public function getUntaggedPages(User $user, Project $project, int $limit = 25): array
+    public function getUntaggedPages(Project $project, int $limit = 25): array
     {
-        return $this->pageRepository->findProjectPages($user, $project, tags: [], limit: $limit);
+        return $this->pageRepository->findProjectPages($project, tags: [], limit: $limit);
     }
 }
