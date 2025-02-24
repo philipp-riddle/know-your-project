@@ -2,12 +2,14 @@
 
 namespace App\Entity\User;
 
+use App\Entity\File;
 use App\Entity\Interface\AccessContext;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Entity\Project\Project;
 use App\Entity\Project\ProjectUser;
 use App\Repository\UserRepository;
 use App\Serializer\Attribute\IgnoreWhenNested;
+use App\Service\File\Interface\EntityFileInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -19,7 +21,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
-class User implements UserInterface, PasswordAuthenticatedUserInterface, UserPermissionInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface, UserPermissionInterface, EntityFileInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -52,6 +54,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, UserPer
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: ProjectUser::class)]
     private Collection $projectUsers;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?File $profilePicture = null;
 
     public function __construct()
     {
@@ -208,8 +213,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, UserPer
         return $this;
     }
 
+    public function getProfilePicture(): ?File
+    {
+        return $this->profilePicture;
+    }
+
+    public function setProfilePicture(?File $profilePicture): static
+    {
+        $this->profilePicture = $profilePicture;
+
+        return $this;
+    }
+
+    // ==== IMPLEMENTATION METHODS ===============================
+
     public function hasUserAccess(User $user, AccessContext $accessContext = AccessContext::READ): bool
     {
         return $this->getId() === $user->getId();
+    }
+
+    public function getFile(): ?File
+    {
+        return $this->getProfilePicture(); // return the profile picture as a file of the user; allows for deletion of the profile picture if the user gets deleted
     }
 }

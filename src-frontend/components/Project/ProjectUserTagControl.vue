@@ -1,5 +1,5 @@
 <template>
-    <div class="d-flex flex-row gap-3">
+    <div class="d-flex flex-row align-items-center gap-1">
         <VDropdown>
             <button class="btn" v-tooltip="'Assign tags to this user'">
                 <font-awesome-icon :icon="['fas', 'tag']" />
@@ -21,7 +21,7 @@
             <button
                 v-if="projectUser.tags"
                 v-for="tag in projectUser.tags"
-                class="btn btn-tag"
+                class="btn btn-sm btn-tag"
                 :style="{backgroundColor: tag.tag.color}"
                 v-tooltip="tag.tag.name"
             >

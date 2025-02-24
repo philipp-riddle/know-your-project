@@ -1,20 +1,40 @@
 <template>
-    <div class="navigation-sidebar p-3 d-flex flex-row align-items-center justify-content-between gap-2">
-        <div class="flex-grow-1">
+    <div class="navigation-sidebar p-3 row">
+        <div class="col-sm-12 col-md-4 m-0 p-0 d-flex flex-row gap-2 align-items-center">
+            <router-link
+                v-if="userStore.currentUser.profilePicture != null"
+                :to="{ name: 'Settings' }"
+                class="nav-link btn settings-btn p-2 d-flex flex-row gap-3 align-items-center"
+                :style="{ backgroundImage: 'url(' + userStore.currentUser.profilePicture.publicFilePath + ')' }"
+                :class="{
+                    inactive: currentRoute.name !== 'Settings',
+                    active: currentRoute.name == 'Settings',
+                }"
+            >
+                &nbsp;&nbsp;&nbsp;&nbsp;
+            </router-link>
+            <router-link
+                v-else
+                :to="{ name: 'Settings' }"
+                class="nav-link btn p-2 d-flex flex-row gap-3 align-items-center"
+                :class="{
+                    inactive: currentRoute.name !== 'Settings',
+                    active: currentRoute.name == 'Settings',
+                }"
+            >
+                <font-awesome-icon :icon="['fas', 'cog']" />
+            </router-link>
             <button
-                class="nav-link btn p-2 btn-dark d-flex gap-3 align-items-start"
+                class="nav-link btn p-2 d-flex flex-row gap-3 align-items-center"
                 :class="{inactive: !searchStore.isSearching, active: searchStore.isSearching}"
                 @click="searchStore.toggleIsSearching"
-                v-tooltip="'Search and ask'"
             >
-                <font-awesome-icon :icon="['fas', 'search']" />
+                <font-awesome-icon :icon="['fa', 'search']" />
+                Search and ask
             </button>
         </div>
 
-        <div
-            class="d-flex flex-row justify-content-center align-items-center"
-            :class="{'flex-grow-1': pageStore.selectedPage != null}"
-        >
+        <div class="col-sm-12 col-md-4 m-0 p-0 d-flex flex-row justify-content-center align-items-center">
             <ul class="nav nav-pills p-2 pt-4 pb-0 d-flex flex-row justify-content-center align-items-center gap-1">
                 <li class="nav-item">
                     <NavigationProjectDropdown />
@@ -42,7 +62,7 @@
             </ul>
         </div>
 
-        <div class="flex-grow-1 d-flex flex-row justify-content-end align-items-center gap-2">
+        <div class="col-sm-12 col-md-4 m-0 p-0 d-flex flex-row justify-content-end align-items-center gap-2">
             <!-- inject at global navigation level to align with the main nav; this toolbar for page controls should always be shown at the top -->
             <PageControlNavigation
                 v-if="pageStore.selectedPage"
@@ -57,9 +77,9 @@
     import NavigationCreateContentMenu from '@/components/Navigation/NavigationCreateContentMenu.vue';
     import NavigationFilterDropdown from '@/components/Navigation/NavigationFilterDropdown.vue';
     import NavigationProjectDropdown from '@/components/Navigation/NavigationProjectDropdown.vue';
-    import { useTaskStore } from '@/stores/TaskStore.js';
     import { useSearchStore } from '@/stores/SearchStore.js';
     import { usePageStore } from '@/stores/PageStore.js';
+    import { useUserStore } from '@/stores/UserStore.js';
 
     const navigationItems = [
         {
@@ -80,9 +100,9 @@
         },
     ];
     const currentRoute = useRoute();
-    const taskStore = useTaskStore();
     const searchStore = useSearchStore();
     const pageStore = usePageStore();
+    const userStore = useUserStore();
 
     const isSelected = (navigationItem) => {
         return currentRoute.name?.includes(navigationItem) ?? false;

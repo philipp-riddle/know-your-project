@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { fetchGetCurrentUser, fetchUserProjectInvititations, fetchCreateUserProjectInvitation, fetchDeleteUserProjectInvitation } from '@/stores/fetch/UserFetcher';
+import { fetchGetCurrentUser, fetchUserProjectInvititations, fetchCreateUserProjectInvitation, fetchDeleteUserProjectInvitation, fetchUploadUserProfilePicture } from '@/stores/fetch/UserFetcher';
 import { ref } from 'vue';
 
 export const useUserStore = defineStore('user', () => {
@@ -67,6 +67,15 @@ export const useUserStore = defineStore('user', () => {
         });
     }
 
+    async function uploadUserProfilePicture(pictureFile) {
+        return new Promise((resolve) => {
+            fetchUploadUserProfilePicture(pictureFile).then((userInfo) => {
+                currentUser.value = userInfo;
+                resolve(userInfo);
+            });
+        });
+    }
+
     return {
         currentUser,
         userProjectInvitations,
@@ -74,6 +83,7 @@ export const useUserStore = defineStore('user', () => {
         getCurrentUser,
         getUserProjectInvitations,
         createUserProjectInvitation,
-        deleteUserProjectInvitation
+        deleteUserProjectInvitation,
+        uploadUserProfilePicture,
     };
 });

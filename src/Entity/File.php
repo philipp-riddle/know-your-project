@@ -25,7 +25,7 @@ class File implements UserPermissionInterface, CrudEntityInterface
     private ?User $user = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Project $project = null;
 
     #[ORM\Column(length: 255)]

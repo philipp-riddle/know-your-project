@@ -1,5 +1,5 @@
 <template>
-    <div class="navigation-sidebar navigation-sidebar-right p-3 d-flex flex-row align-items-center justify-content-center gap-4">
+    <div class="navigation-sidebar navigation-sidebar-right d-flex flex-row align-items-center justify-content-center gap-4">
         <!-- nav pills for page task controls -->
         <ul class="nav nav-pills d-flex flex-row justify-content-center align-items-center p-3 pt-0 pb-0 gap-3" v-if="page.task != null">
             <li class="nav-item">

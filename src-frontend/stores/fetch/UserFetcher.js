@@ -28,3 +28,16 @@ export async function fetchDeleteUserProjectInvitation(invitationId) {
 
     return resp.data;
 }
+
+export async function fetchUploadUserProfilePicture(pictureFile) {
+    const formData = new FormData();
+    formData.append('picture', pictureFile);
+
+    const resp = await axios.post(`${BaseService}/profile-picture`, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+
+    return resp.data;
+}

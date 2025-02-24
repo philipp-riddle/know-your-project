@@ -72,8 +72,6 @@ export const useCalendarStore = defineStore('calendar', () => {
             }
         }
 
-        console.log(eventHashmap.value);
-
         return eventHashmap.value;
     };
 

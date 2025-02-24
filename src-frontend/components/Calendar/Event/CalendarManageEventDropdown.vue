@@ -93,8 +93,7 @@
                         <hr>
                         <p class="m-0">Mentioned in</p>
 
-                        <ul class="nav nav-pills w-100">
-                        
+                        <ul class="nav nav-pills nav-fill w-100">
                             <li class="nav-item" v-for="pageSectionCalendarEvent in calendarEvent.pageSectionCalendarEvents">
                                 <router-link
                                     :to="{ name: 'WikiPage', params: {id: pageSectionCalendarEvent.pageSection.pageTab.page.id} }"

@@ -5,8 +5,9 @@
         class="d-flex flex-row align-items-center gap-3"
     >
         <!-- This will be the popover reference (for the events and position) -->
-        <button class="btn btn-lg p-0 m-0" v-tooltip="'Invite a user to your project'">
-            <strong class="m-0 p-0">+</strong>
+        <button class="nav-link btn btn-dark d-flex flex-row gap-3 align-items-center">
+            <font-awesome-icon :icon="['fas', 'plus']" />
+            <span>Invite user</span>
         </button>
 
         <!-- This will be the content of the popover -->
@@ -14,8 +15,9 @@
             <div class="m-4">
                 <div class="d-flex flex-row align-items-end gap-4">
                     <div class="col-sm-10">
-                        <h5>Invite a user by their email to your project</h5>
+                        <label for="email" class="text-muted">Enter email</label>
                         <input
+                            id="email"
                             type="email"
                             class="form-control"
                             v-model="addProjectUserEmail"
@@ -26,11 +28,11 @@
                     </div>
                     <div class="col-sm-2">
                         <button
-                            class="btn btn-primary"
+                            class="btn btn-dark-gray"
                             :disabled="!hasValidEmail"
                             @click="onSubmitEmail()"
                         >
-                            Invite
+                            <font-awesome-icon :icon="['fas', 'paper-plane']" />
                         </button>
                     </div>
                 </div>

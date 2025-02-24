@@ -158,7 +158,8 @@ hr {
     &.active {
         color: white !important;
         background-color: $dark-gray !important;
-        border-width: 0px !important;
+        border-width: 0px;
+        transition: background-color 0.2s linear;
 
         &.nav-directory-link {
             color: black !important;
@@ -173,21 +174,15 @@ hr {
         // make whole div a bit transparent
         opacity: 0.5;
         color: black !important;
-
         background-color: transparent !important;
-        -webkit-transition: background-color 50ms linear;
-        -ms-transition: background-color 50ms linear;
-        transition: background-color 50ms linear;
+        transition: background-color 0.2s linear;
+        transform: opacity 0.2s ease-in-out;
 
         &:hover {
             opacity: 1.0;
-            -webkit-transition: opacity 300ms linear;
-            -ms-transition: opacity 300ms linear;
-            // color: white !important;
             background-color: $light-green-20 !important;
-            -webkit-transition: background-color 100ms linear;
-            -ms-transition: background-color 100ms linear;
-            transition: background-color 100ms linear;
+            transition: background-color 0.2s linear;
+            transform: opacity 0.2s ease-in-out;
         }
     }
 
@@ -360,6 +355,60 @@ modal-backdrop.show {
     &:hover {
         cursor: pointer;
         border-width: 1px !important;
+    }
+}
+
+/* === PROFILE PICTURE CONTAINER ============================================================= */
+
+.profile-picture-container {
+    width: 15rem;
+    height: 15rem;
+    border-radius: 20rem !important;
+    border-color: $dark-gray-60;
+    border-width: .15rem;
+    border-style: solid;
+    background-position: center;
+    background-size: cover;
+
+    &:hover {
+        cursor: pointer;
+    }
+
+    &.profile-picture-container-small {
+        width: 5rem;
+        height: 5rem;
+    }
+}
+
+// seems unrelated here but the main settings button already features the profile picture in the background, thus it's here.
+.settings-btn {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 20rem !important;
+    border-color: $dark-gray-60;
+    border-width: .15rem;
+    border-style: solid;
+    background-position: center;
+    background-size: cover;
+    transition: border-color 0.3s ease-in-out;
+    transition: border-width 0.3s ease-in-out;
+
+    &.active {
+        border-color: $dark-gray;
+        border-width: .3rem !important;
+        border-style: solid;
+        transition: border-width 0.3s ease-in-out;
+        transition: border-color 0.3s ease-in-out;
+    }
+
+    &.inactive {
+        opacity: 1 !important;
+    }
+
+    &:hover {
+        cursor: pointer;
+        border-color: $light-green !important;
+        transition: border-color 0.3s ease-in-out;
     }
 }
 
