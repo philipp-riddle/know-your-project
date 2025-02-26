@@ -37,6 +37,10 @@ export const useTagStore = defineStore('tag', () => {
 
     const setup = () => {
         const project = projectStore.selectedProject;
+
+        if (project === null) {
+            return;
+        }
         
         tags.value = project.tags.map((tag) => {
             tag.project = project; // enrich the serialized object; otherwise it is only an ID because of circular dependencies in the entities

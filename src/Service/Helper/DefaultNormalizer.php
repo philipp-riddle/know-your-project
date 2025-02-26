@@ -23,7 +23,7 @@ final class DefaultNormalizer
     /**
      * Normalizes data by using our own entity serializer.
      */
-    public function normalize(User $currentUser, $object, ?int $maxDepth = null): array
+    public function normalize(User $currentUser, $object, ?int $maxDepth = null): ?array
     {
         return $this->symfonyNormalize($object);
 

@@ -10,6 +10,7 @@ use App\Repository\UserInvitationRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -22,10 +23,12 @@ class VerifyController extends AbstractController
         private EntityManagerInterface $em,
         private UserInvitationRepository $userInvitationRepository,
         private UserRepository $userRepository,
+        private UserPasswordHasherInterface $passwordHasher,
+        private Security $security,
     ) { }
 
     #[Route(path: '/{code}', name: 'app_auth_verify')]
-    public function verify(Request $request, UserPasswordHasherInterface $passwordHasher, string $code): Response
+    public function verify(Request $request, string $code): Response
     {
         $form = $this->createForm(UserInvitationVerifyForm::class, options: ['code' => $code]);
         $form->handleRequest($request);
@@ -51,26 +54,32 @@ class VerifyController extends AbstractController
                 ->setSelectedProject($userInvitation->getProject())
                 ->setCreatedAt(new \DateTimeImmutable())
                 ->setVerified(true);
-            $user->setPassword($passwordHasher->hashPassword($user, $form->get('password')->getData()));
+            $user->setPassword($this->passwordHasher->hashPassword($user, $form->get('password')->getData()));
             $this->em->persist($user);
 
-            $projectUser = (new ProjectUser())
-                ->setUser($user)
-                ->setProject($userInvitation->getProject())
-                ->setCreatedAt(new \DateTime());
-            $this->em->persist($projectUser);
+            if (null !== $userInvitation->getProject()) {
+                // the password can only be anonymous, i.e. without any particular project context.
+                // only if the project is given we create a project user when verifying the user.
+                $projectUser = (new ProjectUser())
+                    ->setUser($user)
+                    ->setProject($userInvitation->getProject())
+                    ->setCreatedAt(new \DateTime());
+                $this->em->persist($projectUser);
+            }
 
             // now remove the invitation to prevent re-use
             $this->em->remove($userInvitation);
-
             $this->em->flush();
 
-            $this->addFlash('success', 'Your account has been created successfully! You can now login.');
+            // eventually, log in the user.
+            $this->security->login($user);
 
-            return $this->redirectToRoute('app_login');
+            // authenticated the user, now redirect to the home page
+            return $this->redirectToRoute('home');
         }
 
         return $this->render('auth/verify.html.twig', [
+            'navigationRoutes' => [],
             'form' => $form->createView(),
         ]);
     }

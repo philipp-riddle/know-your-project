@@ -52,7 +52,11 @@ class MercureIntegration
      * @param string|null $uniqueName a unique name for the event; if not set, the event name is used. E.g. tasks => 'Discover' to change the order of all tasks in this step of the double diamond
      */
     public function publishEntityCollectionEvent(array $entities, MercureEntityEvent $entityEvent, User $user, ?string $uniqueName = null): void
-    {
+    {   
+        if (!$this->shouldPublishUserEvent($user)) {
+            return;
+        }
+
         if (\count($entities) === 0) {
             return;
         }
@@ -79,6 +83,10 @@ class MercureIntegration
      */
     public function publishEntityEvent(object $entity, MercureEntityEvent $entityEvent, User $user, ?int $entityId = null): void
     {   
+        if (!$this->shouldPublishUserEvent($user)) {
+            return;
+        }
+
         $endpointName = (new \ReflectionClass($entity))->getShortName();
         $serializedEntity = $this->defaultNormalizer->normalize($user, $entity);
         $serializedEntity['id'] = $entityId ?? $entity->getId();
@@ -107,6 +115,23 @@ class MercureIntegration
             // mercure is not available
             // @todo add to logger to notice error somewhere else but to not break the application/request
         }
+    }
+
+    /**
+     * This function acts as a filter to decide whether to publish an event for the user or not.
+     * E.g. if the user has no selected project (=> in the setup) we do not publish any events to the Mercure hub.
+     */
+    public function shouldPublishUserEvent(User $user): bool
+    {
+        if (null === $project = $user->getSelectedProject()) {
+            return false;
+        }
+
+        if (1 === \count($project->getProjectUsers())) {
+            return false; // only if there are two users in the project it makes sense to publish events
+        }
+
+        return true;
     }
 
     public function getMercurePublicHostUrl(): string

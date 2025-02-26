@@ -3,13 +3,14 @@
         :placement="'bottom'"
         v-model:shown="isDropdownVisible"
         :triggers="[]"
+        :tabindex="99999"
     >
         <button class="btn m-0 p-0" v-tooltip="'Click to add tags'" @click.stop="isDropdownVisible = !isDropdownVisible">
             <font-awesome-icon :icon="['fas', 'tags']" />
         </button>
 
         <template #popper>
-            <div class="p-2 d-flex flex-column gap-2">
+            <div class="p-2 d-flex flex-column gap-2" style="max-width: 25rem; min-width: 15rem;">
                 <PageCreateTagControl :page="page" />
             </div>
         </template>

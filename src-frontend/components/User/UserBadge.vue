@@ -9,6 +9,14 @@
         >
             &nbsp;&nbsp;&nbsp;
         </div>
+        <div
+            v-else
+            class="profile-picture-container"
+            :class="imageSizeClass"
+            v-tooltip="user.email"
+        >
+            <font-awesome-icon :icon="['fas', 'user']" />
+        </div>
         <div v-if="!minimal">
             <p class="m-0">{{ user.email }}</p>
         </div>

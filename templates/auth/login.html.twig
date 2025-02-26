@@ -5,33 +5,18 @@
 {% block authBody %}
     <form method="post">
         <div class="d-grid flex-column gap-4">
-            {% if error %}
-                <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-            {% endif %}
-
             <div class="d-flex flex-column gap-2">
                 <input type="email" value="{{ last_username }}" name="_username" id="username" class="form-control" autocomplete="email" required autofocus placeholder="Email">
                 <input type="password" name="_password" id="password" class="form-control" autocomplete="current-password" required placeholder="Password">
-                <p class="m-0 p-0">No account yet? <a href="{{ path('app_signup') }}">Sign up</a></p>
             </div>
 
             <input type="hidden" name="_csrf_token"
                 value="{{ csrf_token('authenticate') }}"
             >
 
-            {#
-                Uncomment this section and add a remember_me option below your firewall to activate remember me functionality.
-                See https://symfony.com/doc/current/security/remember_me.html
-
-                <div class="checkbox mb-3">
-                    <input type="checkbox" name="_remember_me" id="_remember_me">
-                    <label for="_remember_me">Remember me</label>
-                </div>
-            #}
-
-            <div class="d-flex flex-column mt-3">
-                <button class="btn btn-lg btn-primary" type="submit">
-                    Login
+            <div class="d-flex flex-row justify-content-end mt-3">
+                <button type="submit" class="btn btn-dark btn-wide">
+                    Enter app
                 </button>
             </div>
         </div>

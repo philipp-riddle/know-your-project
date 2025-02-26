@@ -26,21 +26,8 @@
             </div>
 
             <!-- invitations / pending users -->
-            <div
-                class="col-sm-12 col-md-6 col-lg-4 mb-2"
-                v-for="invitation in userStore.userProjectInvitations"
-            >
-                <div class="card">
-                    <div class="card-body d-flex flex-row justify-content-between align-items-center">
-                        <div class="d-flex flex-column justify-content-center">
-                            <h5 class="m-0">{{ invitation.email }}</h5>
-                            <p class="text-muted"><i>Invitation pending</i></p>
-                        </div>
-                        <button class="btn btn-dark-gray" v-tooltip="'Cancel invitation'" @click="() => userStore.deleteUserProjectInvitation(invitation.id)">
-                            <font-awesome-icon :icon="['fas', 'trash']" />
-                        </button>
-                    </div>
-                </div>
+            <div class="col-sm-12 col-md-6 col-lg-4 mb-2">
+                <ProjectInvitationList />
             </div>
         </div>
         <div
@@ -48,8 +35,8 @@
             class="mt-4 d-flex flex-row justify-content-center align-items-center gap-2"
         >
             <div class="d-flex flex-column align-items-center">
-                <h4 class="bold m-0">No users invited yet.</h4>
-                <p class="text-muted">Why don't you invite any?</p>
+                <h4 class="bold">No users invited yet.</h4>
+                <p class="text-muted m-0">Why don't you invite any?</p>
             </div>
         </div>
     </div>
@@ -58,8 +45,10 @@
 <script setup>
     import { ref, onMounted, nextTick } from 'vue';
     import { useRoute } from 'vue-router';
+    import ProjectInvitationList from '@/components/Project/ProjectInvitationList.vue';
     import ProjectUser from '@/components/Project/ProjectUser.vue';
     import AddProjectUser from '@/components/Project/AddProjectUser.vue';
+    import UserBadge from '@/components/User/UserBadge.vue';
     import { useProjectStore } from '@/stores/ProjectStore.js';
     import { useUserStore } from '@/stores/UserStore.js';
 

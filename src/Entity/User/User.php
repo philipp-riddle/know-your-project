@@ -50,6 +50,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, UserPer
     private bool $isVerified = false;
 
     #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Project $selectedProject = null;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: ProjectUser::class)]
@@ -58,9 +59,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, UserPer
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?File $profilePicture = null;
 
+    /**
+     * @var Collection<int, UserInvitation>
+     */
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: UserInvitation::class)]
+    private Collection $userInvitations;
+
     public function __construct()
     {
         $this->projectUsers = new ArrayCollection();
+        $this->userInvitations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -235,5 +243,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, UserPer
     public function getFile(): ?File
     {
         return $this->getProfilePicture(); // return the profile picture as a file of the user; allows for deletion of the profile picture if the user gets deleted
+    }
+
+    /**
+     * @return Collection<int, UserInvitation>
+     */
+    public function getUserInvitations(): Collection
+    {
+        return $this->userInvitations;
+    }
+
+    public function addUserInvitation(UserInvitation $userInvitation): static
+    {
+        if (!$this->userInvitations->contains($userInvitation)) {
+            $this->userInvitations->add($userInvitation);
+            $userInvitation->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserInvitation(UserInvitation $userInvitation): static
+    {
+        if ($this->userInvitations->removeElement($userInvitation)) {
+            // set the owning side to null (unless already changed)
+            if ($userInvitation->getUser() === $this) {
+                $userInvitation->setUser(null);
+            }
+        }
+
+        return $this;
     }
 }

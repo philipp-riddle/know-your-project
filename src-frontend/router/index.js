@@ -2,6 +2,11 @@ import { createRouter, createWebHashHistory } from 'vue-router';
 
 const routes = [
     {
+        path: '/',
+        name: 'Home',
+        component: () => import('@/views/Home.vue'),
+    },
+    {
         path: '/tasks',
         name: 'Tasks',
         component: () => import('@/views/TaskOverview.vue'),
@@ -55,7 +60,22 @@ const routes = [
         'path': '/settings',
         name: 'Settings',
         component: () => import('@/views/Settings.vue'),
-    }
+    },
+    {
+        'path': '/setup',
+        name: 'Setup',
+        component: () => import('@/views/Setup.vue'),
+    },
+    // {
+    //     path: '/feedback',
+    //     name: 'Feedback',
+    //     component: () => import('@/views/Feedback.vue'),
+    // },
+    // {
+    //     path: '/help',
+    //     name: 'Help',
+    //     component: () => import('@/views/Help.vue'),
+    // },
 ];
 
 const router = createRouter({

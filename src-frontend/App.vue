@@ -2,7 +2,7 @@
     <div class="container-fluid p-0 m-0 h-100 w-100">
         <div class="d-flex row h-100 p-0 m-0">
             <div class="h-100 col-sm-12 d-flex flex-column gap-4">
-                <Navigation />
+                <Navigation v-if="!isUserInSetup" />
 
                 <router-view></router-view>
             </div>
@@ -14,29 +14,26 @@
 </template>
 
 <script setup>
-    import { watch,reactive, computed } from 'vue';
-    import { useRoute } from 'vue-router';
+    import { computed, onMounted } from 'vue';
+    import { useRoute, useRouter } from 'vue-router';
     import Navigation from '@/components/Navigation/Navigation.vue';
     import SearchModal from '@/components/Search/SearchModal.vue';
     import ThreadBox from '@/components/Thread/ThreadBox.vue';
     import { usePageStore } from '@/stores/PageStore.js';
+    import { useProjectStore } from '@/stores/ProjectStore.js';
 
     const currentRoute = useRoute();
+    const router = useRouter();
     const pageStore = usePageStore();
+    const projectStore = useProjectStore();
 
-    // watch the current route and reset the store if the route is not a page.
-    // this makes it more memory efficient but also avoids many bugs, e.g. page is still selected on an irrelevant page.
-    watch(() => currentRoute.name, (name) => {
-        if (!name.includes('Wiki')) { // if the user is not in the wiki anymore, reset the store.
-            pageStore.resetStore();
+    onMounted(() => {
+        if (isUserInSetup.value && currentRoute.name !== 'Setup') {
+            router.push({ name: 'Setup' });
         }
     });
-</script>
 
-<style scoped lang="sass">
-    .page-panel {
-        /* this is a very subtle drop shadow - lifts the main page panel. */
-        -webkit-box-shadow: -28px 3px 15px -6px rgba(0,0,0,0.05); 
-        box-shadow: -28px 3px 15px -6px rgba(0,0,0,0.05);
-    }
-</style>
+    const isUserInSetup = computed(() => {
+        return projectStore.selectedProject === null || currentRoute.name === 'Setup';
+    });
+</script>

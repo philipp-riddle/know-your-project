@@ -1,5 +1,11 @@
 <template>
-    <div class="flex-fill d-flex row wiki-container m-0 p-0">
+    <div v-if="isWikiEmpty" class="mt-5 d-flex flex-row justify-content-center align-items-center">
+        <div class="d-flex flex-column align-items-center">
+            <h4 class="bold">No pages created yet.</h4>
+            <p class="m-0 text-muted">Create pages and tasks to browse here.</p>
+        </div>
+    </div>
+    <div v-else class="flex-fill d-flex row wiki-container m-0 p-0">
         <div v-if="!isFullscreenMode" class="wiki-col col-sm-4 col-lg-2 p-0 m-0 d-flex flex-column align-items-start">
             <button
                 class="btn"
@@ -31,7 +37,7 @@
     </div>
 </template>
 <script setup>
-    import { onMounted, ref, watch } from 'vue';
+    import { computed, onMounted, ref, watch } from 'vue';
     import { useRoute } from 'vue-router';
     import { useRouter } from 'vue-router';
     import PageExplorer from '@/components/Page/Explorer/PageExplorer.vue';
@@ -44,6 +50,9 @@
     const router = useRouter();
 
     const isFullscreenMode = ref(false);
+    const isWikiEmpty = computed(() => {
+        return tagStore.tags.length === 0 && Object.keys(pageStore.displayedPages).length === 0;
+    });
 
     onMounted(() => {
         redirectToFirstPage();

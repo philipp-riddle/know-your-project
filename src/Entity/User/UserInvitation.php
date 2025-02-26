@@ -19,16 +19,25 @@ class UserInvitation implements CrudEntityInterface, UserPermissionInterface
     #[ORM\Column]
     private ?int $id = null;
 
+    /**
+     * If the user is set, the invitation goes to an existing user.
+     */
+    #[ORM\ManyToOne(inversedBy: 'userInvitations')]
+    private ?User $user = null;
+
     #[ORM\ManyToOne(inversedBy: 'UserInvitations')]
     #[ORM\JoinColumn(nullable: true)]
     private ?Project $project = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: false)]
     private ?string $email = null;
 
     // @todo this ignore does not work
     #[Ignore]
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $code = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
@@ -39,6 +48,18 @@ class UserInvitation implements CrudEntityInterface, UserPermissionInterface
         return $this->id;
     }
 
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
     public function getProject(): ?Project
     {
         return $this->project;
@@ -47,6 +68,18 @@ class UserInvitation implements CrudEntityInterface, UserPermissionInterface
     public function setProject(?Project $project): static
     {
         $this->project = $project;
+
+        return $this;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): static
+    {
+        $this->name = $name;
 
         return $this;
     }

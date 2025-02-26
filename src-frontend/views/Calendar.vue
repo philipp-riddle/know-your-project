@@ -70,7 +70,7 @@
                                 class="calendar-event"
                             >
                                 <button
-                                    class="btn m-0 p-2 d-flex flex-row align-items-center gap-2"
+                                    class="btn m-0 w-100 p-2 flex-fill d-flex flex-row align-items-center gap-2"
                                     @click="() => openEventModal(event)"
                                     v-if="eventType == 'tasks'"
                                 >

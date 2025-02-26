@@ -33,6 +33,10 @@ export function useMercureEventSubscriber() {
     }, {deep: true});
 
     const setup = (config) => {
+        if (!config) {
+            return;
+        }
+
         mercureStore.url = config.url;
         mercureStore.jws = config.jws;
         mercureStore.topics = config.topics;

@@ -4,7 +4,6 @@
     >
         <button
             class="btn m-0 p-1"
-            v-tooltip="'Status: ' + task.stepType"
         >
             <font-awesome-icon :icon="['fas', 'spinner']" />
         </button>

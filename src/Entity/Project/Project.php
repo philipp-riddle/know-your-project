@@ -3,6 +3,7 @@
 namespace App\Entity\Project;
 
 use App\Entity\Interface\AccessContext;
+use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Entity\Tag\Tag;
 use App\Entity\User\User;
@@ -15,7 +16,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\PersistentCollection;
 
 #[ORM\Entity(repositoryClass: ProjectRepository::class)]
-class Project extends CachedEntityVectorEmbedding implements UserPermissionInterface
+class Project extends CachedEntityVectorEmbedding implements UserPermissionInterface, CrudEntityInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -97,8 +98,11 @@ class Project extends CachedEntityVectorEmbedding implements UserPermissionInter
 
     public function hasUserAccess(User $user, AccessContext $accessContext = AccessContext::READ): bool
     {
-        if ($this->getOwner() === $user) {
-            return true;
+        $isOwnerAction = $accessContext === AccessContext::DELETE;
+        $isOwner = $this->getOwner() === $user;
+
+        if ($isOwnerAction) {
+            return $isOwner; // only the owner can delete the entire project
         }
 
         foreach ($this->getProjectUsers() as $projectUser) {
@@ -245,5 +249,12 @@ class Project extends CachedEntityVectorEmbedding implements UserPermissionInter
         // @todo Implement; return all child entities which should be deleted when this project is deleted
         // there can be quite many pages
         return [];
+    }
+
+    public function initialize(): static
+    {
+        $this->createdAt ??= new \DateTimeImmutable();
+
+        return $this;
     }
 }

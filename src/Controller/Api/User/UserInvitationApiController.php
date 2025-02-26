@@ -35,23 +35,30 @@ class UserInvitationApiController extends CrudApiController
             null,
             $request,
             onProcessEntity: function (UserInvitation $userInvitation) {
-                if ($this->userRepository->findOneBy(['email' => $userInvitation->getEmail()])) {
-                    throw new BadRequestException('User with this email already exists');
+                if (null !== $user = $this->userRepository->findOneBy(['email' => $userInvitation->getEmail()])) {
+                    $userInvitation->setUser($user);
+                    $isNewUser = false;
+                } else {
+                    $isNewUser = true;
                 }
 
-                if ($this->userInvitationRepository->findOneBy(['email' => $userInvitation->getEmail()])) {
+                if (null !== $this->userInvitationRepository->findOneBy(['user' => $userInvitation->getUser(), 'project' => $userInvitation->getProject()])) {
+                    throw new BadRequestException('User was already invited to this project');
+                }
+
+                if ($this->userInvitationRepository->findOneBy(['project' => $userInvitation->getProject(), 'email' => $userInvitation->getEmail()])) {
                     throw new BadRequestException('User with this email was already invited');
                 }
 
                 $userInvitation->setCode(bin2hex(openssl_random_pseudo_bytes(10))); // attach random code to user invitation so that it can be used to verify the user
 
-                // do not send email in test environment
+                // send emails only when not in the test env
                 if (TestEnvironment::isActive()) {
-                    $this->mailerService->sendMail(
-                        $userInvitation->getEmail(),
-                        'You were invited to Know Your Project',
-                        'Hi there! <br>You were invited to join Know Your Project. <br><br>Please click on the following link to register: <a href="http://127.0.0.1:8080/auth/verify/'.$userInvitation->_getCode().'">Register</a>'
-                    );
+                    if ($isNewUser) {
+                        $this->mailerService->sendUserInvitationToNewEmail($userInvitation);
+                    } else {
+                        $this->mailerService->sendUserInvitationToExistingUser($userInvitation);
+                    }
                 }
 
                 return $userInvitation;

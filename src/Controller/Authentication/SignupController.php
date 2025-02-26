@@ -20,11 +20,12 @@ class SignupController extends AbstractController
         private EmailVerifier $emailVerifier,
     ) { }
 
-    #[Route('/auth/signup', name: 'app_signup')]
+    #[Route('/auth/signup', name: 'app_auth_signup')]
     public function signup(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
     {
         $user = new User();
         $form = $this->createForm(UserRegistrationForm::class, $user);
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -69,7 +70,9 @@ class SignupController extends AbstractController
         }
 
         return $this->render('auth/signup.html.twig', [
-            'registrationForm' => $form,
+            'navigationRoutes' => ['login', 'signup'],
+            'form' => $form,
+            'errors' => $form->getErrors(true, false),
         ]);
     }
 
@@ -84,12 +87,12 @@ class SignupController extends AbstractController
     //     } catch (VerifyEmailExceptionInterface $exception) {
     //         $this->addFlash('verify_email_error', $translator->trans($exception->getReason(), [], 'VerifyEmailBundle'));
 
-    //         return $this->redirectToRoute('app_signup');
+    //         return $this->redirectToRoute('app_auth_signup');
     //     }
 
     //     // @TODO Change the redirect on success and handle or remove the flash message in your templates
     //     $this->addFlash('success', 'Your email address has been verified.');
 
-    //     return $this->redirectToRoute('app_signup');
+    //     return $this->redirectToRoute('app_auth_signup');
     // }
 }

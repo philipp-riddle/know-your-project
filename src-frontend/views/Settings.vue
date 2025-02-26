@@ -1,16 +1,13 @@
 <template>
+    <div class="d-flex flex-row justify-content-center align-items-center">
+        <CreateProjectDropdown />
+    </div>
+
     <div class="row m-0 p-0">
-        <div class="mt-5 col-sm-4 col-lg-2 p-0 m-0">
-            <ul class="nav nav-pills nav-fill d-flex flex-column gap-5">
-                <li class="nav-item">
-                    <router-link
-                        :to="{ name: 'Settings' }"
-                        class="nav-link active d-flex flex-row gap-3 align-items-center"
-                    >
-                        <font-awesome-icon :icon="['fas', 'cog']" />
-                        Personal details
-                    </router-link>
-                </li>
+        <div class="col-sm-4 col-lg-2 p-0 m-0 d-flex flex-column gap-3">
+            <LoggedInUserBadge :user="userStore.currentUser" />
+
+            <ul class="nav nav-pills nav-fill d-flex flex-column">
                 <li class="nav-item">
                     <a
                         href="/logout"
@@ -23,20 +20,46 @@
                 </li>
             </ul>
         </div>
-        <div class="col-sm-8 col-lg-9 m-0 p-0 ps-5 d-flex flex-column">
-            <div class="card section-card section-card-small">
-                <div class="card-body d-flex flex-column align-items-center gap-2">
-                    <h5><span class="text-muted">Logged in as </span><span class="black bold">{{ userStore.currentUser.email }}</span></h5>
-                    <div
-                        v-if="hasProfilePicture"
-                        class="profile-picture-container"
-                        :style="{ backgroundImage: 'url(' + userStore.currentUser.profilePicture.publicFilePath + ')' }"
-                        @click="openFileExplorerForUpload"
-                    ></div>
+        <div class="col-sm-8 col-lg-9 m-0 p-0 ps-5 d-flex flex-column gap-4">
+            <h2>Your projects</h2>
 
-                    <button class="btn btn-dark" @click="openFileExplorerForUpload">
-                        {{ hasProfilePicture ? 'Update' : 'Upload' }} profile picture
-                    </button>
+            <div class="d-flex flex-row gap-2">
+                <div
+                    class="card project-card"
+                    v-for="project in ownedProjects"
+                    :class="{'active': projectStore.selectedProject?.id === project.id}"
+                    :key="project.id"
+                    @click="projectStore.selectProject(project)"
+                >
+                    <div class="card-body d-flex flex-column justify-content-end">
+                        <div class="d-flex flex-row justify-content-between gap-2">
+                            <p class="m-0">{{ project.name }}</p>
+
+                            <font-awesome-icon
+                                v-if="projectStore.selectedProject?.id === project.id"
+                                :icon="['fas', 'circle-check']"
+                                v-tooltip="'This project is currently selected'"
+                            />
+                        </div>
+                        <div
+                            class="d-flex flex-row justify-content-end"
+                            v-if="ownedProjects.length > 0 && (project.owner == userStore.currentUser.id || project.owner?.id === userStore.currentUser.id)"
+                            :class="{
+                                // the class 'card-options' is used to hide the card options and make them only visible on hover.
+                                // however, when the project delete dropdown is visible, we want to show the card options at all cases to not make the buttons disappear.
+                                'card-options': projectIdDeleteDropdownVisible !== project.id,
+                            }"
+                        >
+                            <DeletionButton
+                                label="project"
+                                :showTooltip="false"
+                                :darkMode="projectStore.selectedProject?.id === project.id"
+                                @onConfirm="() => projectStore.deleteProject(project)"
+                                @onShowDropdown="projectIdDeleteDropdownVisible = project.id"
+                                @onHideDropdown="projectIdDeleteDropdownVisible = null"
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -44,29 +67,24 @@
 </template>
 <script setup>
     import { computed, ref, onMounted } from 'vue';
+    import CreateProjectDropdown from '@/components/Project/CreateProjectDropdown.vue';
+    import LoggedInUserBadge from '@/components/User/LoggedInUserBadge.vue';
+    import DeletionButton from '@/components/Util/DeletionButton.vue';
     import { useUserStore } from '@/stores/UserStore.js';
+    import { useProjectStore } from '@/stores/ProjectStore.js';
 
     const userStore = useUserStore();
+    const projectStore = useProjectStore();
+
+    const projectIdDeleteDropdownVisible = ref(null);
     
     const hasProfilePicture = computed(() => {
         return userStore.currentUser.profilePicture != null;
-    })
+    });
 
-    const openFileExplorerForUpload = () => {
-        let input = document.createElement('input');
-        input.multiple = false;
-        input.type = 'file';
-        input.accept = 'image/*';
-        input.onchange = () => {
-            let files = input.files?? null;
-
-            if (files.length !== 1) {
-                console.error('Only one file can be uploaded at a time');
-                return;
-            }
-
-            userStore.uploadUserProfilePicture(files[0]);
-        };
-        input.click();
-    };
+    const ownedProjects = computed(() => {
+        return userStore.currentUser.projectUsers
+            .filter(projectUser => projectUser.project.owner == userStore.currentUser.id || projectUser.project.owner?.id === userStore.currentUser.id) // first, filter out the non-owner project users
+            .map((projectUser) => projectUser.project); // then map the projectUser objects to the project objects as we only need the project objects
+    });
 </script>

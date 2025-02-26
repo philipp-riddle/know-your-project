@@ -63,15 +63,15 @@
             padding: 0.3rem !important;
         }
 
-        &.btn-tag-user {
-            padding: 0.3rem !important;
-        }
-
         &:hover {
             // make it appear a bit darker
             filter: brightness(0.6);
             transition: filter 0.3s ease-in-out;
         }
+    }
+
+    &.btn-wide {
+        min-width: 10rem;
     }
 }
 
@@ -94,14 +94,44 @@ hr {
             max-width: 50%;
         }
     }
+
+    &.project-card, &.setup-card {
+        min-height: 5rem;
+        width: 20rem;
+        transition: background-color 0.2s linear;
+
+        &.active {
+            background-color: $dark-gray !important;
+            color: white;
+            transition: background-color 0.2s linear;
+
+            &:hover {
+                background-color: $dark-gray-80 !important;
+                transition: background-color 0.2s linear;
+            }
+        }
+
+        &:hover {
+            background-color: $light-green-20 !important;
+            transition: background-color 0.2s linear;
+            cursor: pointer;
+        }
+    }
+
+    &.setup-card {
+        min-height: 12rem;
+        margin-bottom: 1rem;
+    }
 }
 
 .card-options {
-    display: none;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
 }
 
 .card .card-body:hover .card-options {
     display: block;
+    opacity: 1;
     transition: opacity 0.2s ease-in-out;
 }
 
@@ -356,8 +386,8 @@ modal-backdrop.show {
 /* === PROFILE PICTURE CONTAINER ============================================================= */
 
 .profile-picture-container {
-    width: 15rem;
-    height: 15rem;
+    width: 10rem;
+    height: 10rem;
     border-radius: 20rem !important;
     border-color: $dark-gray-60;
     border-width: .15rem;

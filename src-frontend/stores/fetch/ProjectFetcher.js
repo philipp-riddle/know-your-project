@@ -8,8 +8,23 @@ export async function fetchGetProject(projectId) {
     return resp.data;
 }
 
-export async function fetchCreateProject(project) {
-    const resp = await axios.post(`${BaseService}`, project);
+export async function fetchCreateProject(projectName, selectAfterCreating) {
+    const resp = await axios.post(`${BaseService}`, {
+        name: projectName,
+        selectAfterCreating: selectAfterCreating
+    });
+
+    return resp.data;
+}
+
+export async function fetchSelectProject(projectId) {
+    const resp = await axios.put(`${BaseService}/select/${projectId}`);
+
+    return resp.data;
+}
+
+export async function fetchDeleteProject(projectId) {
+    const resp = await axios.delete(`${BaseService}/${projectId}`);
 
     return resp.data;
 }

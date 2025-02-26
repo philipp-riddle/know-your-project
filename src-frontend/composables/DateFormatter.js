@@ -20,7 +20,13 @@ export function  useDateFormatter() {
             dateString = timeUnits.minutes === 1 ? '1 minute' : `${timeUnits.minutes} minutes`;
         }
 
-        return `${dateString} ago`;
+        if (timeUnits.multiplier === 1) {
+            return `in ${dateString}`;
+        } else if (timeUnits.multiplier === -1) {
+            return `${dateString} ago`;
+        } else {
+            return 'now';
+        }
     };
 
     const formatShortDateDistance = (date) => {
@@ -62,6 +68,7 @@ export function  useDateFormatter() {
             hours,
             minutes,
             seconds,
+            multiplier: distance < 0 ? -1 : 1,
         };
     };
 

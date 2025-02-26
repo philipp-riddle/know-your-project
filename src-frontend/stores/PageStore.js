@@ -228,6 +228,10 @@ export const usePageStore = defineStore('page', () => {
                     selectedPage.value = null;
                 }
 
+                if (displayedPages.value[page.id]) {
+                    delete displayedPages.value[page.id];
+                }
+
                 removePage(page);
 
                 if (page.task !== null) {

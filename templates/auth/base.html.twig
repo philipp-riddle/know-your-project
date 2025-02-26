@@ -2,41 +2,71 @@
 
 {% block body %}
     <div class="h-100 row m-0 p-0 d-flex flex-xl-column justify-content-xl-center mt-sm-3 mt-xl-0">
-        <div class="col-sm-12 offset-md-3 col-md-6 offset-xl-4 col-xl-4">
-            <div class="d-flex flex-column gap-4">
-                <h1 class="mb-0">{{ block('title') }}</h1>
+        <div class="col-sm-12 offset-lg-3 col-lg-6 offset-xl-4 col-xl-4 d-flex flex-column gap-5">
+            <div class="navigation-sidebar">
 
-                {% block authErrors %}
-                    {% for flash_error in app.flashes('verify_email_error') %}
-                        <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
-                    {% endfor %}
-                    
-                    {% for danger in app.flashes('danger') %}
-                        <div class="alert alert-danger" role="alert">{{ danger }}</div>
-                    {% endfor %}
-
-                    {% for success in app.flashes('success') %}
-                        <div class="alert alert-success" role="alert">{{ success }}</div>
-                    {% endfor %}
-
-                    {% for info in app.flashes('info') %}
-                        <div class="alert alert-info" role="alert">{{ info }}</div>
-                    {% endfor %}
-
-                    {% for warning in app.flashes('warning') %}
-                        <div class="alert alert-warning" role="alert">{{ warning }}</div>
-                    {% endfor %}
-                {% endblock %}
-
-                {% block authParentBody %}
-                    <div class="card">
-                        <div class="card-body">
-                            {% block authBody %}
-                            {% endblock %}
+                {% if navigationRoutes|length  %}
+                    <ul class="nav nav-pills d-flex flex-row align-items-center justify-content-between gap-2">
+                        <div class="d-flex flex-row gap-2 align-items-center">
+                            {% for route in navigationRoutes %}
+                                {% set routeName = 'app_auth_'~route %}
+                                <li class="nav-item">
+                                    <a href="{{ path(routeName) }}" class="nav-link btn {{ routeName in app.request.attributes.get('_route') ? 'active' : 'inactive'}}">{{ route|capitalize }}</a>
+                                </li>
+                            {% endfor %}
                         </div>
-                    </div>
-                {% endblock %}
+
+                        <li class="nav-item"><a href="#" class="nav-link inactive">Know Your Project</a></li>
+                    </ul>
+                {% else %}
+                    <ul class="nav nav-pills d-flex flex-row justify-content-between">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link btn btn-wide active">{{ block('title') }}</a>
+                        </li>
+                        <li class="nav-item"><a href="#" class="nav-link inactive">Know Your Project</a></li>
+                    </ul>
+                {% endif %}
             </div>
+
+            {# only render if the flashbag contains any errors - avoids displaying bugs due to flex gaps. #}
+            {% if app.session.flashbag.peekAll()|length or (errors is defined and errors.length > 0) %}
+                <div class="d-flex flex-column gap-4">
+                    {% block authErrors %}
+                        {% for flash_error in app.flashes('verify_email_error') %}
+                            <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
+                        {% endfor %}
+                        
+                        {% for danger in app.flashes('danger') %}
+                            <div class="alert alert-danger" role="alert">{{ danger }}</div>
+                        {% endfor %}
+
+                        {% for success in app.flashes('success') %}
+                            <div class="alert alert-success" role="alert">{{ success }}</div>
+                        {% endfor %}
+
+                        {% for info in app.flashes('info') %}
+                            <div class="alert alert-info" role="alert">{{ info }}</div>
+                        {% endfor %}
+
+                        {% for warning in app.flashes('warning') %}
+                            <div class="alert alert-warning" role="alert">{{ warning }}</div>
+                        {% endfor %}
+
+                        {% for error in errors ?? [] %}
+                            <div class="alert alert-danger" role="alert">{{ error }}</div>
+                        {% endfor %}
+                    {% endblock %}
+                </div>
+            {% endif %}
+
+            {% block authParentBody %}
+                <div class="card">
+                    <div class="card-body">
+                        {% block authBody %}
+                        {% endblock %}
+                    </div>
+                </div>
+            {% endblock %}
         </div>
     </div>
 {% endblock %}

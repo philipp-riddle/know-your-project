@@ -4,7 +4,7 @@
     >
         <button
             class="btn m-0 p-1 d-flex flex-row align-items-center gap-3"
-            v-tooltip="'Click to change due date'"
+            v-tooltip="dateFormatter.formatDate(pageStore.selectedPage.task.dueDate)"
         >
             <font-awesome-icon :icon="['fas', 'fa-calendar-days']" />
             <span

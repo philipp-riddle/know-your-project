@@ -8,13 +8,8 @@
         <button
             v-tooltip="tooltip"
             class="btn btn-sm"
-            @click="() => showPopover = !showPopover"
-            :class="{
-                'btn-dark-gray': darkMode, // in dark mode we only have one color; this ensures it can be seen
-
-                'btn-light-gray': !darkMode && !showPopover, // this makes it appear 'unselected'
-                'btn-dark-gray': !darkMode && showPopover, // this makes it appear 'selected'
-            }"
+            @click.stop="() => showPopover = !showPopover"
+            :class="classList"
         >
             <font-awesome-icon :icon="['fas', 'trash']" />
         </button>
@@ -54,11 +49,41 @@
             required: false,
             default: false,
         },
+
+        activeClass: {
+            type: String,
+            required: false,
+            default: 'btn-dark-gray',
+        },
+        inactiveClass: {
+            type: String,
+            required: false,
+            default: 'btn-light-gray',
+        },
     });
     const showPopover = ref(false);
     const tooltip = computed(() => {
         return props.showTooltip ? 'Delete ' + props.label : '';
     });
+    const classList = computed(() => {
+        if (props.darkMode) {
+            return {
+                'btn-dark-gray': true,
+            };
+        }
+
+        return {
+            [props.activeClass]: showPopover.value,
+            [props.inactiveClass]: !showPopover.value,
+        };
+    });
+
+    // const activeClass = computed(() => {
+    //     return showPopover.value ? props.activeClass : props.inactiveClass;
+    // });
+    // const inactiveClass = computed(() => {
+    //     return showPopover.value ? props.inactiveClass : props.activeClass;
+    // });
 
     watch(() => showPopover.value, (newValue) => {
         if (newValue) {

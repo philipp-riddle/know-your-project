@@ -28,7 +28,6 @@
 
 <script setup>
     import NavigationCreateContentMenu from '@/components/Navigation/NavigationCreateContentMenu.vue';
-    import DeletionButton from '@/components/Util/DeletionButton.vue';
     import { usePageStore } from '@/stores/PageStore.js';
     import { useRouter } from 'vue-router';
     import { useRoute } from 'vue-router';

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { useUserStore } from '@/stores/UserStore';
-import { fetchGetProject, fetchCreateProject, fetchDeleteProjectUser } from '@/stores/fetch/ProjectFetcher';
+import { fetchGetProject, fetchCreateProject, fetchSelectProject, fetchDeleteProject, fetchDeleteProjectUser } from '@/stores/fetch/ProjectFetcher';
 
 export const useProjectStore = defineStore('project', () => {
     const projects = ref({});
@@ -11,7 +11,7 @@ export const useProjectStore = defineStore('project', () => {
 
     function setup() {
         // use the prefetched value from the window object if it exists
-        if (window.selectedProject) {
+        if (window.selectedProject != null) {
             selectedProject.value = window.selectedProject;
         }
     }
@@ -59,6 +59,30 @@ export const useProjectStore = defineStore('project', () => {
         });
     }
 
+    async function createProject(name, selectAfterCreating=false) {
+        return new Promise((resolve) => {
+            fetchCreateProject(name, selectAfterCreating).then((project) => {
+                if (selectAfterCreating) {
+                    resolve(project);
+                } else {
+                    window.location.reload(); // reload the page to reload the selected project if it is not selected right away
+                }
+            });
+        });
+    }
+
+    async function selectProject(project) {
+        fetchSelectProject(project.id).then(() => {
+                window.location.reload(); // reload the page to reload the selected project and everything else
+        });
+    }
+
+    async function deleteProject(project) {
+        fetchDeleteProject(project.id).then(() => {
+            window.location.reload(); // reload the page to reload the selected project and everything else
+        });
+    }
+
     async function deleteProjectUser(projectUserId) {
         return new Promise((resolve) => {
             fetchDeleteProjectUser(projectUserId).then(() => {
@@ -73,6 +97,9 @@ export const useProjectStore = defineStore('project', () => {
         setup,
         getSelectedProject,
         getProject,
-        deleteProjectUser
+        createProject,
+        selectProject,
+        deleteProject,
+        deleteProjectUser,
     };
 });

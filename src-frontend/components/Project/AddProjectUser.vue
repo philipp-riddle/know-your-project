@@ -5,7 +5,7 @@
         class="d-flex flex-row align-items-center gap-3"
     >
         <!-- This will be the popover reference (for the events and position) -->
-        <button class="nav-link btn btn-dark d-flex flex-row gap-3 align-items-center">
+        <button class="nav-link p-2 active btn btn-dark d-flex flex-row gap-3 align-items-center">
             <font-awesome-icon :icon="['fas', 'plus']" />
             <span>Invite user</span>
         </button>

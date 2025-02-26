@@ -1,5 +1,5 @@
 <template>
-    <div class="navigation-sidebar p-3 row">
+    <div class="navigation-sidebar p-3 row" v-if="projectStore.selectedProject">
         <div class="col-sm-12 col-md-4 m-0 p-0 d-flex flex-row gap-2 align-items-center">
             <router-link
                 v-if="userStore.currentUser.profilePicture != null"
@@ -24,21 +24,28 @@
             >
                 <font-awesome-icon :icon="['fas', 'cog']" />
             </router-link>
+            <!-- <router-link
+                :to="{ name: 'Help' }"
+                class="nav-link btn p-2 d-flex flex-row gap-3 align-items-center"
+                :class="{
+                    inactive: currentRoute.name !== 'Help',
+                    active: currentRoute.name == 'Help',
+                }"
+            >
+                <font-awesome-icon :icon="['fas', 'question']" />
+            </router-link> -->
             <button
                 class="nav-link btn p-3 pt-2 pb-2 d-flex flex-row gap-3 align-items-center"
                 :class="{inactive: !searchStore.isSearching, active: searchStore.isSearching}"
                 @click="searchStore.toggleIsSearching"
             >
                 <font-awesome-icon :icon="['fa', 'search']" />
-                Search and ask
+                <p class="m-0">Search and ask in <span class="bold">{{ projectStore.selectedProject.name }}</span></p>
             </button>
         </div>
 
         <div class="col-sm-12 col-md-4 m-0 p-0 d-flex flex-row justify-content-center align-items-center">
-            <ul class="nav nav-pills p-2 pt-4 pb-0 d-flex flex-row justify-content-center align-items-center gap-1">
-                <li class="nav-item">
-                    <NavigationProjectDropdown />
-                </li>
+            <ul class="nav nav-pills p-2 d-flex flex-row justify-content-center align-items-center gap-1">
                 <!-- regular Navigation items; take user to different view -->
                 <li class="nav-item" v-for="navigationItem in navigationItems">
                     <router-link
@@ -77,9 +84,9 @@
     import PageControlNavigation from '@/components/Page/PageControl/PageControlNavigation.vue';
     import NavigationCreateContentMenu from '@/components/Navigation/NavigationCreateContentMenu.vue';
     import NavigationFilterDropdown from '@/components/Navigation/NavigationFilterDropdown.vue';
-    import NavigationProjectDropdown from '@/components/Navigation/NavigationProjectDropdown.vue';
     import { useSearchStore } from '@/stores/SearchStore.js';
     import { usePageStore } from '@/stores/PageStore.js';
+    import { useProjectStore } from '@/stores/ProjectStore.js';
     import { useUserStore } from '@/stores/UserStore.js';
 
     const navigationItems = [
@@ -103,6 +110,7 @@
     const currentRoute = useRoute();
     const searchStore = useSearchStore();
     const pageStore = usePageStore();
+    const projectStore = useProjectStore();
     const userStore = useUserStore();
 
     const isSelected = (navigationItem) => {
