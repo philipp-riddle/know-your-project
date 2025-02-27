@@ -29,7 +29,7 @@
             </div>
 
             {# only render if the flashbag contains any errors - avoids displaying bugs due to flex gaps. #}
-            {% if app.session.flashbag.peekAll()|length or (errors is defined and errors.length > 0) %}
+            {% if app.session.flashbag.peekAll() is not empty or (errors is defined and errors is not empty) %}
                 <div class="d-flex flex-column gap-4">
                     {% block authErrors %}
                         {% for flash_error in app.flashes('verify_email_error') %}
