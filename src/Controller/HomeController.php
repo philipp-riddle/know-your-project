@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\User\User;
 use App\Service\Helper\DefaultNormalizer;
 use App\Service\Integration\MercureIntegration;
-use App\Service\PageService;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,7 +14,6 @@ class HomeController extends AbstractController
 {
     public function __construct(
         private DefaultNormalizer $normalizer,
-        private PageService $pageService,
         private MercureIntegration $mercureIntegration,
     ) { }
 
@@ -34,7 +32,6 @@ class HomeController extends AbstractController
             $templateData = [
                 'user' => $this->normalizer->normalize($this->getUser(), $user),
                 'project' => null,
-                'untaggedPages' => [],
                 'mercureConfig' => null,
             ];
         } else {
@@ -45,7 +42,6 @@ class HomeController extends AbstractController
                 // - untagged pages / notes
                 'user' => $this->normalizer->normalize($this->getUser(), $user),
                 'project' => $this->normalizer->normalize($this->getUser(), $user->getSelectedProject()),
-                'untaggedPages' => $this->normalizer->normalize($user, $this->pageService->getUntaggedPages($user->getSelectedProject())),
     
                 // give the frontend context for our Mercure event integration;
                 // this way changing the config in one place will update the frontend as well.

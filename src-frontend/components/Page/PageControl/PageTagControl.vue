@@ -1,5 +1,5 @@
 <template>
-    <div class="flex-fill d-flex flex-row align-items-center justify-content-end p-1 gap-2">
+    <div class="d-flex flex-row align-items-center p-1 gap-2">
         <PageTagManagerControl
             :page="page"
             @hideDropdown="isDropdownVisible = false"

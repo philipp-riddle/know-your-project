@@ -36,7 +36,7 @@ implements
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'pageSections')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?PageTab $pageTab = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
@@ -46,7 +46,7 @@ implements
     private ?\DateTimeInterface $createdAt = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
     private ?User $author = null;
 
     #[ORM\Column]

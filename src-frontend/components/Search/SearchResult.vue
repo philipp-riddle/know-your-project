@@ -36,6 +36,7 @@
     import { usePageSectionAccessibilityHelper } from '@/composables/PageSectionAccessibilityHelper.js';
     import { usePageStore } from '@/stores/PageStore.js';
     import { useSearchStore } from '@/stores/SearchStore.js';
+    import { useThreadStore } from '@/stores/ThreadStore.js';
 
     const emit = defineEmits(['searchResultClick'])
     const props = defineProps({
@@ -56,6 +57,7 @@
     const router = useRouter();
     const pageStore = usePageStore();
     const searchStore = useSearchStore();
+    const threadStore = useThreadStore();
 
     const searchResultName = computed(() => {
         const type = props.result.type;
@@ -66,6 +68,8 @@
             return props.result.result.page.name;
         } else if (type === 'PageSection') {
             return props.result.result.pageTab.page.name;
+        } else if (type === 'ThreadItem') {
+            return props.result.result.threadItemComment.comment;
         }
 
         return type;
@@ -106,6 +110,18 @@
             pageStore.setSelectedPage(props.result.result.pageTab.page).then((page) => {
                 router.push({ name: 'WikiPage', params: { id: page.id } });
             });
+        } else if (props.result.type === 'ThreadItem') {
+            const threadPage = props.result.result.thread.pageSectionContext.pageSection.pageTab.page;
+
+            pageStore.setSelectedPage(threadPage).then((page) => {
+                if (threadPage.task === null) {
+                    router.push({ name: 'WikiPage', params: { id: page.id } });
+                } else {
+                    router.push({ name: 'TasksDetail', params: { id: threadPage.task.id } });
+                }
+
+                // @todo here we could optionally scroll down to the thread item
+            });
         }
     };
 
@@ -117,6 +133,10 @@
             return 'fa-tasks';
         } else if (props.result.type === 'PageSection') {
             return accessibilityHelper.getIcon(props.result.result);
+        } else if (props.result.type === 'ThreadItem') {
+            return 'fa-comments';
+        } else {
+            return 'fa-question';
         }
     });
     const searchResultTooltip = computed(() => {
@@ -126,6 +146,8 @@
             return 'Found in task';
         } else if (props.result.type === 'PageSection') {
             return 'Found in page section: ' + accessibilityHelper.getTooltip(props.result.result);
+        } else if (props.result.type === 'ThreadItem') {
+            return 'Found in thread comment: ' + accessibilityHelper.getTooltip(props.result.result);
         } else {
             return props.result.type;
         }

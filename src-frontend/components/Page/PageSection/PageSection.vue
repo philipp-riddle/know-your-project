@@ -1,12 +1,12 @@
 <template>
     <div v-if="pageSection" class="page-section page-section-container row" :page-section="pageSection.id">
-        <div class="col-sm-12 col-md-9 col-xl-2 m-0 p-2">
+        <div class="col-sm-12 col-md-9 ps-3 pe-3 col-xl-2 m-0">
             <div
                 v-if="pageSection.id != null"
                 class="d-flex flex-row gap-3 justify-content-between"
                 :class="{
                     // if the deletion dropdown is open the control should be completely visible and not only on hover
-                    'section-options': !isDeletionDropdownVisible,
+                    'section-options': !isDeletionDropdownVisible && (threadStore.selectedThread?.id != pageSection.threadContext?.thread.id),
                 }"
             >
                 <div class="d-flex flex-row gap-3 align-items-center">
@@ -16,7 +16,7 @@
                         @onHideDropdown="isDeletionDropdownVisible = false"
                         @onConfirm="onPageSectionDeleteClick"
                     />
-                    <PageSectionInfo :pageSection="pageSection" />              
+                    <PageSectionInfo :pageSection="pageSection" />         
                 </div>
                 <div class="d-flex flex-row gap-4 align-items-center">
                     <button class="btn p-0 m-0" v-tooltip="'Drag to rearrange order'">
@@ -27,9 +27,12 @@
                     </span>
                 </div>
             </div>
+            <div class="d-flex flex-row justify-content-end">
+                <PageSectionThreadButton :pageSection="pageSection" />
+            </div>
         </div>
 
-        <div class="col-sm-12 col-md-9 col-xl-10 d-flex flex-row gap-5">
+        <div class="col-sm-12 col-md-9 col-xl-10">
             <!-- the PageSection elements all need the v-once directive! -->
             <!-- this is important to not cause any re-renders of the object when creating or updating the pageSection ref value. -->
             <!-- otherwise this could interrupt the user flow, e.g. by losing the input focus while typing. -->
@@ -86,7 +89,8 @@
                 <p>Unknown section type - cannot render.</p>
             </div>
 
-            <PageSectionThreadButton :pageSection="pageSection" />
+            <!-- thread box is always beneath the main content -->
+            <ThreadBox v-if="threadStore.selectedThread !== null && threadStore.selectedThread.id === pageSection.threadContext?.thread.id" />
         </div>
     </div>
 </template>
@@ -101,13 +105,14 @@
     import PageSectionSummary from '@/components/Page/PageSection/Widget/PageSectionSummary.vue';
     import PageSectionText from '@/components/Page/PageSection/Widget/PageSectionText.vue';
     import PageSectionURL from '@/components/Page/PageSection/Widget/PageSectionURL.vue';
-
     import PageSectionInfo from '@/components/Page/PageSection/PageSectionInfo.vue';
     import PageSectionThreadButton from '@/components/Page/PageSection/PageSectionThreadButton.vue';
+    import ThreadBox from '@/components/Thread/ThreadBox.vue';
     import DeletionButton from '@/components/Util/DeletionButton.vue';
     import { usePageSectionAccessibilityHelper } from '@/composables/PageSectionAccessibilityHelper.js';
     import { usePageSectionStore } from '@/stores/PageSectionStore.js';
-    import { computed, nextTick, ref, watch } from 'vue';
+    import { useThreadStore } from '@/stores/ThreadStore.js';
+    import { computed, nextTick, ref, watch, onMounted } from 'vue';
     import { useDebounceFn } from '@vueuse/core';
 
     const props = defineProps({
@@ -129,6 +134,7 @@
         },
     });
     const pageSectionStore = usePageSectionStore();
+    const threadStore = useThreadStore();
     const pageSection = ref(props.pageSection);
     const currentSubmitPromise = ref(null); // we can use this to choose whether to force the re-render of the page section or not.
 
@@ -155,6 +161,13 @@
         await nextTick();
         pageSection.value = newValue;
     });
+
+    // onMounted(() => {
+    //     if (props.pageSection.threadContext != null) {
+    //         threadStore.selectedThread = props.pageSection.threadContext.thread;
+    //         threadStore.selectedThread.pageSectionContext = props.pageSection.threadContext; // enrich the default object; prevent items of '1'
+    //     }
+    // })
 
     const onPageSectionSubmitHandler = async (section, sectionItem) => {
         return new Promise(async (resolve) => {

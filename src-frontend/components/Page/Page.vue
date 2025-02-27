@@ -11,7 +11,10 @@
 
                     <h1 class="m-0"><input class="magic-input" v-model="props.page.name" @keyup="updatePageTitle" /></h1>
 
-                    <PageUserControl :page="page" />
+                    <div class="d-flex flex-row gap-3">
+                        <PageUserControl :page="page" />
+                        <PageTagControl :page="page"/>
+                    </div>
                 </div>
             </div>
         </div>

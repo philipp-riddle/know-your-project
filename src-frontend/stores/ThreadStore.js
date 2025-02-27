@@ -57,21 +57,6 @@ export const useThreadStore = defineStore('thread', () => {
         });
     }
 
-    const createThreadPromptItem = (threadId, prompt) => {
-        return new Promise((resolve) => {
-            fetchCreateThreadPromptItem(threadId, prompt).then((threadPromptItem) => {
-                // Add the prompt item to the thread item; this is a bit of a hack to work with serialisation and circular references
-                var threadItem = threadPromptItem.threadItem;
-                threadItem.itemPrompt = threadPromptItem;
-
-                selectedThread.value.threadItems.push(threadItem);
-                isCreatingThread.value = false;
-
-                resolve(threadPromptItem);
-            }).catch(() => isCreatingThread.value = false);
-        });
-    }
-
     const deleteThreadItem = (threadItem) => {
         return new Promise((resolve) => {
             fetchDeleteThreadItem(threadItem.id).then(() => {
@@ -94,7 +79,6 @@ export const useThreadStore = defineStore('thread', () => {
         selectedThread,
         createThreadFromPageSection,
         createThreadCommentItem,
-        createThreadPromptItem,
         deleteThreadItem,
     }
 });

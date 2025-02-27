@@ -1,5 +1,5 @@
 <template>
-    <div class="d-flex flex-row align-items-center p-1 gap-2">
+    <div class="d-flex flex-row align-items-center p-1 gap-1">
         <VDropdown
             v-model:shown="isDropdownVisible"
         >
@@ -37,7 +37,7 @@
         </VDropdown>
 
         <div
-            class="d-flex flex-row align-items-center gap-2"
+            class="d-flex flex-row align-items-center gap-1"
         >
             <UserBadge
                 v-if="page.users.length > 0"
@@ -46,11 +46,6 @@
                 :user="pageUser.user"
                 @click="isDropdownVisible = !isDropdownVisible"
             />
-            <button
-                v-else
-                class="btn btn-dark-gray inactive m-0 text-muted"
-                @click="isDropdownVisible = !isDropdownVisible"
-            >Add users to collaborate</button>
         </div>
     </div>
 </template>

@@ -37,9 +37,11 @@ implements
     private ?int $id = null;
 
     #[ORM\ManyToOne]
+    #[ORM\JoinColumn(onDelete: 'set null')]
     private ?User $user = null;
 
     #[ORM\ManyToOne]
+    #[ORM\JoinColumn(onDelete: 'CASCADE')]
     private ?Project $project = null;
 
     #[ORM\Column(length: 255)]

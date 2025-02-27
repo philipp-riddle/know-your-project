@@ -108,8 +108,16 @@ export const useTagStore = defineStore('tag', () => {
 
             if (!tagPages.value[tagId]) {
                 tagPages.value[tagId] = {};
-            } else if(Object.values(tagPages.value[tagId]).some((tagPageOrPage) => tagPageOrPage.id === page.id || tagPageOrPage.id === tagPage?.id)) {
-                continue; // the page is already included in the tag
+            } else {
+                if (null !== tagPage) {
+                    if (Object.values(tagPages.value[tagId]).some((tagPage) => tagPage.page.id === page.id)) {
+                        continue; // the page is already included in the tag
+                    }
+                } else {
+                    if (Object.values(tagPages.value[tagId]).some((uncategorizedPage) => uncategorizedPage.id === page.id)) {
+                        continue; // the page is already included in the tag
+                    }
+                }
             }
 
             let orderIndex = tagPage?.orderIndex ?? page.orderIndex;
@@ -254,7 +262,6 @@ export const useTagStore = defineStore('tag', () => {
     const reorderTagPages = (tagId, tagPageOrPageIds) => {
         fetchChangeTagPageOrder(projectStore.selectedProject.id, tagId, tagPageOrPageIds).then((sortedItems) => {
             tagPages.value[tagId] = sortedItems;
-            // sortTagPages(tagId);
         });
     }
 
@@ -276,6 +283,32 @@ export const useTagStore = defineStore('tag', () => {
         });
     }
 
+    const openTagNavigationTree = async (tag) => {
+        const tagTreeIds = getTagTreeIds(tag);
+
+        for (const tagId of tagTreeIds) {
+            shownTags.value[tagId] = true;
+        }
+    }
+
+    /**
+     * Starting from the child tagId we want to get all the parent tag IDs.
+     * This goes up the tree, i.e. in the first step we get the parents of the child tag, then the parents of the parents, and so on.
+     * 
+     * @return int[]
+     */
+    const getTagTreeIds = (tag) => {
+        let tagTreeIds = [];
+        let currentTag = tag;
+
+        while (currentTag) {
+            tagTreeIds.push(currentTag.id);
+            currentTag = currentTag.parent;
+        }
+
+        return tagTreeIds;
+    }
+
     return {
         tags,
         tagPages,
@@ -292,5 +325,7 @@ export const useTagStore = defineStore('tag', () => {
         removeTag,
         reorderTagPages,
         reorderTags,
+        openTagNavigationTree,
+        getTagTreeIds,
     };
 });

@@ -14,7 +14,7 @@
                                 active: currentStep === step.id,
                                 inactive: currentStep !== step.id,
                             }"
-                            :disabled="!canNavigateToStep(step.id)"
+                            :disabled="currentMaximumStep < step.id"
                             @click="currentStep = step.id"
                         >
                             {{ step.name }}
@@ -22,7 +22,7 @@
                     </li>
                 </ul>
 
-                <button class="btn btn-dark-gray" @click="currentStep++" :disabled="currentStep === setupSteps.length || !canNavigateToStep(currentStep+1)">
+                <button class="btn btn-dark-gray" @click="currentStep++" :disabled="currentStep >= currentMaximumStep">
                     <font-awesome-icon :icon="['fas', 'chevron-right']" />
                 </button>
             </div>
@@ -46,8 +46,7 @@
 </template>
 
 <script setup>
-    import { ref } from 'vue';
-    import { useRouter } from 'vue-router';
+    import { computed, ref } from 'vue';
     import SetupDone from '@/components/Setup/SetupDone.vue';
     import SetupProject from '@/components/Setup/SetupProject.vue';
     import SetupWelcome from '@/components/Setup/SetupWelcome.vue';
@@ -67,16 +66,23 @@
             name: 'Done!',
         },
     ]);
-    const currentStep = ref(3);
     const projectStore = useProjectStore();
-    const router = useRouter();
 
+    const currentStep = ref(1);
+    const currentMaximumStep = computed(() => {
+        if (projectStore.selectedProject === null) {
+            return 2; // cannot select past project step if no project is selected
+        }
+
+        return setupSteps.value.length;
+    });
 
     const canNavigateToStep = (stepIndex) => {
         return stepIndex < 2 || projectStore.selectedProject !== null;
     };
 
     const navigateToWiki = () => {
-        router.push({ name: 'Wiki' });
+        window.location.href = '#/wiki';
+        window.location.reload();
     };
 </script>

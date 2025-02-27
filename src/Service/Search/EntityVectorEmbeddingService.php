@@ -10,6 +10,7 @@ use App\Repository\PageRepository;
 use App\Repository\PageSectionRepository;
 use App\Repository\ProjectRepository;
 use App\Repository\TaskRepository;
+use App\Repository\ThreadItemRepository;
 use App\Repository\UserRepository;
 use App\Service\Integration\QdrantIntegration;
 use Qdrant\Models\Filter\Filter;
@@ -33,6 +34,7 @@ final class EntityVectorEmbeddingService
         private TaskRepository $taskRepository,
         private ProjectRepository $projectRepository,
         private UserRepository $userRepository,
+        private ThreadItemRepository $threadItemRepository,
     ) { }
 
     /**
@@ -127,7 +129,9 @@ final class EntityVectorEmbeddingService
     {
         // now check what ID is given -
         // the order is REALLY important here, because a page section is also a page, a task is also a page, ...
-        if (null !== ($pageSectionId = $vectorPayload['pageSection'] ?? null)) {
+        if (null !== ($threadItemId = $vectorPayload['threadItem'] ?? null)) {
+            $entity = $this->threadItemRepository->find($threadItemId);
+        } elseif (null !== ($pageSectionId = $vectorPayload['pageSection'] ?? null)) {
             $entity = $this->pageSectionRepository->find($pageSectionId);
         } elseif (null !== $taskId = $vectorPayload['task'] ?? null) {
             $entity = $this->taskRepository->find($taskId);

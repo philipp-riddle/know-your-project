@@ -9,28 +9,29 @@
             'inactive': !isActive,
             'active-outline': pageStore.selectedPage?.id == page.id && !isActive,
         }"
+        @click="navigateToPage"
     >
         <font-awesome-icon
             v-if="page.task"
             :icon="['fas', 'list-check']"
             v-tooltip="'This page belongs to a task.'"
         />
-        <span
-            class="nav-link p-1"
+        <!-- for accessibility also a link -->
+        <router-link
             :to="{ name: 'WikiPage', params: { id: page.id } }"
+            class="nav-link p-1"
             :class="{'active': isActive, 'inactive': !isActive}"
             @click="navigateToPage"
         >
             {{ page.name }}
-        </span>
+        </router-link>
     </div>
 </template>
 
 <script setup>
     import NavigationCreateContentMenu from '@/components/Navigation/NavigationCreateContentMenu.vue';
     import { usePageStore } from '@/stores/PageStore.js';
-    import { useRouter } from 'vue-router';
-    import { useRoute } from 'vue-router';
+    import { useRoute, useRouter } from 'vue-router';
     import { computed } from 'vue';
 
     const props = defineProps({
@@ -60,11 +61,6 @@
 
     const navigateToPage = () => {
         pageStore.setSelectedPage(props.page);
-
-        if (props.tag) {
-            router.push({ name: 'WikiPageTag', params: {id: props.page.id, tagName: props.tag.name}});
-        } else {
-            router.push({ name: 'WikiPage', params: {id: props.page.id}});
-        }
+        router.push({ name: 'WikiPage', params: {id: props.page.id}});
     };
 </script>

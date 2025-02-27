@@ -20,11 +20,11 @@ class PageSectionEmbeddedPage implements UserPermissionInterface, CrudEntityInte
     private ?int $id = null;
 
     #[ORM\OneToOne(inversedBy: 'embeddedPage', cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?PageSection $pageSection = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
     private ?Page $page = null;
 
     public function getId(): ?int

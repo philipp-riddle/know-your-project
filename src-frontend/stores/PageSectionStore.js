@@ -9,7 +9,7 @@ export const usePageSectionStore = defineStore('pageSection', () => {
     const displayedPageSections = ref([]);
     const isDraggingPageSection = ref(false);
     const isCreatingPageSection = ref(false);
-    const selectedPageSection = ref(null);
+    const selectedPageSectionTextEditor = ref(null);
 
     // == helper stores
     const pageStore = usePageStore();
@@ -18,7 +18,7 @@ export const usePageSectionStore = defineStore('pageSection', () => {
     function resetStore () {
         displayedPageSections.value = [];
         isDraggingPageSection.value = false;
-        selectedPageSection.value = null;
+        selectedPageSectionTextEditor.value = null;
     }
 
     // == fetch + store methods
@@ -113,7 +113,7 @@ export const usePageSectionStore = defineStore('pageSection', () => {
         isDraggingPageSection,
         isCreatingPageSection,
         displayedPageSections,
-        selectedPageSection,
+        selectedPageSectionTextEditor,
 
         // helper methods
         resetStore,

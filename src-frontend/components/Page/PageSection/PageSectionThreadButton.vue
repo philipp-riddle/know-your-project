@@ -8,17 +8,19 @@
         }"
     >
         <button
-            class="btn position-relative mt-lg-3"
+            class="btn m-0 p-2 position-relative"
             v-tooltip="tooltip"
             @click="() => toggleThreadBox()"
             :disabled="threadStore.isCreatingThread"
             :class="{
-                'btn-dark': pageSection.threadContext && pageSection.threadContext.id == threadStore.selectedThread?.id,
+                'btn-dark-gray': pageSection.threadContext && pageSection.threadContext.id == threadStore.selectedThread?.id,
+                'active': pageSection.threadContext && pageSection.threadContext.id == threadStore.selectedThread?.id,
+                'btn-light-gray': !pageSection.threadContext || pageSection.threadContext.id != threadStore.selectedThread?.id,
                 'p-0': pageSection.threadContext === null,
             }"
         >
             <font-awesome-icon :icon="['fas', 'comments']" />
-            <span v-if="pageSection.threadContext != null && pageSection.threadContext.thread.threadItems.length > 0" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+            <span v-if="pageSection.threadContext != null && pageSection.threadContext.thread.threadItems.length > 0" class="position-absolute top-50 start-100 translate-middle badge rounded-pill bg-danger">
                 {{ pageSection.threadContext.thread.threadItems.length }}
             </span>
         </button>
@@ -75,7 +77,7 @@
     })
 
     const toggleThreadBox = () => {
-        if (threadStore.selectedThread === null || threadStore.selectedThread.id !== props.pageSection.threadContext.thread.id) {
+        if (null === props.pageSection.threadContext || threadStore.selectedThread?.id !== props.pageSection.threadContext.thread.id) {
             onThreadStart();
         } else {
             threadStore.selectedThread = null;
@@ -85,13 +87,19 @@
     const onThreadStart = () => {
         if (props.pageSection.threadContext === null) {
             // this creates an empty thread from the page section and opens the thread box automatically
-            threadStore.createThreadFromPageSection(props.pageSection);
+            threadStore.createThreadFromPageSection(props.pageSection).then((createdThread) => {
+                const newPageSectionThreadContext = {
+                    ...createdThread.pageSectionContext,
+                    thread: createdThread,
+                };
+                props.pageSection.threadContext = newPageSectionThreadContext;
+            });
         } else {
             var threadValue = props.pageSection.threadContext.thread;
             threadValue.pageSectionContext = { // we inject the page section into the thread context data as it is not fully serialised (it is a circular reference)
                 pageSection: props.pageSection,
             };
-            threadStore.selectedThread = threadValue; // this opens the thread box for the already existing task
+            threadStore.selectedThread = threadValue; // this opens the thread box for the already existing thread
         }
     };
 </script>

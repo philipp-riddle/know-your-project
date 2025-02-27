@@ -19,7 +19,7 @@ class PageSectionChecklist implements UserPermissionInterface
     private ?int $id = null;
 
     #[ORM\OneToOne(inversedBy: 'pageSectionChecklist', cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?PageSection $pageSection = null;
 
     #[ORM\Column(length: 255)]

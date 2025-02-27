@@ -7,11 +7,13 @@ use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Entity\User\User;
 use App\Repository\ThreadItemRepository;
+use App\Service\Search\Entity\CachedEntityVectorEmbedding;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\PersistentCollection;
 
 #[ORM\Entity(repositoryClass: ThreadItemRepository::class)]
-class ThreadItem implements UserPermissionInterface, CrudEntityInterface
+class ThreadItem extends CachedEntityVectorEmbedding implements UserPermissionInterface, CrudEntityInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -96,11 +98,6 @@ class ThreadItem implements UserPermissionInterface, CrudEntityInterface
         return $this;
     }
 
-    public function hasUserAccess(User $user, AccessContext $accessContext = AccessContext::READ): bool
-    {
-        return $this->getThread()->hasUserAccess($user);
-    }
-
     public function initialize(): static
     {
         $this->createdAt ??= new \DateTime();
@@ -136,5 +133,36 @@ class ThreadItem implements UserPermissionInterface, CrudEntityInterface
         $this->threadItemComment = $threadItemComment;
 
         return $this;
+    }
+
+    // === IMPLEMENTATION FUNCTIONS
+
+    public function hasUserAccess(User $user, AccessContext $accessContext = AccessContext::READ): bool
+    {
+        return $this->getThread()->hasUserAccess($user);
+    }
+
+    public function getTextForEmbedding(): ?string
+    {
+        return \sprintf('User (%d) "%s" commented: START OF COMMENT >>> %s', $this->getUser()->getId(), $this->getUser()->getEmail(), $this->getThreadItemComment()->getComment());
+    }
+
+    public function getMetaAttributes(): array
+    {
+        $metaAttributes = $this->getThread()->getPageSectionContext()->getPageSection()->getMetaAttributes();
+        $metaAttributes['thread'] = $this->getThread()->getId();
+        $metaAttributes['threadItem'] = $this->getId();
+
+        return $metaAttributes;
+    }
+
+    public function getParentEntities(): PersistentCollection|array
+    {
+        return [];
+    }
+
+    public function getChildEntities(): PersistentCollection|array
+    {
+        return [];
     }
 }

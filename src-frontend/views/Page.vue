@@ -16,10 +16,12 @@
     import { useRoute } from 'vue-router';
     import Page from '@/components/Page/Page.vue';
     import  { usePageStore } from '@/stores/PageStore.js';
+    import  { useTagStore } from '@/stores/TagStore.js';
 
     const currentRoute = useRoute();
     const id = currentRoute.params.id;
     const pageStore = usePageStore();
+    const tagStore = useTagStore();
         
     onMounted(() => {
         // this case is when the user refreshes the page and enters via route; load the requested page.
@@ -29,6 +31,13 @@
             const pageRoute = pageStore.getPage(id).then((page) => {
                 pageStore.setSelectedPage(page);
                 pageStore.isLoadingPage = false;
+
+                // now we need to open the tag in the navigation - this requires some more logic if the page is nested in the tree.
+                if (page.tags.length > 0) { // if the page is embedded in a tag tree, we need to open the tag in the navigation
+                    const tag = page.tags[0].tag;
+                    tagStore.openTagNavigationTree(tag);
+
+                }
             });
         }
     });

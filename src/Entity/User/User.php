@@ -50,13 +50,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, UserPer
     private bool $isVerified = false;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?Project $selectedProject = null;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: ProjectUser::class)]
     private Collection $projectUsers;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?File $profilePicture = null;
 
     /**

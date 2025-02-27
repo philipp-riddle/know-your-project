@@ -24,26 +24,21 @@ const routes = [
         component: () => import('@/views/Wiki.vue'),
         children: [
             {
-                // default route when navigating to a certain page without a tag context.
+                // default route when navigating to a page in the wiki.
                 'path': 'page/:id',
                 name: 'WikiPage',
-                component: () => import('@/views/Page.vue'),
-            },
-            {
-                // different route to allow the page to be opened in a tag context.
-                // if the user then refreshes the page, the tag context is not lost and can be restored => Better UX.
-                'path': 'page/:tagName/:id',
-                name: 'WikiPageTag',
                 component: () => import('@/views/Page.vue'),
             },
         ],
     },
     {
+        // route for managing users in the currently selected project.
         'path': '/users',
         name: 'People',
         component: () => import('@/views/People.vue'),
     },
     {
+        // route for viewing the calendar of the currently selected project and all associated task and event deadlines.
         'path': '/calendar',
         name: 'Calendar',
         component: () => import('@/views/Calendar.vue'),

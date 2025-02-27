@@ -7,10 +7,12 @@ use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Entity\User\User;
 use App\Repository\ThreadItemCommentRepository;
+use App\Service\Search\Entity\CachedEntityVectorEmbedding;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\PersistentCollection;
 
 #[ORM\Entity(repositoryClass: ThreadItemCommentRepository::class)]
-class ThreadItemComment implements UserPermissionInterface, CrudEntityInterface
+class ThreadItemComment extends CachedEntityVectorEmbedding implements UserPermissionInterface, CrudEntityInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -58,8 +60,30 @@ class ThreadItemComment implements UserPermissionInterface, CrudEntityInterface
         return $this;
     }
 
+    // === IMPLEMENTATION FUNCTIONS
+
     public function hasUserAccess(User $user, AccessContext $accessContext = AccessContext::READ): bool
     {
         return $this->threadItem->hasUserAccess($user);
+    }
+
+    public function getTextForEmbedding(): ?string
+    {
+        return null; // This class itself does not embed; instead the parent ThreadItem does
+    }
+
+    public function getMetaAttributes(): array
+    {
+        return [];
+    }
+
+    public function getParentEntities(): PersistentCollection|array
+    {
+        return [$this->threadItem];
+    }
+
+    public function getChildEntities(): PersistentCollection|array
+    {
+        return [];
     }
 }

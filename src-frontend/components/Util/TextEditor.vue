@@ -9,6 +9,7 @@
 </template>
 
 <script setup>
+    import { Extension } from '@tiptap/core'
     import Placeholder from '@tiptap/extension-placeholder';
     import { useEditor, EditorContent } from '@tiptap/vue-3';
     import StarterKit from '@tiptap/starter-kit';
@@ -17,7 +18,7 @@
     import { computed, watch, ref } from 'vue';
     import { usePageSectionStore } from '@/stores/PageSectionStore.js';
 
-    const emit = defineEmits(['onChange', 'onFocus']);
+    const emit = defineEmits(['onChange', 'onFocus', 'enter']);
     const props = defineProps({
         text: {
             type: String,
@@ -50,19 +51,35 @@
         },
     });
     const pageSectionStore = usePageSectionStore();
-    const currentText = computed(() => props.text);
+    const currentText = ref(() => props.text);
     const editorRandomKey = ref(Math.random()); // this is to force the editor to re-render when the text changes; otherwise it is set into stone :/
+
+    const CustomShortcutExtension = Extension.create({
+        name: 'customShortcuts',
+
+        addKeyboardShortcuts() {
+            return {
+                'Enter': () => {
+                    return enter(this.editor);
+                },
+                'Shift-Enter': () => {
+                    return enter(this.editor);
+                },
+            };
+        },
+    });
 
     const editor = useEditor({
         content: currentText.value,
         editable: props.editable,
         extensions: [
-            StarterKit, // add starter kit; otherwise the editor cannot render due to missing schemas
+            StarterKit, // add custom starter kit; otherwise the editor cannot render due to missing schemas
             Placeholder.configure({
                 placeholder: props.placeholder ,
                 emptyEditorClass: 'is-editor-empty',
             }),
             Link,
+            CustomShortcutExtension,
         ],
         onUpdate: ({ editor }) => {
             emit('onChange', editor.getHTML());
@@ -77,16 +94,25 @@
         },
     });
 
-    watch (() => props.text, (newValue) => {
-        if (newValue === '') {
+    const updateContentTo = (newContent) => {
+        if (newContent === '') {
             // if any component outside of this text editor sets the text to an empty string, we need to reset the editor and re-render it by setting a new key
-            editor.value?.commands.setContent(newValue);
+            editor.value?.commands.setContent(newContent);
             editorRandomKey.value = Math.random();
 
             if (props.focus) {
                 editor.value?.commands.focus();
             }
         }
+    }
+
+    watch (() => props.text, (newValue) => {
+        currentText.value = newValue;
+        updateContentTo(newValue);
+    });
+
+    watch (() => currentText.value, (newValue) => {
+        updateContentTo(newValue);
     });
 
     watch (() => props.focus, (newValue) => {
@@ -94,6 +120,17 @@
             editor.value?.commands.focus();
         }
     });
+
+    const enter = (editor) => {
+        if (editor.getHTML() === '<p></p>') {
+            currentText.value = ''; // reset text again to prevent white space
+            editor.value?.commands.focus();
+        } else {
+            emit('enter', editor.getHTML())
+        }
+
+        return true; // returning true will prevent the default behavior, i.e. adding new whitespace
+    }
 </script>
 
 

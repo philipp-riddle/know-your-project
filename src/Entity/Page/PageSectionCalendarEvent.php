@@ -19,10 +19,11 @@ class PageSectionCalendarEvent implements UserPermissionInterface
     private ?int $id = null;
 
     #[ORM\OneToOne(inversedBy: 'calendarEvent', cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?PageSection $pageSection = null;
 
     #[ORM\ManyToOne(inversedBy: 'pageSectionCalendarEvents')]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
     private ?CalendarEvent $calendarEvent = null;
 
     public function getId(): ?int

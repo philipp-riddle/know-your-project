@@ -28,16 +28,3 @@ export async function fetchCreateThreadCommentItem(threadId, comment) {
 
     return resp.data;
 }
-
-const BaseThreadItemPromptService = BaseThreadItemService + "/prompt";
-
-export async function fetchCreateThreadPromptItem(threadId, prompt) {
-    const resp = await axios.post(`${BaseThreadItemPromptService}`, {
-        thread: threadId,
-        prompt: {
-            promptText: prompt,
-        },
-    });
-
-    return resp.data;
-}

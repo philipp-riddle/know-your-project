@@ -282,30 +282,29 @@ modal-backdrop.show {
     opacity: 0.1 !important;
 }
 
-/* === FIXED ELEMENTS (e.g. ThreadBox) ============================================================= */
+/* === THREAD BOX ============================================================= */
 
 .thread-box {
-    position: fixed !important;
-    bottom: 20% !important;
-    right: .75rem !important;
     margin: 1rem;
-    z-index: 1000;
-    width: 20%;
-    max-width: 300px;
     height: 80%;
-    max-height: 600px;
+    max-height: 30rem;
+    height: 30rem;
     border-radius: 2rem;
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(10px);
     background-color: $white-60;
     border-width: 3px;
-    border-color: $dark-gray;
+    border-color: $dark-gray-60;
 
     .thread-messages {
         overflow-x: hidden;
         overflow-y: scroll;
         // white-space: nowrap;
         
+    }
+
+    .card-footer {
+        background-color: transparent !important;
+        border-width: 0 !important;
     }
 }
 

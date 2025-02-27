@@ -11,7 +11,7 @@
         </div>
         <div
             v-else
-            class="profile-picture-container"
+            class="profile-picture-container d-flex flex-row align-items-center justify-content-center"
             :class="imageSizeClass"
             v-tooltip="user.email"
         >

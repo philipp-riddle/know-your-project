@@ -21,7 +21,7 @@ class PageTab implements UserPermissionInterface, CrudEntityInterface
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'pageTabs')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Page $page = null;
 
     #[ORM\Column(length: 255)]

@@ -27,20 +27,27 @@ class EntityEmbeddingQueueCommand extends Command
             ->setName('queue:entity-embedding')
             ->setDescription('Process the entity embedding queue')
             ->addOption('debug', mode: InputOption::VALUE_NONE, description: 'Enable debug mode')
+            ->addOption('daemon', mode: InputOption::VALUE_NONE, description: 'Run the command as a daemon')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $isDaemon = $input->getOption('daemon');
+
         if ($input->getOption('debug')) {
             Debug::enable();
+        }
+
+        if ($isDaemon) {
+            Debug::print('Running as daemon... (never stopping)');
         }
 
         $startTime = \time();
         $isIdling = false; // flag to indicate if we are idling; this is useful to know on the console output
 
         while (true) {
-            if ($startTime + self::RUNNING_TIME < \time()) {
+            if ($startTime + self::RUNNING_TIME < \time() && !$isDaemon) {
                 Debug::print('Time is up! Exiting...');
                 break;
             }

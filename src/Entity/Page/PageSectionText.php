@@ -20,7 +20,7 @@ class PageSectionText implements UserPermissionInterface
     private ?int $id = null;
 
     #[ORM\OneToOne(inversedBy: 'pageSectionText', cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?PageSection $pageSection = null;
 
     #[ORM\Column(type: Types::TEXT, length: self::MAX_CONTENT_LENGTH)]

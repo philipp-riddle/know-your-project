@@ -5,8 +5,8 @@
             <p class="m-0 text-muted">Create pages and tasks to browse here.</p>
         </div>
     </div>
-    <div v-else class="flex-fill d-flex row wiki-container m-0 p-0">
-        <div v-if="!isFullscreenMode" class="wiki-col col-sm-4 col-lg-2 p-0 m-0 d-flex flex-column align-items-start">
+    <div class="flex-fill d-flex row wiki-container m-0 p-0">
+        <div v-if="!isWikiEmpty && !isFullscreenMode" class="wiki-col col-sm-4 col-lg-2 p-0 m-0 d-flex flex-column align-items-start">
             <button
                 class="btn"
                 @click="isFullscreenMode = !isFullscreenMode"
@@ -18,7 +18,7 @@
 
             <PageExplorer />
         </div>
-        <div v-else class="col-sm-1">
+        <div v-else-if="!isWikiEmpty" class="col-sm-1">
             <button
                 class="btn"
                 @click="isFullscreenMode = !isFullscreenMode"
@@ -28,7 +28,7 @@
                 <font-awesome-icon :icon="['fa', 'expand']" />
             </button>
         </div>
-        <div class="flex-fill wiki-col col-sm-8 col-lg-10 m-0 p-0 d-flex flex-column">
+        <div class="flex-fill wiki-col col-sm-8 col-lg-10 m-0 p-0 d-flex flex-column" v-if="!isWikiEmpty">
             <div class="flex-fill">
                 <!-- this is where the selected page will be rendered  -->
                 <router-view></router-view> 
@@ -42,9 +42,11 @@
     import { useRouter } from 'vue-router';
     import PageExplorer from '@/components/Page/Explorer/PageExplorer.vue';
     import { usePageStore } from '@/stores/PageStore.js';
+    import { useProjectStore } from '@/stores/ProjectStore.js';
     import { useTagStore } from '@/stores/TagStore.js';
 
     const pageStore = usePageStore();
+    const projectStore = useProjectStore();
     const tagStore = useTagStore();
     const currentRoute = useRoute();
     const router = useRouter();
@@ -55,7 +57,10 @@
     });
 
     onMounted(() => {
-        redirectToFirstPage();
+        // get all untagged pages; then redirect to the first untagged page if there is one
+        pageStore.getPageList(projectStore.selectedProject.id, []).then(() => {
+            redirectToFirstPage();
+        });
     });
 
     /**
