@@ -1,5 +1,13 @@
 import { defineStore } from 'pinia';
-import { fetchGetCurrentUser, fetchUserProjectInvititations, fetchCreateUserProjectInvitation, fetchDeleteUserProjectInvitation, fetchUploadUserProfilePicture } from '@/stores/fetch/UserFetcher';
+import {
+    fetchGetCurrentUser,
+    fetchUserProjectInvititations,
+    fetchUserInvitations,
+    fetchCreateUserProjectInvitation,
+    fetchAcceptUserProjectInvitation,
+    fetchDeleteUserProjectInvitation,
+    fetchUploadUserProfilePicture,
+} from '@/stores/fetch/UserFetcher';
 import { ref } from 'vue';
 
 export const useUserStore = defineStore('user', () => {
@@ -49,6 +57,12 @@ export const useUserStore = defineStore('user', () => {
         });
     }
 
+    async function getUserInvitations() {
+        const userInvitations = await fetchUserInvitations();
+
+        return userInvitations;
+    }
+
     async function createUserProjectInvitation(project, email) {
         return new Promise((resolve) => {
             fetchCreateUserProjectInvitation(project.id, email).then((invitation) => {
@@ -58,9 +72,18 @@ export const useUserStore = defineStore('user', () => {
         });
     }
 
-    async function deleteUserProjectInvitation(invitationId) {
+    async function acceptUserProjectInvitation(invitation) {
         return new Promise((resolve) => {
-            fetchDeleteUserProjectInvitation(invitationId).then(() => {
+            fetchAcceptUserProjectInvitation(invitation.id).then((createdProjectUser) => {
+                userProjectInvitations.value = userProjectInvitations.value.filter((inv) => inv.id !== invitation.id);
+                resolve(createdProjectUser);
+            });
+        });
+    }
+
+    async function deleteUserProjectInvitation(invitation) {
+        return new Promise((resolve) => {
+            fetchDeleteUserProjectInvitation(invitation.id).then(() => {
                 userProjectInvitations.value = userProjectInvitations.value.filter((invitation) => invitation.id !== invitationId);
                 resolve();
             });
@@ -82,7 +105,9 @@ export const useUserStore = defineStore('user', () => {
         setup,
         getCurrentUser,
         getUserProjectInvitations,
+        getUserInvitations,
         createUserProjectInvitation,
+        acceptUserProjectInvitation,
         deleteUserProjectInvitation,
         uploadUserProfilePicture,
     };

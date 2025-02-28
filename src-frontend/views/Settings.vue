@@ -20,46 +20,31 @@
                 </li>
             </ul>
         </div>
-        <div class="col-sm-8 col-lg-9 m-0 p-0 ps-5 d-flex flex-column gap-4">
-            <h2>Your projects</h2>
+        <div class="col-sm-8 col-lg-9 m-0 p-0 ps-5 d-flex flex-column gap-5">
+            <div class="d-flex flex-column gap-3">
+                <h2>Your projects</h2>
 
-            <div class="d-flex flex-row gap-2">
-                <div
-                    class="card project-card"
-                    v-for="project in ownedProjects"
-                    :class="{'active': projectStore.selectedProject?.id === project.id}"
-                    :key="project.id"
-                    @click="projectStore.selectProject(project)"
-                >
-                    <div class="card-body d-flex flex-column justify-content-end">
-                        <div class="d-flex flex-row justify-content-between gap-2">
-                            <p class="m-0">{{ project.name }}</p>
+                <div class="d-flex flex-row gap-2">
+                    <ProjectCard
+                        v-for="projectUser in userStore.currentUser.projectUsers"
+                        :project="projectUser.project"
+                        :projectUser="projectUser"
+                        :key="projectUser.id"
+                    />
+                </div>
+            </div>
+            <div class="d-flex flex-column gap-3" v-if="userInvitations && userInvitations.length > 0">
+                <h2>Your project invitations</h2>
 
-                            <font-awesome-icon
-                                v-if="projectStore.selectedProject?.id === project.id"
-                                :icon="['fas', 'circle-check']"
-                                v-tooltip="'This project is currently selected'"
-                            />
-                        </div>
-                        <div
-                            class="d-flex flex-row justify-content-end"
-                            v-if="ownedProjects.length > 0 && (project.owner == userStore.currentUser.id || project.owner?.id === userStore.currentUser.id)"
-                            :class="{
-                                // the class 'card-options' is used to hide the card options and make them only visible on hover.
-                                // however, when the project delete dropdown is visible, we want to show the card options at all cases to not make the buttons disappear.
-                                'card-options': projectIdDeleteDropdownVisible !== project.id,
-                            }"
-                        >
-                            <DeletionButton
-                                label="project"
-                                :showTooltip="false"
-                                :darkMode="projectStore.selectedProject?.id === project.id"
-                                @onConfirm="() => projectStore.deleteProject(project)"
-                                @onShowDropdown="projectIdDeleteDropdownVisible = project.id"
-                                @onHideDropdown="projectIdDeleteDropdownVisible = null"
-                            />
-                        </div>
-                    </div>
+                <div class="d-flex flex-row gap-2">
+                    <!-- the title seems paradox but the user invitation is a project invitation for a certain user -->
+                    <ProjectInvitationCard
+                        v-for="userInvitation in userInvitations"
+                        :userInvitation="userInvitation"
+                        :key="userInvitation.id"
+                        @accept="removeUserInvitation"
+                        @delete="removeUserInvitation"
+                    />
                 </div>
             </div>
         </div>
@@ -68,6 +53,8 @@
 <script setup>
     import { computed, ref, onMounted } from 'vue';
     import CreateProjectDropdown from '@/components/Project/CreateProjectDropdown.vue';
+    import ProjectCard from '@/components/Project/ProjectCard.vue';
+    import ProjectInvitationCard from '@/components/Project/ProjectInvitationCard.vue';
     import LoggedInUserBadge from '@/components/User/LoggedInUserBadge.vue';
     import DeletionButton from '@/components/Util/DeletionButton.vue';
     import { useUserStore } from '@/stores/UserStore.js';
@@ -77,14 +64,24 @@
     const projectStore = useProjectStore();
 
     const projectIdDeleteDropdownVisible = ref(null);
+    const userInvitations = ref([]);
     
     const hasProfilePicture = computed(() => {
         return userStore.currentUser.profilePicture != null;
     });
 
-    const ownedProjects = computed(() => {
+    const allProjects = computed(() => {
         return userStore.currentUser.projectUsers
-            .filter(projectUser => projectUser.project.owner == userStore.currentUser.id || projectUser.project.owner?.id === userStore.currentUser.id) // first, filter out the non-owner project users
-            .map((projectUser) => projectUser.project); // then map the projectUser objects to the project objects as we only need the project objects
+            .map((projectUser) => projectUser.project); // map the projectUser objects to the project objects as we only need the project objects
+    });
+
+    const removeUserInvitation = (userInvitation) => {
+        userInvitations.value = userInvitations.value.filter((invitation) => invitation.id !== userInvitation.id);
+    };
+
+    onMounted(() => {
+        userStore.getUserInvitations().then((invitations) => {
+            userInvitations.value = invitations;
+        });
     });
 </script>

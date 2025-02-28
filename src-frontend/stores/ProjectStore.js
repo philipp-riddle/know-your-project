@@ -63,7 +63,7 @@ export const useProjectStore = defineStore('project', () => {
         return new Promise((resolve) => {
             fetchCreateProject(name, selectAfterCreating).then((project) => {
                 if (selectAfterCreating) {
-                    resolve(project);
+                    resolve(project); // if it is selected right away, resolve the promise and continue
                 } else {
                     window.location.reload(); // reload the page to reload the selected project if it is not selected right away
                 }
@@ -73,7 +73,7 @@ export const useProjectStore = defineStore('project', () => {
 
     async function selectProject(project) {
         fetchSelectProject(project.id).then(() => {
-                window.location.reload(); // reload the page to reload the selected project and everything else
+            window.location.reload(); // reload the page to reload the selected project and everything else
         });
     }
 
@@ -84,10 +84,9 @@ export const useProjectStore = defineStore('project', () => {
     }
 
     async function deleteProjectUser(projectUserId) {
-        return new Promise((resolve) => {
-            fetchDeleteProjectUser(projectUserId).then(() => {
-                resolve();
-            });
+        fetchDeleteProjectUser(projectUserId).then(() => {
+            selectedProject.value.projectUsers = selectedProject.value.projectUsers.filter((pu) => pu.id !== projectUserId);
+            window.location.reload();
         });
     }
 

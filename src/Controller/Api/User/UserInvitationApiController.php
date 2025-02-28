@@ -66,6 +66,16 @@ class UserInvitationApiController extends CrudApiController
         );
     }
 
+    #[Route('/accept/{userInvitation}', name: 'api_user_invitation_accept', methods: ['POST'])]
+    public function accept(UserInvitation $userInvitation)
+    {
+        $this->checkUserAccess($userInvitation);
+        $createdProjectUser = $this->userService->acceptUserInvitation($userInvitation);
+        $this->em->flush();
+
+        return $this->jsonSerialize($createdProjectUser);
+    }
+
     #[Route('/{userInvitation}', name: 'api_user_invitation_delete', methods: ['DELETE'])]
     public function delete(UserInvitation $userInvitation): JsonResponse
     {
@@ -76,6 +86,12 @@ class UserInvitationApiController extends CrudApiController
     public function projectInvitationList(Project $project)
     {
         return $this->crudList(['project' => $project]);
+    }
+
+    #[Route('/list', name: 'api_user_invitation_user_list', methods: ['GET'])]
+    public function userInvitationList()
+    {
+        return $this->crudList(['user' => $this->getUser()]);
     }
 
     public function getEntityClass(): string

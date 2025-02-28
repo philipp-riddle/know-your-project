@@ -87,12 +87,8 @@ hr {
     border-radius: 15px;
 
     &.section-card {
-        max-width: 70%;
         text-wrap: wrap;
-
-        &.section-card-small {
-            max-width: 50%;
-        }
+        max-width: 30rem;
     }
 
     &.project-card, &.setup-card {

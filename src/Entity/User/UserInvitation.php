@@ -132,6 +132,6 @@ class UserInvitation implements CrudEntityInterface, UserPermissionInterface
 
     public function hasUserAccess(User $user, AccessContext $accessContext = AccessContext::READ): bool
     {
-        return $this->getProject()?->getOwner() === $user;
+        return $this->getProject()?->getOwner() === $user || $this->getUser() === $user;
     }
 }

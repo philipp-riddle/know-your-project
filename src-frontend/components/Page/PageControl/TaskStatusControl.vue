@@ -1,8 +1,10 @@
 <template>
     <VDropdown
         v-if="pageStore.selectedPage?.task !== null"
+        class="d-flex flex-row align-items-center p-1 gap-1"
     >
         <button
+            v-tooltip="task.stepType"
             class="btn m-0 p-1"
         >
             <font-awesome-icon :icon="['fas', 'spinner']" />

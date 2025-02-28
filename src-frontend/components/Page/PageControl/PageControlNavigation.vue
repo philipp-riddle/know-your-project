@@ -2,18 +2,6 @@
     <div class="navigation-sidebar navigation-sidebar-right d-flex flex-row align-items-center justify-content-center gap-4">
         <PageTextEditorControl />
 
-        <!-- nav pills for page task controls -->
-        <ul class="nav nav-pills d-flex flex-row justify-content-center align-items-center p-3 pt-0 pb-0 gap-3" v-if="page.task != null">
-            <li class="nav-item">
-                <TaskStatusControl :task="page.task" />
-            </li>
-        </ul>
-        <ul class="nav nav-pills d-flex flex-row justify-content-center align-items-center p-3 pt-0 pb-0 gap-3" v-if="page.task != null">
-            <li class="nav-item">
-                <TaskDueDateControl :task="page.task" />
-            </li>
-        </ul>
-
         <ul class="nav nav-pills d-flex flex-row justify-content-center align-items-center p-3 pt-0 pb-0 gap-1">
             <li class="nav-item">
                 <PageDeletionControl :page="page" />

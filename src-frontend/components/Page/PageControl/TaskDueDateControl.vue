@@ -1,6 +1,7 @@
 <template>
     <VDropdown
         :shown="showDueDatePopover"
+        class="d-flex flex-row align-items-center p-1 gap-1"
     >
         <button
             class="btn m-0 p-1 d-flex flex-row align-items-center gap-3"

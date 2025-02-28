@@ -1,5 +1,5 @@
 <template>
-    <div class="card section-card section-card-small w-100 " v-if="checklist">
+    <div class="card section-card w-100 " v-if="checklist">
         <div class="card-body p-4">
             <div class="d-flex flex-row align-items-center gap-3">
                 <h4 class="flex-fill">

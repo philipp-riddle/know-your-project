@@ -14,6 +14,8 @@
                     <div class="d-flex flex-row gap-3">
                         <PageUserControl :page="page" />
                         <PageTagControl :page="page"/>
+                        <TaskStatusControl v-if="page.task != null" :task="page.task" />
+                        <TaskDueDateControl v-if="page.task != null" :task="page.task" />
                     </div>
                 </div>
             </div>

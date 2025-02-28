@@ -1,6 +1,6 @@
 <template>
-    <div class="navigation-sidebar p-3 row" v-if="projectStore.selectedProject">
-        <div class="col-sm-12 col-md-4 m-0 p-0 d-flex flex-row gap-2 align-items-center">
+    <div class="navigation-sidebar p-md-2 p-lg-3 row" v-if="projectStore.selectedProject">
+        <div class="col-sm-12 col-md-3 m-0 p-0 d-flex flex-row gap-md-1 gap-lg-2 align-items-center">
             <router-link
                 v-if="userStore.currentUser.profilePicture != null"
                 :to="{ name: 'Settings' }"
@@ -40,11 +40,11 @@
                 @click="searchStore.toggleIsSearching"
             >
                 <font-awesome-icon :icon="['fa', 'search']" />
-                <p class="m-0">Search and ask in <span class="bold">{{ projectStore.selectedProject.name }}</span></p>
+                <p class="m-0 d-flex flex-row align-items-center gap-1"><span class="d-md-none d-xl-block">Search and ask in</span> <span class="bold">{{ projectStore.selectedProject.name }}</span></p>
             </button>
         </div>
 
-        <div class="col-sm-12 col-md-4 m-0 p-0 d-flex flex-row justify-content-center align-items-center">
+        <div class="col-sm-12 col-md-6 m-0 p-0 d-flex flex-row justify-content-center align-items-center">
             <ul class="nav nav-pills p-2 d-flex flex-row justify-content-center align-items-center gap-1">
                 <!-- regular Navigation items; take user to different view -->
                 <li class="nav-item" v-for="navigationItem in navigationItems">
@@ -70,7 +70,7 @@
             </ul>
         </div>
 
-        <div class="col-sm-12 col-md-4 m-0 p-0 d-flex flex-row justify-content-end align-items-center gap-2">
+        <div class="col-sm-12 col-md-3 m-0 p-0 d-flex flex-row justify-content-end align-items-center gap-2">
             <!-- inject at global navigation level to align with the main nav; this toolbar for page controls should always be shown at the top -->
             <PageControlNavigation
                 v-if="pageStore.selectedPage && currentRoute.name.includes('Wiki')"

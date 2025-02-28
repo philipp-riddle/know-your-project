@@ -8,27 +8,6 @@ export async function fetchGetCurrentUser() {
     return resp.data;
 }
 
-export async function fetchUserProjectInvititations(projectId) {
-    const resp = await axios.get(`${BaseService}/invitation/project/list/${projectId}`);
-
-    return resp.data;
-}
-
-export async function fetchCreateUserProjectInvitation(projectId, email) {
-    const resp = await axios.post(`${BaseService}/invitation`, {
-        email: email,
-        project: projectId,
-    });
-
-    return resp.data;
-}
-
-export async function fetchDeleteUserProjectInvitation(invitationId) {
-    const resp = await axios.delete(`${BaseService}/invitation/${invitationId}`);
-
-    return resp.data;
-}
-
 export async function fetchUploadUserProfilePicture(pictureFile) {
     const formData = new FormData();
     formData.append('picture', pictureFile);
@@ -38,6 +17,41 @@ export async function fetchUploadUserProfilePicture(pictureFile) {
             'Content-Type': 'multipart/form-data',
         },
     });
+
+    return resp.data;
+}
+
+const BaseInvitationService = BaseService + "/invitation";
+
+export async function fetchUserProjectInvititations(projectId) {
+    const resp = await axios.get(`${BaseInvitationService}/project/list/${projectId}`);
+
+    return resp.data;
+}
+
+export async function fetchUserInvitations() {
+    const resp = await axios.get(`${BaseInvitationService}/list`);
+
+    return resp.data;
+}
+
+export async function fetchCreateUserProjectInvitation(projectId, email) {
+    const resp = await axios.post(`${BaseInvitationService}`, {
+        email: email,
+        project: projectId,
+    });
+
+    return resp.data;
+}
+
+export async function fetchAcceptUserProjectInvitation(invitationId) {
+    const resp = await axios.post(`${BaseInvitationService}/accept/${invitationId}`);
+
+    return resp.data;
+}
+
+export async function fetchDeleteUserProjectInvitation(invitationId) {
+    const resp = await axios.delete(`${BaseInvitationService}/${invitationId}`);
 
     return resp.data;
 }

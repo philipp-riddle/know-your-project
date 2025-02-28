@@ -20,7 +20,6 @@
                 <ProjectUser
                     :projectUser="projectUser"
                     :project="projectStore.selectedProject"
-                    @deleteProjectUser="onDeleteProjectUser"
                     @updateProjectUser="onUpdateProjectUser"
                 />
             </div>
@@ -66,10 +65,6 @@
             });
         });
     });
-
-    const onDeleteProjectUser = (projectUser) => {
-        projectStore.selectedProject.value.projectUsers = projectStore.selectedProject.value.projectUsers.filter((pu) => pu.id !== projectUser.id);
-    };
 
     const onUpdateProjectUser = (projectUser) => {
         const index = projectStore.selectedProject.projectUsers.findIndex((pu) => pu.id === projectUser.id);

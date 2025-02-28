@@ -23,7 +23,7 @@
                     H2
                 </button>
             </li>
-            <li class="nav-item">
+            <li class="nav-item d-md-none">
                 <button
                     @click.stop="editor.chain().focus().toggleHeading({ level: 3 }).run()"
                     editor-cmd="paragraph"
@@ -74,6 +74,28 @@
 
             <template #popper>
                 <ul class="p-2 nav nav-pills d-flex flex-column justify-content-center align-items-center gap-1">
+                    <li class="nav-item d-none d-md-block">
+                        <button
+                            @click.stop="editor.chain().focus().toggleHeading({ level: 3 }).run()"
+                            editor-cmd="paragraph"
+                            class="nav-link btn btn-sm"
+                            :class="{ 'active': editor.isActive('heading', { level: 3 }), 'inactive': !editor.isActive('heading', { level: 3 }) }"
+                            v-tooltip="editor.isActive('heading', { level: 3 }) ? 'Heading 3' : 'Change to heading 3'"
+                        >
+                            H3
+                        </button>
+                    </li>
+                    <li class="nav-item d-none d-md-block">
+                        <button
+                            @click.stop="editor.chain().focus().toggleHeading({ level: 4 }).run()"
+                            editor-cmd="paragraph"
+                            class="nav-link btn btn-sm"
+                            :class="{ 'active': editor.isActive('heading', { level: 4 }), 'inactive': !editor.isActive('heading', { level: 4 }) }"
+                            v-tooltip="editor.isActive('heading', { level: 4 }) ? 'Heading 4' : 'Change to heading 4'"
+                        >
+                            H4
+                        </button>
+                    </li>
                     <li class="nav-item">
                         <button
                             @click.stop.stop="editor.chain().focus().toggleStrike().run()"

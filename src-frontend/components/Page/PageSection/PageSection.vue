@@ -1,12 +1,12 @@
 <template>
     <div v-if="pageSection" class="page-section page-section-container row" :page-section="pageSection.id">
-        <div class="col-sm-12 col-md-9 ps-3 pe-3 col-xl-2 m-0">
+        <div class="col-sm-12 col-md-3 ps-3 pe-3 col-xl-2 m-0">
             <div
                 v-if="pageSection.id != null"
                 class="d-flex flex-row gap-3 justify-content-between"
                 :class="{
                     // if the deletion dropdown is open the control should be completely visible and not only on hover
-                    'section-options': !isDeletionDropdownVisible && (threadStore.selectedThread?.id != pageSection.threadContext?.thread.id),
+                    'section-options': shouldHideSectionOptions,
                 }"
             >
                 <div class="d-flex flex-row gap-3 align-items-center">
@@ -147,6 +147,16 @@
     // this saves requests and makes the UI more responsive.
     const debouncedPageSectionSubmit = useDebounceFn((section, sectionItem) => props.onPageSectionSubmit(section, sectionItem), 300);
 
+    const shouldHideSectionOptions = computed(() => {
+        // if the deletion dropdown is visible, always hide the section options
+        if (!isDeletionDropdownVisible) {
+            return true;
+        }
+
+        // if the user has not selected a thread or if the selected thread is not the thread of the page section, hide the section options
+        return threadStore.selectedThread === null ||  threadStore.selectedThread.id !== pageSection.value.threadContext?.thread.id;
+    });
+
     watch (() => props.pageSection, async (newValue) => {
         // problem: vue does not recognize it needs to re-render the component as the ID does not change.
         // solution: force re-render by changing the page section to null for one tick and then back to the new value.
@@ -161,13 +171,6 @@
         await nextTick();
         pageSection.value = newValue;
     });
-
-    // onMounted(() => {
-    //     if (props.pageSection.threadContext != null) {
-    //         threadStore.selectedThread = props.pageSection.threadContext.thread;
-    //         threadStore.selectedThread.pageSectionContext = props.pageSection.threadContext; // enrich the default object; prevent items of '1'
-    //     }
-    // })
 
     const onPageSectionSubmitHandler = async (section, sectionItem) => {
         return new Promise(async (resolve) => {

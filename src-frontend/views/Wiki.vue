@@ -6,7 +6,7 @@
         </div>
     </div>
     <div class="flex-fill d-flex row wiki-container m-0 p-0">
-        <div v-if="!isWikiEmpty && !isFullscreenMode" class="wiki-col col-sm-4 col-lg-2 p-0 m-0 d-flex flex-column align-items-start">
+        <div v-if="!isWikiEmpty && !isFullscreenMode" class="wiki-col col-sm-4 col-xl-2 p-0 m-0 d-flex flex-column align-items-start">
             <button
                 class="btn"
                 @click="isFullscreenMode = !isFullscreenMode"
@@ -28,7 +28,7 @@
                 <font-awesome-icon :icon="['fa', 'expand']" />
             </button>
         </div>
-        <div class="flex-fill wiki-col col-sm-8 col-lg-10 m-0 p-0 d-flex flex-column" v-if="!isWikiEmpty">
+        <div class="flex-fill wiki-col col-sm-8 col-xl-10 m-0 p-0 d-flex flex-column" v-if="!isWikiEmpty">
             <div class="flex-fill">
                 <!-- this is where the selected page will be rendered  -->
                 <router-view></router-view> 
