@@ -87,8 +87,42 @@ hr {
     border-radius: 15px;
 
     &.section-card {
+        border-radius: 2rem;
         text-wrap: wrap;
-        max-width: 30rem;
+        max-width: 40rem;
+
+        &.section-card-url {
+            border-style: solid;
+            border-width: 0.15rem;
+            border-color: $dark-gray-60;
+
+            p {
+                margin: 0; // for the text editor
+            }
+
+            .section-url-image {
+                border-style: solid;
+                border-width: 0.15rem;
+                // border-top-width: 0.15rem;
+                border-color: $light-gray-60;
+                border-radius: 2rem;
+            }
+
+            .url-input-column {
+                background-color: $light-gray-30;
+                border-top-left-radius: 2rem;
+                border-top-right-radius: 2rem;
+
+                input {
+                    color: $dark-gray;
+                }
+            }
+
+            .url-description {
+                border-bottom-left-radius: 2rem;
+                border-bottom-right-radius: 2rem;
+            }
+        }
     }
 
     &.project-card, &.setup-card {
@@ -481,7 +515,7 @@ modal-backdrop.show {
     }
 }
 
-/* === IMAGE CONTAINER WITH OVERLAY ============================================================= */
+/* === IMAGE CONTAINER WITH OVERLAY & OTHER IMAGE CLASSES ============================================================= */
 
 .img-container {
     max-height: 40% !important;
@@ -517,6 +551,12 @@ modal-backdrop.show {
         opacity: 1.0;
         transition: opacity 0.3s ease-in-out;
     }
+}
+
+.favicon-image {
+    max-height: 2rem;
+    max-width: 2rem;
+    border-radius: 2rem;
 }
 
 /* === CALENDAR ============================================================= */

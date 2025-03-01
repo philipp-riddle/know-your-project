@@ -11,6 +11,51 @@ use Masterminds\HTML5;
 final class HTMLParser
 {
     /**
+     * Extracts the page meta from a page. By default the title, icon and description are extracted.
+     * 
+     * @param string $html The raw HTML to extract the meta from; THIS MUST BE A VALID HTML DOCUMENT; not edited by this function.   
+     * @param array $metaTags (default: ['icon', 'description']) The meta tags to extract from the raw HTML; title is excluded from this and is always extracted.
+     */
+    public static function extractPageMeta(string &$html, array $metaTags = ['og:image', 'description']): ?array
+    {
+        // do not use the main extract function here to be more efficient as we do not require the elements to be returned chronologically
+        $document = static::parseHTML($html, addWrapperHTMLCode: false);
+        $title = $document->getElementsByTagName('title')[0]?->textContent;
+        $extractedMetaTags = [];
+
+        foreach ($document->getElementsByTagName('meta') as $metaTag) {
+            $metaName = $metaTag->getAttribute('name');
+            $metaProperty = $metaTag->getAttribute('property');
+            $metaContent = $metaTag->getAttribute('content');
+
+            if (\in_array($metaName, $metaTags, true)) {
+                $extractedMetaTags[$metaName] = $metaContent;
+            }
+
+            if (\in_array($metaProperty, $metaTags, true)) {
+                $extractedMetaTags[$metaProperty] = $metaContent;
+            }
+        }
+
+        $faviconUrl = null;
+
+        foreach ($document->getElementsByTagName('link') as $linkTag) {
+            if ($linkTag->getAttribute('rel') === 'icon') {
+                $faviconUrl = $linkTag->getAttribute('href');
+                break;
+            }
+        }
+
+        return [
+            ...$extractedMetaTags,
+            ...\array_filter([ // this filters out null values
+                'title' => $title,
+                'icon' => $faviconUrl,
+            ]),
+        ];
+    }
+
+    /**
      * Extracts the first <h1>/<h2> tag from the raw HTML, if any.
      * 
      * @param string $html The raw HTML to extract the heading from.
@@ -124,17 +169,18 @@ final class HTMLParser
     }
 
     /**
-     * Parses the HTML into a DOMDocument by adding a meta charset and a div with ID 'main'.
+     * Parses the HTML into a DOMDocument by adding a meta charset and a div with ID 'main' (can be disabled with $addWrapperHTMLCode)
      * Reading child nodes from the given $rawHTML is possible by first selecting the div and then iterating over its childNodes.
      * 
      * @param string $rawHtml The raw HTML to parse, e.g. '<p>Parsed HTML</p>'.
+     * @param bool $addWrapperHTMLCode (default: true) Whether to add a meta charset and a div with ID 'main' to the raw HTML.
      * 
      * @return \DOMDocument The parsed HTML as a DOMDocument.
      */
-    public static function parseHTML(string $rawHtml): \DOMDocument
+    public static function parseHTML(string $rawHtml, bool $addWrapperHTMLCode = true): \DOMDocument
     {
         $html = new HTML5();
-        $domDocument = $html->loadHTML('<meta charset="utf8"><div id="main">'.$rawHtml.'</div>');
+        $domDocument = $html->loadHTML($addWrapperHTMLCode ? '<meta charset="utf8"><div id="main">'.$rawHtml.'</div>' : $rawHtml);
 
         return $domDocument;
     }

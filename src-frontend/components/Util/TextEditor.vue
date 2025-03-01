@@ -51,9 +51,15 @@
         },
     });
     const pageSectionStore = usePageSectionStore();
-    const currentText = ref(() => props.text);
+    const currentText = ref(props.text);
     const editorRandomKey = ref(Math.random()); // this is to force the editor to re-render when the text changes; otherwise it is set into stone :/
 
+    /**
+     * Remap what happens when the user presses the enter key or the shift-enter key.
+     * We usually want to submit the text when the user presses enter.
+     * 
+     * Later on we could differentiate between the two keys to allow for different behavior.
+     */
     const CustomShortcutExtension = Extension.create({
         name: 'customShortcuts',
 
@@ -70,7 +76,7 @@
     });
 
     const editor = useEditor({
-        content: currentText.value,
+        content: currentText.value, // the ?? case is for the initial rendering
         editable: props.editable,
         extensions: [
             StarterKit, // add custom starter kit; otherwise the editor cannot render due to missing schemas

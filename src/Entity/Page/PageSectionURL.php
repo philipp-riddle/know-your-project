@@ -24,6 +24,21 @@ class PageSectionURL implements UserPermissionInterface
     #[ORM\Column(type: Types::TEXT)]
     private ?string $url = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $name = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $description = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $faviconUrl = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $coverImageUrl = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $isInitialized = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -53,8 +68,92 @@ class PageSectionURL implements UserPermissionInterface
         return $this;
     }
 
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): static
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getFaviconUrl(): ?string
+    {
+        return $this->faviconUrl;
+    }
+
+    public function setFaviconUrl(?string $faviconUrl): static
+    {
+        $this->faviconUrl = $faviconUrl;
+
+        return $this;
+    }
+
     public function hasUserAccess(User $user, AccessContext $accessContext = AccessContext::READ): bool
     {
         return true;
+    }
+
+    public function getCoverImageUrl(): ?string
+    {
+        return $this->coverImageUrl;
+    }
+
+    public function setCoverImageUrl(?string $coverImageUrl): static
+    {
+        $this->coverImageUrl = $coverImageUrl;
+
+        return $this;
+    }
+
+    public function getIsInitialized(): ?bool
+    {
+        return $this->isInitialized;
+    }
+
+    public function setInitialized(?bool $isInitialized): static
+    {
+        $this->isInitialized = $isInitialized;
+
+        return $this;
+    }
+
+    public function getTextForEmbedding(): string
+    {
+        $htmlText = '';
+        $htmlText .= \sprintf('<h1>%s</h1>', $this->getUrl());
+
+        if (!\in_array($this->getName(), ['', null, 'URL'], true)) {
+            $htmlText .= \sprintf('<p>%s</p>', $this->getName());
+        }
+
+        if (null !== $this->getDescription()) {
+            $htmlText .= \sprintf('<p>%s</p>', $this->getDescription());
+        }
+
+        if (null !== $this->getFaviconUrl()) {
+            $htmlText .= \sprintf('<img src="%s" alt="Favicon">', $this->getFaviconUrl());
+        }
+
+        if (null !== $this->getCoverImageUrl()) {
+            $htmlText .= \sprintf('<img src="%s" alt="Cover image">', $this->getCoverImageUrl());
+        }
+
+        return $htmlText;
     }
 }

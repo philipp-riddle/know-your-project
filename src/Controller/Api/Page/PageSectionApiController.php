@@ -3,7 +3,6 @@
 namespace App\Controller\Api\Page;
 
 use App\Controller\Api\CrudApiController;
-use App\Entity\Interface\UserPermissionInterface;
 use App\Entity\Page\PageSection;
 use App\Entity\Page\PageSectionAIPrompt;
 use App\Entity\Page\PageSectionCalendarEvent;
@@ -16,9 +15,8 @@ use App\Entity\Prompt;
 use App\Form\Page\PageSectionForm;
 use App\Service\Helper\ApiControllerHelperService;
 use App\Service\OrderListHandler;
-use App\Service\Search\Entity\EntityVectorEmbeddingInterface;
+use App\Service\Page\PageSectionService;
 use App\Service\Search\GenerationEngine;
-use App\Service\Search\RecommendationEngine;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -30,41 +28,10 @@ class PageSectionApiController extends CrudApiController
     public function __construct(
         ApiControllerHelperService $apiControllerHelperService,
         private GenerationEngine $generationEngine,
-        private RecommendationEngine $recommendationEngine,
+        private PageSectionService $pageSectionService,
     ) {
         parent::__construct($apiControllerHelperService);
     }
-
-    /**
-     * When updating a page section we want to recommend similar pages to the user.
-     * Not when retrieving, creating or deleting a page section.
-     * 
-     * @param PageSection $entity The entity to get additional data for.
-     */
-    protected function getAdditionalDataToSerialize(UserPermissionInterface $entity, string $httpMethod): array
-    {
-        if (\in_array($httpMethod, ['GET', 'POST', 'DELETE'], true)) {
-            return [];
-        }
-
-        if (!($entity instanceof EntityVectorEmbeddingInterface)) {
-            throw new \RuntimeException('The entity must implement the EntityVectorEmbeddingInterface to generate recommendations. Class: '.\get_class($entity));
-        }
-
-        return [
-            // generate recommendations using the whole project as context
-            // @todo add again later
-            // 'recommendations' => $this->recommendationEngine->recommendSimilarContent(
-            //     $this->getUser(),
-            //     baseEntity: $entity,
-            //     queryEntity: $entity->getPageTab()->getPage()->getProject(),
-            //     excludeEntity: $entity->getPageTab()->getPage(),
-            // ),
-        ];
-    }
-
-    // === ROUTES ========
-    // ====================
     
     #[Route('/{pageSection}', name: 'api_page_section_get', methods: ['GET'])]
     public function get(PageSection $pageSection): JsonResponse
@@ -85,10 +52,7 @@ class PageSectionApiController extends CrudApiController
             $pageSection,
             $request,
             onProcessEntity: function (PageSection $pageSection) {
-                if (null !== $pageSection->getAiPrompt()) {
-                    // generate the AI prompt response; this is done by chatting with the AI and using the page contents as context
-                    $this->generationEngine->generatePageSectionAIPrompt($pageSection->getPageTab()->getPage(), $pageSection->getAiPrompt());
-                }
+                $this->pageSectionService->processUpdate($pageSection);
 
                 return $pageSection;
             },
@@ -155,7 +119,8 @@ class PageSectionApiController extends CrudApiController
                 // edge case: empty page URL
                 else if ('' === @$requestContent['pageSectionURL']['url']) {
                     $pageSectionURL = (new PageSectionURL())
-                        ->setUrl('');
+                        ->setUrl('')
+                        ->setName('');
                     $pageSection->setPageSectionURL($pageSectionURL);
                     $this->em->persist($pageSectionURL);
 

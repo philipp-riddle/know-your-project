@@ -333,7 +333,7 @@ implements
                 return '<p>'.$text->getContent().'</p>';
             }
         } else if (null !== $url = $this->getPageSectionURL()) {
-            return $url->getUrl();
+            return $url->getTextForEmbedding();
         } else if (null !== $upload = $this->getPageSectionUpload()) {
             return \sprintf('<p>File (%s): %s', $upload->getFile()->getMimeType(), $upload->getFile()->getName());
         } else if (null !== $checklist = $this->getPageSectionChecklist()) {

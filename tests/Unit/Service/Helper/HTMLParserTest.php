@@ -7,6 +7,60 @@ use PHPUnit\Framework\TestCase;
 
 class HTMLParserTest extends TestCase
 {
+    public function testExtractPageMeta_hasAllTags()
+    {
+        $html = '
+            <html>
+                <head>
+                    <title>Page Title</title>
+                    <meta name="description" content="Page Description">
+                    <link rel="icon" href="favicon.ico">
+                    <meta property="og:image" content="cover-image.jpg">
+                </head>
+                <body>
+                    <p>Paragraph 1</p>
+                </body>
+            </html>
+        ';
+        $meta = HTMLParser::extractPageMeta($html);
+
+        $this->assertSame([
+            'description' => 'Page Description',
+            'og:image' => 'cover-image.jpg',
+            'title' => 'Page Title',
+            'icon' => 'favicon.ico',
+        ], $meta);
+    }
+
+    public function testExtractPageMeta_hasNoIcon()
+    {
+        $html = '
+            <html>
+                <head>
+                    <title>Page Title</title>
+                    <meta name="description" content="Page Description">
+                </head>
+                <body>
+                    <p>Paragraph 1</p>
+                </body>
+            </html>
+        ';
+        $meta = HTMLParser::extractPageMeta($html);
+
+        $this->assertSame([
+            'description' => 'Page Description',
+            'title' => 'Page Title',
+        ], $meta);
+    }
+
+    public function testExtractPageMeta_emptyHTML()
+    {
+        $html = '';
+        $meta = HTMLParser::extractPageMeta($html);
+
+        $this->assertSame([], $meta);
+    }
+
     public function testExtractHeading_h1()
     {
         $html = '<h1>Heading 1</h1>';
