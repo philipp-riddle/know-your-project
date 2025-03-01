@@ -85,7 +85,14 @@ class ProjectUser implements UserPermissionInterface, CrudEntityInterface
 
     public function hasUserAccess(User $user, AccessContext $accessContext = AccessContext::READ): bool
     {
-        return $this->getUser() === $user || $this->getProject()->getOwner() === $user;
+        $isOwnerAccessContext = $accessContext === AccessContext::DELETE;
+        $isOwner = $this->getProject()->getOwner() === $user;
+
+        if ($isOwnerAccessContext && !$isOwner) {
+            return false;
+        }
+
+        return $isOwner || $this->getUser() === $user;
     }
 
     public function initialize(): static

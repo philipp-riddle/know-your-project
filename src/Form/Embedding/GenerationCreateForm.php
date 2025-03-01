@@ -14,7 +14,7 @@ class GenerationCreateForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         // this is the initial question the user asks
-        $builder->add('intro', TextType::class, [
+        $builder->add('text', TextType::class, [
             'constraints' => [
                 new NotBlank(),
                 new Length(['min' => 3, 'max' => 512]),

@@ -19,7 +19,6 @@
     import  { useTagStore } from '@/stores/TagStore.js';
 
     const currentRoute = useRoute();
-    const id = currentRoute.params.id;
     const pageStore = usePageStore();
     const tagStore = useTagStore();
         
@@ -28,16 +27,12 @@
         // we need to make sure to not load anything here if we already load a page in the store; otherwise we'd overwrite this loaded page again
         if (!pageStore.selectedPage && !pageStore.isLoadingPage) {
             pageStore.isLoadingPage = true;
-            const pageRoute = pageStore.getPage(id).then((page) => {
+            const pageRoute = pageStore.getPage(currentRoute.params.id).then((page) => {
                 pageStore.setSelectedPage(page);
                 pageStore.isLoadingPage = false;
 
                 // now we need to open the tag in the navigation - this requires some more logic if the page is nested in the tree.
-                if (page.tags.length > 0) { // if the page is embedded in a tag tree, we need to open the tag in the navigation
-                    const tag = page.tags[0].tag;
-                    tagStore.openTagNavigationTree(tag);
-
-                }
+                tagStore.openTagNavigationTreeForPage(page);
             });
         }
     });

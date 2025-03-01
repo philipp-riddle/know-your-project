@@ -75,6 +75,66 @@ class HTMLParserTest extends TestCase
         $this->assertSame('<h1>Heading 1</h1>', $html);
     }
 
+    public function testExtractAllText_oneTag()
+    {
+        $html = '<h1>Heading 1</h1>';
+        $text = HTMLParser::extractAllText($html);
+        $expectedText = [
+            ['Heading 1', 'h1'],
+        ];
+
+        $this->assertSame($expectedText, $text);
+    }
+
+    public function testExtractAllText_multipleTags()
+    {
+        $html = '<h1>Heading 1</h1><p>Paragraph 2</p><li>Random list item</li>';
+        $text = HTMLParser::extractAllText($html);
+        $expectedText = [
+            ['Heading 1', 'h1'],
+            ['Paragraph 2', 'p'],
+            ['Random list item', 'li'],
+        ];
+
+        $this->assertSame($expectedText, $text);
+    }
+
+    public function testExtractAllText_nestedTextInListItem()
+    {
+        $html = '
+            <p>Paragraph 2</p>
+            <ul>
+                <li>Random list item</li>
+            </ul>
+        ';
+        $text = HTMLParser::extractAllText($html);
+        $expectedText = [
+            ['Paragraph 2', 'p'],
+            ['Random list item', 'li'],
+        ];
+
+        $this->assertSame($expectedText, $text);
+    }
+
+    public function testExtractAllText_noTextTags()
+    {
+        $html = '<div>Div content</div>';
+        $text = HTMLParser::extractAllText($html);
+
+        $this->assertNull($text);
+    }
+
+    public function testExtractAllText_hasTextChildNodes()
+    {
+        $html = '<div><li><p>Paragraph 1<p></li></div>';
+        $text = HTMLParser::extractAllText($html);
+        $expectedText = [
+            ['Paragraph 1', 'p'],
+        ];
+
+        $this->assertSame($expectedText, $text);
+    }
+
     public function testExtract_withEmptyHtml()
     {
         $html = '';

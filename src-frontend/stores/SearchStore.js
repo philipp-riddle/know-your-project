@@ -55,8 +55,8 @@ export const useSearchStore = defineStore('search', () => {
     }
 
     const resetStore = () => {
-        isSearching.value = false;
-        isLoading.value = false;
+        searchResults.value = null;
+        answer.value = null;
     }
 
     return {

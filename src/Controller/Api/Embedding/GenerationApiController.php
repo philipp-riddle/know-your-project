@@ -13,6 +13,7 @@ use App\Form\Embedding\GenerationCreateForm;
 use App\Form\Embedding\GenerationSaveForm;
 use App\Service\Helper\ApiControllerHelperService;
 use App\Service\Page\PageGenerationService;
+use App\Service\PageService;
 use App\Service\Search\GenerationEngine;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,6 +26,7 @@ class GenerationApiController extends ApiController
 {
     public function __construct(
         ApiControllerHelperService $apiControllerHelperService,
+        private PageService $pageService,
         private GenerationEngine $generationEngine,
         private PageGenerationService $pageGenerationService,
     ) {
@@ -64,21 +66,26 @@ class GenerationApiController extends ApiController
             return $form;
         }
 
-        $intro = \trim($form->get('intro')->getData() ?? '');
+        $text = \trim($form->get('text')->getData() ?? '');
 
-        if ($intro === '') {
-            throw new BadRequestHttpException('The intro field is required');
+        if ($text === '') {
+            throw new BadRequestHttpException('The "text" field is required and must not be empty');
         }
 
         return $this->createJsonResponse(
-            $this->generationEngine->generateCreationPrompt($this->getUser(), $page, $intro),
+            $this->generationEngine->generateCreationPrompt($this->getUser(), $page, $text),
         );
     }
 
-    #[Route('/save/{page}', methods: ['POST'], name: 'api_generation_save')]
-    public function save(Page $page, Request $request): JsonResponse
+    #[Route('/save/{project}/{page}', methods: ['POST'], name: 'api_generation_save')]
+    public function save(Request $request, Project $project, ?Page $page = null): JsonResponse
     {
-        $this->checkUserAccess($page, AccessContext::UPDATE);
+        $this->checkUserAccess($project);
+
+        if (null === $page) {
+            $page = $this->pageService->createEmptyPage($this->getUser(), $project, 'New Page');
+            $this->em->flush();
+        }
 
         $form = $this->createForm(GenerationSaveForm::class);
         $form = $this->handleFormRequest($form, $request);

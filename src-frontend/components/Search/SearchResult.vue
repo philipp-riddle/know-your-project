@@ -1,41 +1,73 @@
 <template>
-    <div class="card" @click.stop="onSearchResultClick">
-        <div class="card-body d-flex flex-row justify-content-between gap-3">
-            <div class="d-flex flex-row gap-3 align-items-center justify-content-top">
+    <div
+        class="search-result d-flex flex-column gap-2"
+        :class="{
+            'search-result-root': !props.isNested,
+        }"
+        @click.stop="onSearchResultClick"
+    >
+        <div class="search-result-content d-flex flex-column gap-1">
+            <div class="flex-fill d-flex flex-row gap-2">
                 <span
                     class="btn m-0 p-0"
                     :class="{'btn-sm': condensed, 'btn-lg': !condensed}"
                 >
                     <font-awesome-icon :icon="['fas', searchResultIcon]" v-tooltip="searchResultTooltip" />
                 </span>
-                <div>
-                    <p v-if="condensed" class="m-0 p-0 black">{{ searchResultName }}</p>
-                    <h5 v-else class="m-0 p-0 black">{{ searchResultName }}</h5>
 
-                    <SearchResultSummary v-if="!condensed" :result="result" :searchTerm="searchTerm" />
+                <div class="flex-fill d-flex flex-column gap-1">
+                    <div v-if="!isNested" class="d-flex flex-row justify-content-between gap-2">
+                        <h5 v-if=" result.title != null" class="m-0 p-0 black"><span v-html="result.title"></span></h5>
+
+                        <div class="d-flex flex-row gap-2">
+                            <div v-if="tags.length > 0" class="d-flex flex-row gap-1">
+                                <div class="d-flex flex-row gap-1 align-items-center">
+                                    <span class="btn m-0 p-0">
+                                        <font-awesome-icon :icon="['fas', 'tag']" />
+                                    </span>
+                                    <TagBadge
+                                        v-for="tag in tags"
+                                        :key="tag.id"
+                                        :tag="tag"
+                                    />
+                                </div>
+                            </div>
+                            <div v-if="result.result?.users?.length > 0" class="d-flex flex-row gap-1">
+                                <UserBadge
+                                    v-for="pageUser in result.result.users"
+                                    :user="pageUser.user"
+                                    :key="pageUser.user.id"
+                                    imageSize="xxs"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- this span contains the text with text marked; if any of the text matches the search term. -->
+                    <p v-if="result.text != ''"><span v-html="result.text"></span></p>
                 </div>
             </div>
-
-            <div class="d-flex flex-row gap-1 align-items-center">
-                <small v-for="tag in tags">
-                    <span class="btn btn-sm me-2" :style="{'background-color': tag.color}" v-tooltip="'Tag: '+tag.name">&nbsp;&nbsp;&nbsp;</span>
-                </small>
-            </div>
         </div>
-    </div>
 
-    <!-- there are sub results; e.g. if the page title and a section match -->
-    <div v-if="result.subResults" class="ps-5 ms-3 pt-2">
+        <!-- there are sub results; e.g. if the page title and a section match -->
+        <div v-if="result.subResults && result.subResults.length > 0" class="ms-3">
+            <NestedSearchResult
+                :subResults="result.subResults"
+                @searchResultClick="(data) => $emit('searchResultClick', evt)"
+            />
+        </div>
     </div>
 </template>
 <script setup>
     import { computed } from 'vue';
     import { useRouter } from 'vue-router';
     import NestedSearchResult from '@/components/Search/NestedSearchResult.vue';
-    import SearchResultSummary from '@/components/Search/SearchResultSummary.vue';
+    import TagBadge from '@/components/Tag/TagBadge.vue';
+    import UserBadge from '@/components/User/UserBadge.vue';
     import { usePageSectionAccessibilityHelper } from '@/composables/PageSectionAccessibilityHelper.js';
     import { usePageStore } from '@/stores/PageStore.js';
     import { useSearchStore } from '@/stores/SearchStore.js';
+    import { useTagStore } from '@/stores/TagStore.js';
     import { useThreadStore } from '@/stores/ThreadStore.js';
 
     const emit = defineEmits(['searchResultClick'])
@@ -44,11 +76,12 @@
             type: Object,
             required: true
         },
-        searchTerm: {
-            type: String,
-            required: true
-        },
         condensed: {
+            type: Boolean,
+            required: false,
+            default: false,
+        },
+        isNested: {
             type: Boolean,
             required: false,
             default: false,
@@ -57,23 +90,8 @@
     const router = useRouter();
     const pageStore = usePageStore();
     const searchStore = useSearchStore();
+    const tagStore = useTagStore();
     const threadStore = useThreadStore();
-
-    const searchResultName = computed(() => {
-        const type = props.result.type;
-
-        if (type === 'Page') {
-            return props.result.result.name;
-        } else if (type === 'Task') {
-            return props.result.result.page.name;
-        } else if (type === 'PageSection') {
-            return props.result.result.pageTab.page.name;
-        } else if (type === 'ThreadItem') {
-            return props.result.result.threadItemComment.comment;
-        }
-
-        return type;
-    });
 
     /**
      * This computed property is used to get the tags from any search result.
@@ -98,31 +116,35 @@
         // this makes sure the search modal is closed among other things
         await emit('searchResultClick', props.projectUser);
 
+        // we now extract where to navigate to
+        let searchResultPage = null;
+        let searchResultTask = null;
+
         if (props.result.type === 'Page') {
-            pageStore.setSelectedPage(props.result.result).then((page) => {
-                router.push({ name: 'WikiPage', params: { id: page.id } });
-            });
+            searchResultPage = props.result.result;
         } else if (props.result.type === 'Task') {
-            pageStore.setSelectedPage(props.result.result.page).then((page) => {
-                router.push({ name: 'TasksDetail', params: { id: props.result.result.id } });
-            });
+            searchResultPage = props.result.result.page;
+            searchResultTask = props.result.result;
         } else if (props.result.type === 'PageSection') {
-            pageStore.setSelectedPage(props.result.result.pageTab.page).then((page) => {
-                router.push({ name: 'WikiPage', params: { id: page.id } });
-            });
+            searchResultPage = props.result.result.pageTab.page;
         } else if (props.result.type === 'ThreadItem') {
-            const threadPage = props.result.result.thread.pageSectionContext.pageSection.pageTab.page;
-
-            pageStore.setSelectedPage(threadPage).then((page) => {
-                if (threadPage.task === null) {
-                    router.push({ name: 'WikiPage', params: { id: page.id } });
-                } else {
-                    router.push({ name: 'TasksDetail', params: { id: threadPage.task.id } });
-                }
-
-                // @todo here we could optionally scroll down to the thread item
-            });
+            searchResultPage = props.result.result.thread.pageSectionContext.pageSection.pageTab.page;
+            searchResultTask = searchResultPage.task;
         }
+
+        if (!searchResultPage) {
+            console.error('Could not find page for search result', props.result);
+            return;
+        }
+
+        tagStore.openTagNavigationTreeForPage(searchResultPage); // this will open the tag navigation tree for the page (left nav bar)
+        pageStore.setSelectedPage(searchResultPage).then((selectedPage) => {
+            if (searchResultTask !== null) {
+                router.push({ name: 'TasksDetail', params: { id: searchResultTask.id } });
+            } else {
+                router.push({ name: 'WikiPage', params: { id: selectedPage.id } });
+            }
+        });
     };
 
     const accessibilityHelper = usePageSectionAccessibilityHelper();
@@ -157,5 +179,11 @@
 <style scoped>
     div.card {
         cursor: pointer !important;
+    }
+
+    /* especially for the shown search results */
+    p {
+        margin: 0;
+        padding: 0;
     }
 </style>

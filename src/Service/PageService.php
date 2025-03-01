@@ -19,16 +19,10 @@ class PageService
         private PageRepository $pageRepository,
     ) { }
 
-    public function createDefaultPage(Task $task, string $pageName): Page
+    public function createDefaultTaskPage(User $user, Task $task, string $pageName): Page
     {
-        $page = (new Page())
-            ->setProject($task->getProject())
-            ->setName($pageName)
-            ->setCreatedAt(new \DateTime());
-        $pageTab = (new PageTab())
-            ->setName('Overview')
-            ->setEmojiIcon('🌐')
-            ->setCreatedAt(new \DateTime());
+        $page = $this->createEmptyPage($user, $task->getProject(), $pageName);
+
         $pageSection = (new PageSection())
             ->setUpdatedAt(new \DateTimeImmutable())
             ->setCreatedAt(new \DateTimeImmutable())
@@ -37,14 +31,29 @@ class PageService
         $pageSectionText = (new PageSectionText())
             ->setContent(''); // add empty content for the user to start
         $pageSection->setPageSectionText($pageSectionText);
+        $page->getPageTabs()[0]->addPageSection($pageSection);
 
-        $pageTab->addPageSection($pageSection);
+        $this->em->persist($pageSection);
+        $this->em->persist($pageSectionText);
+
+        return $page;
+    }
+
+    public function createEmptyPage(User $user, Project $project, string $pageName): Page
+    {
+        $page = (new Page())
+            ->setProject($project)
+            ->setUser($user)
+            ->setName($pageName)
+            ->setCreatedAt(new \DateTime());
+        $pageTab = (new PageTab())
+            ->setName('Overview')
+            ->setEmojiIcon('🌐')
+            ->setCreatedAt(new \DateTime());
         $page->addPageTab($pageTab);
 
         $this->em->persist($page);
         $this->em->persist($pageTab);
-        $this->em->persist($pageSection);
-        $this->em->persist($pageSectionText);
 
         return $page;
     }

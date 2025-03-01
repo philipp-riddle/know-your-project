@@ -166,6 +166,11 @@ class Task extends CachedEntityVectorEmbedding implements OrderListItemInterface
         return \implode("\n", $lines);
     }
 
+    public function getTitleForSearchResult(): ?string
+    {
+        return $this->getPage()->getName();
+    }
+
     public function getMetaAttributes(): array
     {
         return $this->getPage()->getMetaAttributes();

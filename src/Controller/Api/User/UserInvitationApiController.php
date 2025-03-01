@@ -7,6 +7,7 @@ use App\Entity\Project\Project;
 use App\Entity\User\UserInvitation;
 use App\Form\User\UserInvitationForm;
 use App\Repository\UserInvitationRepository;
+use App\Serializer\SerializerContext;
 use App\Service\Helper\ApiControllerHelperService;
 use App\Service\Helper\TestEnvironment;
 use App\Service\MailerService;
@@ -53,7 +54,7 @@ class UserInvitationApiController extends CrudApiController
                 $userInvitation->setCode(bin2hex(openssl_random_pseudo_bytes(10))); // attach random code to user invitation so that it can be used to verify the user
 
                 // send emails only when not in the test env
-                if (TestEnvironment::isActive()) {
+                if (!TestEnvironment::isActive()) {
                     if ($isNewUser) {
                         $this->mailerService->sendUserInvitationToNewEmail($userInvitation);
                     } else {
@@ -91,7 +92,7 @@ class UserInvitationApiController extends CrudApiController
     #[Route('/list', name: 'api_user_invitation_user_list', methods: ['GET'])]
     public function userInvitationList()
     {
-        return $this->crudList(['user' => $this->getUser()]);
+        return $this->crudList(['user' => $this->getUser()], serializerContext: SerializerContext::INVITATION);
     }
 
     public function getEntityClass(): string

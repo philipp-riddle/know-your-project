@@ -102,7 +102,8 @@
     import { useRouter } from 'vue-router';
     import { usePageStore } from '@/stores/PageStore.js';
     import { usePageSectionStore } from '@/stores/PageSectionStore.js';
-    import { fetchProjectCreate, fetchProjectPageSave } from '@/stores/fetch/GenerationFetcher.js';
+    import { useProjectStore } from '@/stores/ProjectStore.js';
+    import { fetchProjectPageCreate, fetchProjectPageSave } from '@/stores/fetch/GenerationFetcher.js';
     import SearchResult from '@/components/Search/SearchResult.vue';
 
     const props = defineProps({
@@ -116,6 +117,7 @@
         },
     });
     const pageStore = usePageStore();
+    const projectStore = useProjectStore();
     const pageSectionStore = usePageSectionStore();
     const router = useRouter();
     const introInput = ref(null);
@@ -158,7 +160,7 @@
 
         isLoading.value = true;
 
-        fetchProjectCreate(props.page.id, introPrompt).then((response) => {
+        fetchProjectPageCreate(props.page.id, introPrompt).then((response) => {
             creationResponse.value = response;
         }).finally(() => {
             isLoading.value = false;
@@ -173,6 +175,7 @@
         isSaving.value = true;
 
         fetchProjectPageSave(
+            projectStore.selectedProject.id,
             props.page.id,
             creationResponse.value.answer.title,
             creationResponse.value.answer.content,

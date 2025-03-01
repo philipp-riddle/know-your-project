@@ -144,7 +144,13 @@ class ThreadItem extends CachedEntityVectorEmbedding implements UserPermissionIn
 
     public function getTextForEmbedding(): ?string
     {
-        return \sprintf('User (%d) "%s" commented: START OF COMMENT >>> %s', $this->getUser()->getId(), $this->getUser()->getEmail(), $this->getThreadItemComment()->getComment());
+        // just the comment - this makes it clean both in the vector database embedding and in the search result
+        return $this->getThreadItemComment()->getComment();
+    }
+
+    public function getTitleForSearchResult(): ?string
+    {
+        return 'Match in thread comment';
     }
 
     public function getMetaAttributes(): array

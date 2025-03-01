@@ -7,6 +7,8 @@ use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Entity\Project\Project;
 use App\Repository\UserInvitationRepository;
+use App\Serializer\Attribute\KeepInSerializerContext;
+use App\Serializer\SerializerContext;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Ignore;
@@ -60,6 +62,7 @@ class UserInvitation implements CrudEntityInterface, UserPermissionInterface
         return $this;
     }
 
+    #[KeepInSerializerContext(SerializerContext::INVITATION)]
     public function getProject(): ?Project
     {
         return $this->project;

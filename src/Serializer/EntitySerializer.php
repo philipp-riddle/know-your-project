@@ -2,27 +2,29 @@
 
 namespace App\Serializer;
 
+use App\Entity\Interface\AccessContext;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Entity\User\User;
 use App\Serializer\Attribute\IgnoreWhenNested;
+use App\Serializer\Attribute\KeepInSerializerContext;
 use Doctrine\Common\Proxy\Proxy;
 use ReflectionClass;
 
 final class EntitySerializer
 {
-    public function serialize(User $currentUser, UserPermissionInterface|iterable $entityOrIterable, int $maxDepth = 5): array
+    public function serialize(User $currentUser, UserPermissionInterface|iterable $entityOrIterable, int $maxDepth = 5, SerializerContext $serializerContext = SerializerContext::DEFAULT) : array
     {
         if (\is_iterable($entityOrIterable)) { // @todo move this to the recursive serializer to keep the depth in mind when serializing an iterable as well
             $serializedIterable = [];
             
             foreach ($entityOrIterable as $entity) {
-                $serializedIterable[] = $this->recursiveSerialize($currentUser, $entity, $maxDepth, currentDepth: 1); // start at depth 1 has we went into the iterable
+                $serializedIterable[] = $this->recursiveSerialize($currentUser, $entity, $maxDepth, $serializerContext, currentDepth: 1); // start at depth 1 has we went into the iterable
             }
 
             return $serializedIterable;
         }
 
-        return $this->recursiveSerialize($currentUser, $entityOrIterable, $maxDepth);
+        return $this->recursiveSerialize($currentUser, $entityOrIterable, $maxDepth, $serializerContext);
     }
 
     /**
@@ -36,7 +38,7 @@ final class EntitySerializer
      * 
      * @return array The exclude normalize callbacks.
      */
-    private function recursiveSerialize(User $currentUser, object $object, int $maxDepth, int $currentDepth = 0, array &$allFoundTypesAndIds = []): array|int
+    private function recursiveSerialize(User $currentUser, object $object, int $maxDepth, SerializerContext $serializerContext, int $currentDepth = 0, array $allFoundTypesAndIds = []): array|int
     {
         if ($object instanceof Proxy) {
             $object->__load(); // this makes sure all the properties are loaded if we handle a Doctrine entity proxy
@@ -49,8 +51,6 @@ final class EntitySerializer
         // prevent infinite loops by checking if we already processed this type and ID
         // if yes we serialize the ID only
         if (null !== $objectId && \array_key_exists($objectId, $allFoundTypesAndIds[$reflection->getName()] ?? [])) {
-            // var_dump('CIRCULAR', $reflection->getName(), $objectId);
-
             return $this->getMappedEntityValue($reflection, $object);
         }
 
@@ -72,7 +72,7 @@ final class EntitySerializer
 
             // now we determine through the return type whether or not we want to allow the normalization of this property in the given class and at the current depth
             $propertyName = \lcfirst(\substr($propertyMethod->getName(), 3));
-            $nestedReflectionClass = $this->getNestedReflectionClass($currentUser, $object, $propertyMethod, $currentDepth);
+            $nestedReflectionClass = $this->getNestedReflectionClass($currentUser, $object, $propertyMethod, $serializerContext, $currentDepth);
             $nestedValue = $propertyMethod->invoke($object);
 
             if ($currentDepth >= $maxDepth || null === $nestedReflectionClass || null === $nestedValue) {
@@ -95,6 +95,7 @@ final class EntitySerializer
                         currentUser: $currentUser,
                         object: $nestedValueItem,
                         maxDepth: $maxDepth,
+                        serializerContext: $serializerContext,
                         currentDepth: $currentDepth + 1,
                         allFoundTypesAndIds: $allFoundTypesAndIds,
                     );
@@ -104,6 +105,7 @@ final class EntitySerializer
                     currentUser: $currentUser,
                     object: $nestedValue,
                     maxDepth: $maxDepth,
+                    serializerContext: $serializerContext,
                     currentDepth: $currentDepth + 1,
                     allFoundTypesAndIds: $allFoundTypesAndIds,
                 );
@@ -118,12 +120,22 @@ final class EntitySerializer
      * 
      * @return \ReflectionClass|null The reflection class of the nested object or null if the object is not a nested entity we want to serialise.
      */
-    public function getNestedReflectionClass(User $currentUser, object $object, \ReflectionMethod $method, int $currentDepth = 0): ?ReflectionClass
+    public function getNestedReflectionClass(User $currentUser, object $object, \ReflectionMethod $method, SerializerContext $serializerContext = SerializerContext::DEFAULT, int $currentDepth = 0): ?ReflectionClass
     {
         $ignoreWhenNestedAttribute = $method->getAttributes(IgnoreWhenNested::class)[0] ?? null;
 
         if ($ignoreWhenNestedAttribute !== null && $currentDepth > 0) {
             return null; // value is ignored if the 'nested' attribute is set
+        }
+
+        $keepInSerializerContextAttributes = $method->getAttributes(KeepInSerializerContext::class);
+        $keepInSerializerContext = false; // if this flag is set to true user authorization check is ignored
+
+        foreach ($keepInSerializerContextAttributes as $attribute) {
+            if ($attribute->newInstance()->getSerializerContext() === $serializerContext) {
+                $keepInSerializerContext = true;
+                break;
+            }
         }
 
         $methodReturnType = $method->getReturnType();
@@ -135,17 +147,26 @@ final class EntitySerializer
         }
 
         /**
+         * Now, go through all the types the method can return and check if we can serialise them.
          * @var \ReflectionNamedType $type
          */
         foreach ($types as $type) {
             $typeName = $type?->getName();
             $nestedTypeValue = $method->invoke($object);
 
-            // special case if we find a collection:
+            // special case if we find a Collection:
             // we need to determine the types of the collection via the doc comment
             if (\str_contains($typeName, 'Collection')) {
-                $nestedReflectionClass = $this->getReflectionEntityClassFromDocComment($method->getDocComment());
-                $typeName = $nestedReflectionClass->getName();
+                if (!$method->getDocComment()) { // the doc comment returns FALSE if the doc comment is empty; we need to check for this case
+                    continue;
+                }
+
+                try {
+                    $nestedReflectionClass = $this->getReflectionEntityClassFromDocComment($method->getDocComment());
+                    $typeName = $nestedReflectionClass->getName();
+                } catch (\RuntimeException $e) {
+                    throw new \RuntimeException(\sprintf('%s::%s: Could not find type name in doc comment "%s" ', \get_class($object), $method->getName(), $method->getDocComment()));
+                }
             } else {
                 try {
                     $nestedReflectionClass = (new \ReflectionClass($typeName));
@@ -164,7 +185,10 @@ final class EntitySerializer
                 continue;
             }
 
-            if ($nestedReflectionClass?->implementsInterface(UserPermissionInterface::class)) {
+            // serious advantage of our custom serializer:
+            // we can check if the entity we are serialising implements the UserPermissionInterface and if the user has access to it.
+            // this prevents leaking information in API endpoints, such as when inviting other users which have projects as well but the current user should not see them.
+            if (!$keepInSerializerContext && $nestedReflectionClass?->implementsInterface(UserPermissionInterface::class)) {
                 // this can happen if we serialise a collection; check all the entries in the collection whether the user has access
                 if (\is_iterable($nestedTypeValue)) {
                     foreach ($nestedTypeValue as $nestedTypeValueItem) {
@@ -200,6 +224,11 @@ final class EntitySerializer
 
     public function getMappedEntityValue(?\ReflectionClass $class, $nestedTypeValue)
     {
+        // if there was no class given but the given value is an object we assume the class to map to is the class of the nested value
+        if (null === $class && \is_object($nestedTypeValue)) {
+            $class = new \ReflectionClass($nestedTypeValue);
+        }
+
         if ($nestedTypeValue instanceof \Traversable) {
             $nestedTypeValue = [];
         } else if (null !== $class && null !== $nestedEntityId = $this->getEntityIdValue($class, $nestedTypeValue)) {
@@ -242,7 +271,7 @@ final class EntitySerializer
     /**
      * Extracts the entity class from the given doc comment.
      * This is really tricky and requires us to handle many edge cases.
-     * Thus, there are unit tests for this method.
+     * Thus, there are lots of unit tests for this method to cover all the edge cases.
      * 
      * @param string $docComment The doc comment to extract the entity class from.
      * 
@@ -256,8 +285,13 @@ final class EntitySerializer
         
         // first, split up the type names, e.g. 'Type1|Type2'
         $typeNameParts = @\explode('|', $typeName);
+        $removeCharacters = [' ', '/', '*'];
 
         foreach ($typeNameParts as $typeName) {
+            foreach ($removeCharacters as $removeCharacter) {
+                $typeName = \str_replace($removeCharacter, '', $typeName);
+            }
+
             if (\str_contains($typeName, ',')) {
                 $typeNameCommaParts = \explode(',', $typeName);
                 $typeName = $typeNameCommaParts[1] ?? null; // always use the second part, i.e. the type of the value, the first part is the key
@@ -284,8 +318,20 @@ final class EntitySerializer
             }
 
             // if the type name does not contain a backslash we assume it is a relative path to the entity
-            if (!\str_contains($typeName, '\\')) {
-                $typeName = \sprintf('App\\Entity\\%s', \trim($typeName));
+            if ('' !== $typeName && !\str_contains($typeName, '\\')) {
+                $pieces = preg_split('/(?=[A-Z])/', $typeName); // split the type name by capital letters
+                $pieces = \array_values(\array_filter($pieces)); // remove empty elements
+
+                $entityPossibleClassNames = [
+                    \sprintf('App\\Entity\\%s\\%s', $pieces[0], $typeName), // [App\Entity\Page\PageSection]
+                    \sprintf('App\\Entity\\%s', $typeName), // [App\Entity\PageSection]
+                ];
+
+                foreach ($entityPossibleClassNames as $typeName) {
+                    if (\class_exists($typeName)) {
+                        return $typeName;
+                    }
+                }
             }
 
             if (\class_exists($typeName)) {

@@ -7,7 +7,10 @@
     >
         <div class="card-body d-flex flex-column justify-content-end">
             <div class="d-flex flex-row justify-content-between gap-2">
-                <p class="m-0">{{ project.name }}</p>
+                <div class="d-flex flex-column flex-fill">
+                    <p class="m-0">{{ project.name }}</p>
+                    <p class="m-0 text-muted">{{ isOwner ? 'Owner' : 'Member' }}</p>
+                </div>
 
                 <font-awesome-icon
                     v-if="projectStore.selectedProject?.id === project.id"

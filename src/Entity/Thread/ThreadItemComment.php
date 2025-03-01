@@ -72,6 +72,11 @@ class ThreadItemComment extends CachedEntityVectorEmbedding implements UserPermi
         return null; // This class itself does not embed; instead the parent ThreadItem does
     }
 
+    public function getTitleForSearchResult(): ?string
+    {
+        return null; // This class itself does not embed; instead the parent ThreadItem does
+    }
+
     public function getMetaAttributes(): array
     {
         return [];

@@ -4,7 +4,7 @@
             v-for="subResult in props.subResults"
             :key="subResult.id"
             :result="subResult"
-            :searchTerm="searchTerm"
+            :isNested="true"
             @searchResultClick="$emit('searchResultClick', subResult)"
         />
     </div>
@@ -16,10 +16,6 @@
     const props = defineProps({
         subResults: {
             type: Array,
-            required: true
-        },
-        searchTerm: {
-            type: String,
             required: true
         }
     });

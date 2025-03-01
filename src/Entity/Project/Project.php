@@ -197,7 +197,7 @@ class Project extends CachedEntityVectorEmbedding implements UserPermissionInter
     }
 
     /**
-     * @return Collection<int, Tag>
+     * @return Tag[]
      */
     public function getTags(): Collection
     {
@@ -228,7 +228,12 @@ class Project extends CachedEntityVectorEmbedding implements UserPermissionInter
 
     public function getTextForEmbedding(): ?string
     {
-        return \sprintf('Project "%s"', $this->getName());
+        return null;
+    }
+
+    public function getTitleForSearchResult(): ?string
+    {
+        return null;
     }
 
     public function getMetaAttributes(): array

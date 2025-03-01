@@ -64,7 +64,7 @@ class TaskApiController extends CrudApiController
                 $task
                     ->setProject($this->getUser()->getSelectedProject())
                     ->setStepType($workflowStepType)
-                    ->setPage($pageService->createDefaultPage($task, $form->get('name')->getData()));
+                    ->setPage($pageService->createDefaultTaskPage($this->getUser(), $task, $form->get('name')->getData()));
 
                 return $task;
             },

@@ -180,13 +180,10 @@ implements
     /**
      * @return TagPage[]
      */
-    public function getTags(): array
+    public function getTags(): array|Collection
     {
         // order tags by name, ascending
-        $tags = $this->tags->toArray();
-        \usort($tags, fn(TagPage $a, TagPage $b) => $a->getTag()->getName() <=> $b->getTag()->getName());
-
-        return $tags;
+        return $this->tags;
     }
 
     public function addTag(TagPage $tag): static
@@ -270,12 +267,17 @@ implements
         return $pageHtml;
     }
 
+    public function getTitleForSearchResult(): ?string
+    {
+        return $this->getName();
+    }
+
     public function getMetaAttributes(): array
     {
         $attributes = [
             ...$this->getProject()->getMetaAttributes(), // inherit project meta attributes
             'page' => $this->getId(),
-            'tags' => \array_map(fn(TagPage $tag) => $tag->getTag()->getId(), $this->getTags()),
+            'tags' => \array_map(fn(TagPage $tag) => $tag->getTag()->getId(), \iterator_to_array($this->getTags())),
         ];
 
         if (null !== ($this->task ?? null))  {

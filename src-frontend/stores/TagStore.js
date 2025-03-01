@@ -283,13 +283,21 @@ export const useTagStore = defineStore('tag', () => {
         });
     }
 
-    const openTagNavigationTree = async (tag) => {
+    const openTagNavigationTree = (tag) => {
         const tagTreeIds = getTagTreeIds(tag);
 
         for (const tagId of tagTreeIds) {
             shownTags.value[tagId] = true;
         }
     }
+
+    const openTagNavigationTreeForPage = (page) => {
+        const tag = page.tags[0]?.tag;
+
+        if (tag) {
+            openTagNavigationTree(tag);
+        }
+    };
 
     /**
      * Starting from the child tagId we want to get all the parent tag IDs.
@@ -326,6 +334,7 @@ export const useTagStore = defineStore('tag', () => {
         reorderTagPages,
         reorderTags,
         openTagNavigationTree,
+        openTagNavigationTreeForPage,
         getTagTreeIds,
     };
 });

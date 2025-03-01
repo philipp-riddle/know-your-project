@@ -10,16 +10,25 @@ export async function fetchProjectAsk(projectId, question) {
     return resp.data;
 }
 
-export async function fetchProjectCreate(pageId, intro) {
+/**
+ * Generetes a response based on the given page and text.
+ */
+export async function fetchProjectPageCreate(pageId, text) {
     const resp = await axios.post(`${BaseSearchService}/create/${pageId}`, {
-        intro: intro,
+        text: text,
     });
 
     return resp.data;
 }
 
-export async function fetchProjectPageSave(pageId, title, content, tagId, checklistItems = []) {
-    const resp = await axios.post(`${BaseSearchService}/save/${pageId}`, {
+export async function fetchProjectPageSave(projectId, pageId, title, content, tagId, checklistItems = []) {
+    let saveUrl = `${BaseSearchService}/save/${projectId}`;
+
+    if (pageId) {
+        saveUrl += `/${pageId}`;
+    }
+
+    const resp = await axios.post(saveUrl, {
         title: title,
         content: content,
         tag: tagId,

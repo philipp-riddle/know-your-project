@@ -85,18 +85,6 @@ final class GenerationEngine
         // helper variables which help us contextualize the response and make sure the AI knows what to do with the prompt.
         $typeMessageHint = $page->getTask() === null ? 'page' : 'task';
 
-        if (null === $page->getTask()) {
-            $contentDescription = '
-                The content should include a brief introduction about the topic and a brief overview of what needs to be done.
-                Add up to five checklist items to the response that aim to work on the requirements of the page.
-            ';
-        } else {
-            $contentDescription = '
-                The content should include a brief introduction about the topic and a brief overview of what needs to be done.
-                Add up to five checklist items to the response that aim to work on the requirements of the task.
-            ';
-        }
-
         // the messages which are sent to the AI.
         // these act as an assistant and guidelines to help the AI generate a response.
         $messages = [
@@ -105,7 +93,7 @@ final class GenerationEngine
                 'content' => \sprintf('
                     You are an assistant to help with creating a %s.
                     You will  first provided with context ("1. CONTEXT"; each context item delimited by "=== CONTEXT ===") and then the user question ("2. QUESTION").
-                    If the user prompt is disrespectful or has bad intentions, troll the user by creating a page about boredom.
+                    If you have no provided context you can still provide an answer BUT IT IS VERY IMPORTANT TO STATE THIS IN THE RESPONSE!!
 
                     Respond in JSON format, adhering to the provided JSON schema.
                     Return a title, describing the nature of the creation, and content in HTML format for better readibility.
@@ -123,28 +111,7 @@ final class GenerationEngine
         ];
         // this format dictates in which format the AI should respond.
         // this makes it more reliable and we can extract the response in a structured way.
-        $responseJsonFormat = [
-            'type' => 'json_schema',
-            'json_schema' => [
-                'name' => \ucfirst($typeMessageHint),
-                'strict' => true,
-                'schema' => [
-                    'type' => 'object',
-                    'properties' => [
-                        'title' => [
-                            'type' => 'string',
-                            'description' => 'Title for the content, precise maximum three words summary',
-                        ],
-                        'content' => [
-                            'type' => 'string',
-                            'description' => 'The content ',
-                        ],
-                    ],
-                    'required' => ['title', 'content'],
-                    'additionalProperties' => false,
-                ],
-            ],
-        ];
+        $responseJsonFormat = $this->getTitleAndContentJsonSchema(\ucfirst($typeMessageHint));
 
         // if it is a task we must slightly adjust the JSON schema to include a checklist.
         if (null !== $page->getTask()) {
@@ -219,8 +186,12 @@ final class GenerationEngine
                     You will  first provided with context ("1. CONTEXT"; each context item delimited by "=== CONTEXT ===") and then the user question ("2. QUESTION").
                     Make sure to provide a relevant answer to the question and make use of the context provided.
                     If there is no relevant context, you can still provide an answer BUT IT IS VERY IMPORTANT TO STATE THIS IN THE RESPONSE.
-                    Respond in HTML format for better readibility and start with a heading <h4> tag.
-                    The heading should concisely describe the nature of the user question.
+
+                    Respond in JSON format, adhering to the provided JSON schema.
+                    Return a title, describing the nature of the creation, and content in HTML format for better readibility.
+                    DO NOT START WITH A HEADING; Start either with a paragraph or a list of items to make the content more readable. TRY NOT TO OVERSHARE.
+
+                    The user will now start with the 1. CONTEXT and then 2. QUESTION.
                 ',
             ],
             [
@@ -240,14 +211,16 @@ final class GenerationEngine
             ->setPromptText($question);
 
         // call OpenAI API to generate a response with the user context and user question.
-        $this->openAIIntegration->generatePromptChatResponse($prompt, $messages);
+        // make sure to provide a response format to the AI to generate a structured response.
+        $this->openAIIntegration->generatePromptChatResponse($prompt, $messages, responseFormat: $this->getTitleAndContentJsonSchema('Answer'));
 
         return [
             // use the search engine to parse the search results into a format the frontend can easily parse and understand.
             'searchResults' => $this->searchEngine->parseSearchResults($user, $question, $aggregatedSearchResults),
 
-            // this is the answer from the assistant.
-            'answer' => $prompt->getResponseText(),
+            // this is the JSON answer from the assistant; includes title and content.
+            // decode it to an array and pass it to the frontend to display all returned schema properties.
+            'answer' => \json_decode($prompt->getResponseText(), true),
         ];
     }
 
@@ -375,5 +348,41 @@ final class GenerationEngine
         }
 
         return $embeddedPageContextHTML;
+    }
+
+    /**
+     * This JSON schema can be used to dictate the AI to respond in a certain format.
+     * This prevents the AI from generating responses that are not structured and hard to parse.
+     * 
+     * Having a title and a content is also perfect for saving the generated content in the next step to a page.
+     * 
+     * @param string $schemaName The name of the schema to use; only used for reference.
+     * 
+     * @return array The JSON schema for the title and content. 
+     */
+    private function getTitleAndContentJsonSchema(string $schemaName): array
+    {
+        return [
+            'type' => 'json_schema',
+            'json_schema' => [
+                'name' => $schemaName,
+                'strict' => true,
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'title' => [
+                            'type' => 'string',
+                            'description' => 'Title for the content, precise maximum three words summary',
+                        ],
+                        'content' => [
+                            'type' => 'string',
+                            'description' => 'The content ',
+                        ],
+                    ],
+                    'required' => ['title', 'content'],
+                    'additionalProperties' => false,
+                ],
+            ],
+        ];
     }
 }

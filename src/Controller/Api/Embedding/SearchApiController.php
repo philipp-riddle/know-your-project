@@ -32,6 +32,6 @@ class SearchApiController extends ApiController
             return $this->json([]); // no search results when there is no search term
         }
 
-        return $this->json($this->searchEngine->searchProject($this->getUser(), $project, $search));
+        return $this->createJsonResponse($this->searchEngine->searchProject($this->getUser(), $project, $search));
     }
 }

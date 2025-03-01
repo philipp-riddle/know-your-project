@@ -344,7 +344,7 @@ implements
                 $itemName = $item->getName();
 
                 if ($item->isComplete()) {
-                    $itemName = \sprintf('<s>%s</s> (complete)', $itemName);
+                    $itemName = \sprintf('<li>%s (complete)</li>', $itemName);
                 }
 
                 $text .= $itemName;
@@ -358,6 +358,11 @@ implements
         // do not embed any AI prompts / summaries; simply return null.
 
         return null;
+    }
+
+    public function getTitleForSearchResult(): ?string
+    {
+        return 'Match in page section';
     }
 
     public function getMetaAttributes(): array

@@ -40,6 +40,16 @@ final class OpenAIIntegration
      */
     public function generatePromptChatResponse(Prompt &$prompt, array $messages, ?array $responseFormat = null): void
     {
+
+        // // debug responses
+        // $prompt->setResponseText('Hello World! This is a test response.');
+        // $prompt->setPromptTokens(1);
+        // $prompt->setCompletionTokens(1);
+        // $prompt->setUpdatedAt(new \DateTime());
+
+        // return;
+
+
         $createResponse = $this->getChatResponse($messages, $responseFormat);
         $prompt->setResponseText($createResponse->choices[0]->message->content);
         $prompt->setPromptTokens($createResponse->usage->promptTokens);

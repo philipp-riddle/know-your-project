@@ -7,6 +7,7 @@ use App\Entity\Interface\UserPermissionInterface;
 use App\Entity\Project\Project;
 use App\Entity\User\User;
 use App\Service\Helper\DefaultNormalizer;
+use App\Service\Helper\TextMarker;
 
 /**
  * This class is the bridge between our entities in the database and the embeddings in the vector database.
@@ -64,15 +65,24 @@ final class SearchEngine
              */
             list ($searchResult, $entity) = $searchResultResponse;
 
-            if ($entity instanceof EntityVectorEmbeddingInterface && \trim('') === $entity->getTextForEmbedding()) {
+            if (!($entity instanceof EntityVectorEmbeddingInterface)) {
+                throw new \RuntimeException(\sprintf('The entity %s does not implement the EntityVectorEmbeddingInterface', \get_class($entity)));
+            }
+
+            if (null === $entity->getTextForEmbedding() || null === $entity->getTitleForSearchResult()) {
                 continue; // skip entities that have no text to display
             }
 
             $entityType = (new \ReflectionClass($entity))->getShortName();
+            $title = $entity->getTitleForSearchResult();
+            $title = TextMarker::getMarkedText($searchTerm, $title) ?? $title; // this handles the case that the title of the search result matches the search result
+            $text = TextMarker::getMarkedTextFromRichText($searchTerm, $entity->getTextForEmbedding(), defaultTagForMatchedElement: 'p');
 
             $parsedSearchResults[] = [
                 'id' => \sprintf('%s:%s', $entityType, $entity->getId()), // unique ID for the search result; this makes it easier in Vue to keep track of the results!
                 'type' => $entityType,
+                'title' => $title,
+                'text' => $text,
                 'score' => $this->calculateScore($entity, $searchTerm, $searchResult),
                 'result' => $this->normalizer->normalize($currentUser, $entity),
             ];
@@ -135,6 +145,10 @@ final class SearchEngine
                     $searchResults[] = $section;
                 }
             } else {
+                if (\array_key_exists('subResults', $searchContainer)) {
+                    $searchContainer['text'] = ''; // no text for the page itself if it has sub-results; this prevents displaying the same text twice
+                }
+
                 $searchResults[] = $searchContainer;
             }
         }

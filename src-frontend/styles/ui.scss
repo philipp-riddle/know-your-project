@@ -105,6 +105,10 @@ hr {
                 background-color: $dark-gray-80 !important;
                 transition: background-color 0.2s linear;
             }
+
+            .text-muted {
+                color: $light-gray !important;
+            }
         }
 
         &:hover {
@@ -246,7 +250,7 @@ hr {
     }
 }
 
-/* === MODALS ============================================================= */
+/* === SEARCH MODAL ============================================================= */
 
 // specific styling for the search modal; makes the background transparent and the input field a bit bigger.
 // styling is also applied to the search results.
@@ -261,8 +265,42 @@ hr {
         background-color: white !important;
         box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.6) !important;
 
-        textarea {
+        p {
             font-size: 1.5em; // this is the equivalent of a h5 tag
+            margin: 0px !important;
+        }
+
+        :focus-visible {
+            outline: none;
+        }
+    }
+
+    .search-result {
+        cursor: pointer;
+
+        &.search-result-content {
+            background-color: transparent !important;
+            transition: background-color 0.2s linear;
+    
+            &:hover {
+                background-color: $light-green-20 !important;
+                transition: background-color 0.2s linear;
+            }
+        }
+
+        &.search-result-root {
+            border-color: $dark-gray-60;
+            border-width: 0;
+            border-bottom-width: .15rem;
+            border-style: solid;
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+    
+            &:last-of-type {
+                border-bottom-width: 0;
+            }
         }
     }
 

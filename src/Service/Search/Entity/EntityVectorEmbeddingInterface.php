@@ -21,6 +21,13 @@ interface EntityVectorEmbeddingInterface
     public function getTextForEmbedding(): ?string;
 
     /**
+     * Returns the title which should be used for search results.
+     * 
+     * @return string|null The title for search results; null if the entity's title should not be shown in search results.
+     */
+    public function getTitleForSearchResult(): ?string;
+
+    /**
      * Returns all attributes which should be used as meta information for this entity in the vector database.
      * E.g. ['project' => 2] would mean that this entity is part of project 2.
      * 

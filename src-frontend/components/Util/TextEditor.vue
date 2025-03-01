@@ -82,7 +82,7 @@
             CustomShortcutExtension,
         ],
         onUpdate: ({ editor }) => {
-            emit('onChange', editor.getHTML());
+            emit('onChange', editor.state.doc.textContent);
         },
         onCreate: ({ editor }) => {
             if (props.focus) {
@@ -122,11 +122,13 @@
     });
 
     const enter = (editor) => {
-        if (editor.getHTML() === '<p></p>') {
+        const text = editor.state.doc.textContent; // this returns the raw text without any HTML which would make validation really, really hard
+
+        if (text === '') {
             currentText.value = ''; // reset text again to prevent white space
             editor.value?.commands.focus();
         } else {
-            emit('enter', editor.getHTML())
+            emit('enter', text);
         }
 
         return true; // returning true will prevent the default behavior, i.e. adding new whitespace

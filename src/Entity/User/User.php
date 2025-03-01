@@ -238,7 +238,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, UserPer
 
     public function hasUserAccess(User $user, AccessContext $accessContext = AccessContext::READ): bool
     {
-        return $this->getId() === $user->getId();
+        if ($this->getId() === $user->getId()) {
+            return true;
+        }
+
+        if ($accessContext === AccessContext::READ) {
+            foreach ($this->getProjectUsers() as $projectUser) {
+                if ($projectUser->getProject()->hasUserAccess($user, AccessContext::READ)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     public function getFile(): ?File

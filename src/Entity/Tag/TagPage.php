@@ -9,8 +9,6 @@ use App\Entity\Interface\UserPermissionInterface;
 use App\Entity\Page\Page;
 use App\Entity\User\User;
 use App\Repository\TagPageRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TagPageRepository::class)]
@@ -31,11 +29,6 @@ class TagPage implements UserPermissionInterface, CrudEntityInterface, OrderList
 
     #[ORM\Column(nullable: true)]
     private ?int $orderIndex = null;
-
-    public function __construct()
-    {
-        $this->users = new ArrayCollection();
-    }
 
     public function getId(): ?int
     {

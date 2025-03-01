@@ -6,6 +6,7 @@ use App\Entity\Interface\AccessContext;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Entity\User\User;
 use App\Repository\UserRepository;
+use App\Serializer\SerializerContext;
 use App\Service\Helper\ApiControllerHelperService;
 use App\Service\Helper\DefaultNormalizer;
 use Doctrine\ORM\EntityManagerInterface;
@@ -59,19 +60,21 @@ abstract class ApiController extends AbstractController
      * Serialises an object to JSON.
      * 
      * @param mixed $object The object(s) to serialise.
+     * @param array $additionalData Additional data to include in the JSON response; on same level as the object.
+     * @param SerializerContext|null $serializerContext The context to use for serialisation; if not passed the default serialisation context is used.
      * 
      * @return JsonResponse The JSON response.
      */
-    protected function jsonSerialize(mixed $object, array $additionalData = []): JsonResponse
+    protected function jsonSerialize(mixed $object, array $additionalData = [], ?SerializerContext $serializerContext = null): JsonResponse
     {
-        return $this->createJsonResponse($this->normalize($object, $additionalData));
+        return $this->createJsonResponse($this->normalize($object, $additionalData, serializerContext: $serializerContext));
     }
 
-    protected function normalize(mixed $object, array $additionalData = [], int $maxDepth = 999): array|null
+    protected function normalize(mixed $object, array $additionalData = [], int $maxDepth = 999, ?SerializerContext $serializerContext = null): array|null
     {   
         // merge the normalized data with the additional data
         return [
-            ...$this->normalizer->normalize($this->getUser(), $object, maxDepth: $maxDepth),
+            ...$this->normalizer->normalize($this->getUser(), $object, $maxDepth, $serializerContext ?? SerializerContext::DEFAULT),
             ...$additionalData,
         ];
     }

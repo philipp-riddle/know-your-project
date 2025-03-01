@@ -1,6 +1,6 @@
 <template>
     <div class="navigation-sidebar p-md-2 p-lg-3 row" v-if="projectStore.selectedProject">
-        <div class="col-sm-12 col-md-3 m-0 p-0 d-flex flex-row gap-md-1 gap-lg-2 align-items-center">
+        <div class="col-sm-12 col-md-3 m-0 p-0 d-flex flex-row gap-sm-1 gap-lg-2 align-items-center">
             <router-link
                 v-if="userStore.currentUser.profilePicture != null"
                 :to="{ name: 'Settings' }"
@@ -35,12 +35,12 @@
                 <font-awesome-icon :icon="['fas', 'question']" />
             </router-link> -->
             <button
-                class="nav-link btn p-3 pt-2 pb-2 d-flex flex-row gap-3 align-items-center"
+                class="nav-link btn p-2 d-flex flex-row gap-3 align-items-center"
                 :class="{inactive: !searchStore.isSearching, active: searchStore.isSearching}"
                 @click="searchStore.toggleIsSearching"
             >
                 <font-awesome-icon :icon="['fa', 'search']" />
-                <p class="m-0 d-flex flex-row align-items-center gap-1"><span class="d-md-none d-xl-block">Search and ask in</span> <span class="bold">{{ projectStore.selectedProject.name }}</span></p>
+                <p class="m-0 d-none d-xl-flex flex-row align-items-center gap-1">{{ projectStore.selectedProject.name }}</p>
             </button>
         </div>
 

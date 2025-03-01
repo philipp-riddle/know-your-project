@@ -4,6 +4,7 @@ namespace App\Service\Helper;
 
 use App\Entity\User\User;
 use App\Serializer\EntitySerializer;
+use App\Serializer\SerializerContext;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
@@ -23,13 +24,9 @@ final class DefaultNormalizer
     /**
      * Normalizes data by using our own entity serializer.
      */
-    public function normalize(User $currentUser, $object, ?int $maxDepth = null): ?array
+    public function normalize(User $currentUser, $object, ?int $maxDepth = null, SerializerContext $serializerContext = SerializerContext::DEFAULT): ?array
     {
-        return $this->symfonyNormalize($object);
-
-        // @todo: Bugs in the serializer caused me to use the Symfony normalizer instead...
-        // Maybe we fix it later, but it's not worth much extra time as it only saves 5ms (!) per request.
-        // return $this->entitySerializer->serialize($currentUser, $object, maxDepth: $maxDepth ?? 5);        
+        return $this->entitySerializer->serialize($currentUser, $object, maxDepth: $maxDepth ?? 5, serializerContext: $serializerContext);        
     }
 
     /**

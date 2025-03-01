@@ -148,17 +148,24 @@ class File implements UserPermissionInterface, CrudEntityInterface
 
     public function hasUserAccess(User $user, AccessContext $accessContext = AccessContext::READ): bool
     {
-        if (null !== $this->getProject() && !$this->getProject()->hasUserAccess($user, $accessContext)) {
-            return false;
+        $isFileOwnerAccessContext = \in_array($accessContext, [AccessContext::DELETE, AccessContext::UPDATE], true);
+
+        // the file owner can always delete and update the file
+        if ($isFileOwnerAccessContext) {
+            return $user === $this->getUser();
         }
 
-        // anyone in the project can download the file
-        if ($accessContext === AccessContext::DOWNLOAD) {
+        // anyone in the project can download & read files of other project users
+        $projectMemberAllowedContexts = [AccessContext::READ, AccessContext::DOWNLOAD];
+
+        // pass the check if the user has access to the file owner;
+        // the check in the User class checks all of the user's projects and if the accessing user is in any of them.
+        if (\in_array($accessContext, $projectMemberAllowedContexts, true) && $this->getUser()->hasUserAccess($user, $accessContext)) {
             return true;
         }
 
         // everything else (on the file-basis) is limited to the project owner and the user, such as deleting
-        return $user === $this->getProject()?->getOwner() || $this->getUser() === $user;
+        return (null !== $this->getProject() && $user === $this->getProject()->getOwner()) || $this->getUser() === $user;
     }
 
     public function initialize(): static

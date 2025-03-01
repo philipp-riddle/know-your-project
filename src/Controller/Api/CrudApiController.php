@@ -13,6 +13,7 @@ use App\Event\CreateCrudEntityEvent;
 use App\Event\DeleteCrudEntityEvent;
 use App\Event\OrderCrudEntitiesEvent;
 use App\Event\UpdateCrudEntityEvent;
+use App\Serializer\SerializerContext;
 use App\Service\OrderListHandler;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\FormInterface;
@@ -182,7 +183,7 @@ abstract class CrudApiController extends ApiController
      * @param array $filters An array of filters to apply to the list. Each filter is checked if it implements UserPermissionInterface to ensure the user has access to the returned results.
      * @param array|null $orderBy An array of order by clauses; if null, the order by is determined by the entity class and its implemented interfaces
      */
-    protected function crudList(array $filters, ?array $orderBy = null): JsonResponse
+    protected function crudList(array $filters, ?array $orderBy = null, ?SerializerContext $serializerContext = null): JsonResponse
     {
         // check if the user has access to all entities in the list by iterating over all filters and checking if they implement UserPermissionInterface
         foreach ($filters as $filter) {
@@ -205,7 +206,7 @@ abstract class CrudApiController extends ApiController
 
         $entities = $this->getRepository()->findBy($filters, $orderBy, limit: 100); // limit of 100 for now - we can add pagination later
 
-        return $this->jsonSerialize($entities);
+        return $this->jsonSerialize($entities, serializerContext: $serializerContext);
     }
 
     /**
