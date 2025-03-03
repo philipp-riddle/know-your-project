@@ -3,9 +3,13 @@
     <head>
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %}</title>
+
         {% block stylesheets %}{% endblock %}
 
-        {{ encore_entry_link_tags('app') }}
+        {# force all built frontend files to be rendered with an absolute path with the included domain/host; this allows us to work with the CSP #}
+        {% for file in encore_entry_css_files('app') %}
+            <link href="{{ absolute_url(asset(file)) }}" rel="stylesheet" />
+        {% endfor %}
     </head>
     <body>
         {% block body %}{% endblock %}

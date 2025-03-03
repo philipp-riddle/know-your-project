@@ -2,7 +2,6 @@
 
 namespace App\Serializer;
 
-use App\Entity\Interface\AccessContext;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Entity\User\User;
 use App\Exception\Serializer\SerializerException;
@@ -19,7 +18,7 @@ final class EntitySerializer
             $serializedIterable = [];
             
             foreach ($entityOrIterable as $entity) {
-                $serializedIterable[] = $this->recursiveSerialize($currentUser, $entity, $maxDepth, $serializerContext, currentDepth: 1); // start at depth 1 has we went into the iterable
+                $serializedIterable[] = $this->recursiveSerialize($currentUser, $entity, $maxDepth, $serializerContext, currentDepth: 1); // start at depth 1 as we went into the iterable
             }
 
             return $serializedIterable;
@@ -77,7 +76,7 @@ final class EntitySerializer
             $nestedValue = $propertyMethod->invoke($object);
 
             if ($currentDepth >= $maxDepth || null === $nestedReflectionClass || null === $nestedValue) {
-                $serializedObject[$propertyName] = $this->getMappedEntityValue($nestedReflectionClass, $nestedValue);
+                $serializedObject[$propertyName] = $this->getMappedEntityValue($nestedReflectionClass, $nestedValue, $propertyName);
             } else {
                 $foundNestedTypes[] = [$propertyName, $nestedValue];
             }
@@ -130,11 +129,11 @@ final class EntitySerializer
         }
 
         $keepInSerializerContextAttributes = $method->getAttributes(KeepInSerializerContext::class);
-        $keepInSerializerContext = false; // if this flag is set to true user authorization check is ignored
+        $keepInSerializerContext = true; // if this flag is set to true user authorization check is ignored; there needs to be one mismatching attribute to set it to false
 
         foreach ($keepInSerializerContextAttributes as $attribute) {
-            if ($attribute->newInstance()->getSerializerContext() === $serializerContext) {
-                $keepInSerializerContext = true;
+            if ($attribute->newInstance()->getSerializerContext() !== $serializerContext) {
+                $keepInSerializerContext = false;
                 break;
             }
         }
@@ -223,8 +222,12 @@ final class EntitySerializer
         return true;
     }
 
-    public function getMappedEntityValue(?\ReflectionClass $class, $nestedTypeValue)
+    public function getMappedEntityValue(?\ReflectionClass $class, $nestedTypeValue, ?string $propertyName = null)
     {
+        if ($propertyName === 'password') {
+            return null; // never expose ANY password
+        }
+
         // if there was no class given but the given value is an object we assume the class to map to is the class of the nested value
         if (null === $class && \is_object($nestedTypeValue)) {
             $class = new \ReflectionClass($nestedTypeValue);

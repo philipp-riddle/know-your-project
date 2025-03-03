@@ -15,7 +15,7 @@
 </template>
 
 <script setup>
-    import { computed, onMounted } from 'vue';
+    import { computed, watch } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
     import { useMagicKeys } from '@vueuse/core';
     import Navigation from '@/components/Navigation/Navigation.vue';
@@ -48,13 +48,19 @@
         }
     });
 
-    onMounted(() => {
-        if (isUserInSetup.value && currentRoute.name !== 'Setup') {
-            router.push({ name: 'Setup' });
+    watch(() => currentRoute.name, (newRoute) => {
+        if (!newRoute) {
+            return;
+        }
+
+        if (isUserInSetup.value && newRoute !== 'Setup') {
+            router.push({ name: 'Setup' }); // navigate any users who must go through setup to the setup page
+        } else if (!isUserInSetup.value && newRoute === 'Setup') {
+            router.push({ name: 'Wiki' }); // navigate any users who have completed setup to the wiki page
         }
     });
 
     const isUserInSetup = computed(() => {
-        return projectStore.selectedProject === null || currentRoute.name === 'Setup';
+        return projectStore.selectedProject === null;
     });
 </script>

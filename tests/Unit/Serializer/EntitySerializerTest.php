@@ -16,7 +16,6 @@ use App\Entity\User\UserInvitation;
 use App\Serializer\EntitySerializer;
 use App\Serializer\SerializerContext;
 use App\Tests\Application\ApplicationTestCase;
-use App\Tests\TestCase;
 use ReflectionClass;
 
 class EntitySerializerTest extends ApplicationTestCase
@@ -200,6 +199,7 @@ class EntitySerializerTest extends ApplicationTestCase
         $serialized = (new EntitySerializer())->serialize($user, $user, 5);
 
         $this->assertSame($user->getId(), $serialized['id']);
+        $this->assertNull($serialized['password'], 'PASSWORD MUST BE NULL IN THE SERIALIZED OBJECT!');
     }
 
     public function testSerialize_array_depth_0(): void

@@ -28,6 +28,10 @@
             <div class="card">
                 <div class="card-body">
                     <p class="m-0">{{ message }}</p>
+
+                    {% if class is defined %}
+                        <p class="m-0">Exception class: {{ class }}</p>
+                    {% endif %}
                 </div>
             </div>
         </div>

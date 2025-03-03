@@ -2,13 +2,13 @@
 
 namespace App\Controller\Authentication;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class LoginController extends AbstractController
+class LoginController extends Controller
 {
     #[Route(path: '/auth/login', name: 'app_auth_login')]
     public function login(AuthenticationUtils $authenticationUtils, TranslatorInterface $translator): Response
@@ -30,9 +30,11 @@ class LoginController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/logout', name: 'app_logout')]
+    #[Route(path: '/logout', name: 'app_auth_logout')]
     public function logout(): Response
     {
+        // no need to implement anything here, Symfony will take care of logging the user out
+
         return $this->redirectToRoute('app_auth_login');
     }
 }

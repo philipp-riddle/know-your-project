@@ -31,7 +31,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
         $exceptionMessage = $exception->getMessage();
         $statusCode = $exception instanceof HttpException ? $exception->getStatusCode() : 500;
         $request = $event->getRequest();
-        $isAPIRequest = \str_starts_with($request->get('_route'), 'api_');
+        $isAPIRequest = \str_starts_with($request->get('_route'), 'api_') || \str_starts_with($request->getPathInfo(), '/api/');
         
         // in prod environment we do not want to expose any exception messages as they could reveal sensitive information;
         // if we want to display production error messages (e.g. for debugging / displaying to the user) throw an exception which implements DefaultExceptionInterface.

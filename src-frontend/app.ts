@@ -1,10 +1,14 @@
+// first action: read the variables included in the DOM and transfer them to the global Window;
+// we do it this way (and rather complex) to comply with CSP rules and to avoid inline scripts.
+// The variables are set in the index.html file and are read here.
+import "./loadDOMVariables";
+
 /** styles */
 import './styles/app.scss';
 import 'bootstrap';
 import 'floating-vue/dist/style.css'
 
 import { createApp } from 'vue'
-import App from '@/App.vue';
 /* import the fontawesome core */
 import FloatingVue from 'floating-vue'
 
@@ -21,7 +25,7 @@ library.add(faCode, faTrash, faCheck, faChevronUp, faChevronDown, faCog, faPlus)
 
 import Router from '@/router';
 
-
+import App from './App.vue';
 const app = createApp(App)
     .use(Router)
     .use(FloatingVue)
@@ -38,7 +42,7 @@ app.component('Pinia', createPinia());
 import { useExceptionHandler } from '@/composables/ExceptionHandler';
 useExceptionHandler().setupInterceptor();
 
-// before mounting the app we setup the stores with data from the window and default data
+// before mounting the app we setup the stores with the previously loaded data from the given DOM variables.
 import { useProjectStore } from '@/stores/ProjectStore';
 import { useUserStore } from '@/stores/UserStore';
 import { useTagStore } from '@/stores/TagStore';

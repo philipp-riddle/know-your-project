@@ -3,8 +3,10 @@
 namespace App\Service\Helper;
 
 use App\Repository\UserRepository;
+use App\Service\Integration\MercureIntegration;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * This service is used as a base for all API controllers to provide common functionality.
@@ -17,5 +19,7 @@ final class ApiControllerHelperService
         public readonly UserRepository $userRepository,
         public readonly EventDispatcherInterface $eventDispatcher,
         public readonly DefaultNormalizer $defaultNormalizer,
+        public readonly RequestStack $requestStack,
+        public readonly MercureIntegration $mercureIntegration,
     ) { }
 }

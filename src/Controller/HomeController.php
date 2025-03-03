@@ -3,19 +3,20 @@
 namespace App\Controller;
 
 use App\Entity\User\User;
+use App\Service\Helper\ApiControllerHelperService;
 use App\Service\Helper\DefaultNormalizer;
-use App\Service\Integration\MercureIntegration;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class HomeController extends AbstractController
+class HomeController extends Controller
 {
     public function __construct(
+        ApiControllerHelperService $apiControllerHelperService,
         private DefaultNormalizer $normalizer,
-        private MercureIntegration $mercureIntegration,
-    ) { }
+    ) {
+        parent::__construct($apiControllerHelperService);
+    }
 
     /**
      * This is where the Vue.js page renders.
@@ -36,10 +37,10 @@ class HomeController extends AbstractController
             ];
         } else {
             $templateData = [
-                // inject some data into the frontend already to save API calls to fetch ...
-                // - selected project 
-                // - current user information.
-                // - untagged pages / notes
+                // inject normalised data into the frontend to save API calls to fetch ...
+                // - selected project.
+                // - current user.
+                // this makes the bootup of the frontend faster as it reduces the number of API calls on page load.
                 'user' => $this->normalizer->normalize($this->getUser(), $user),
                 'project' => $this->normalizer->normalize($this->getUser(), $user->getSelectedProject()),
     
@@ -53,10 +54,6 @@ class HomeController extends AbstractController
             ];
         }
 
-        $response = $this->render('index.html.twig', $templateData);
-        // @todo: Uncomment the following line to enable Content Security Policy
-        // $response->headers->set('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; frame-src 'self';");
-
-        return $response;
+        return $this->render('index.html.twig', $templateData);
     }
 }

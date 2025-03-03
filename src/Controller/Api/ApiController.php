@@ -20,6 +20,8 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * This is the base class for all API controllers.
  * It provides common functionality to serialise/normalise objects to JSON, to get the currently logged in user, to persist and flush entities and to dispatch events.
+ * 
+ * Unlike the HomeController or the authentication controllers it does not extend App\Controller\Controller since the content security policy is not relevant in the API (not rendering HTML).
  */
 abstract class ApiController extends AbstractController
 {

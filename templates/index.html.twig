@@ -3,13 +3,22 @@
 {% block title %}Know Your Project{% endblock %}
 
 {% block javascripts %}
-    <script>
-        // This can be read by the Vue store to start; saves API calls!
-        var currentUser = {{ user|json_encode|raw }};
-        var selectedProject = {{ project|json_encode|raw }};
-        var mercureConfig = {{ mercureConfig|json_encode|raw }};
+    {# the following script variables can be read by Vue.js to bootstrap the application faster #}
+    {# it also does not break our CSP policy #}
+    <script type="application/json" id="variable-currentUser">
+        {{ user|json_variable_encode|raw }}
     </script>
-    {{ encore_entry_script_tags('app') }}
+    <script type="application/json" id="variable-project">
+        {{ project|json_variable_encode|raw }}
+    </script>
+    <script type="application/json" id="variable-mercureConfig">
+        {{ mercureConfig|json_variable_encode|raw }}
+    </script>
+
+    {# force built JS files to be rendered with an absolute path; allowing us to enable them in CSP #}
+    {% for file in encore_entry_js_files('app') %}
+        <script src="{{ absolute_url(asset(file)) }}" ></script>
+    {% endfor %}
 {% endblock %}
 
 {% block body %}

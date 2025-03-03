@@ -2,14 +2,15 @@
 
 namespace App\Controller\Authentication;
 
+use App\Controller\Controller;
 use App\Entity\Project\ProjectUser;
 use App\Entity\User\User;
 use App\Entity\User\UserInvitation;
 use App\Form\User\UserInvitationVerifyForm;
 use App\Repository\UserInvitationRepository;
 use App\Repository\UserRepository;
+use App\Service\Helper\ApiControllerHelperService;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,19 +18,26 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(path: '/auth/verify')]
-class VerifyController extends AbstractController
+class VerifyController extends Controller
 {
     public function __construct(
+        ApiControllerHelperService $apiControllerHelperService,
         private EntityManagerInterface $em,
         private UserInvitationRepository $userInvitationRepository,
         private UserRepository $userRepository,
         private UserPasswordHasherInterface $passwordHasher,
         private Security $security,
-    ) { }
+    ) {
+        parent::__construct($apiControllerHelperService);
+    }
 
     #[Route(path: '/{code}', name: 'app_auth_verify')]
     public function verify(Request $request, string $code): Response
     {
+        if (null !== $this->getUser()) {
+            return $this->redirectToRoute('home');
+        }
+
         $form = $this->createForm(UserInvitationVerifyForm::class, options: ['code' => $code]);
         $form->handleRequest($request);
 

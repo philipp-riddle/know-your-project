@@ -1,21 +1,23 @@
 <?php
 
-namespace App\Tests\Application;
+namespace App\Tests\Application\Authentication;
 
-class HomeControllerTest extends ApplicationTestCase
+use App\Tests\Application\ApplicationTestCase;
+
+class LoginControllerTest extends ApplicationTestCase
 {
-    public function testHomeUnauthorized(): void
-    {
-        self::$client->request('GET', '/');
-
-        $this->assertResponseStatusCodeSame(302);
-        $this->assertResponseRedirects('http://localhost/auth/login');
-    }
-
-    public function testHomeAuthorized(): void
+    public function testLoginAuthorized(): void
     {
         self::$client->loginUser($this->createUser());
-        self::$client->request('GET', '/');
+        self::$client->request('GET', '/auth/login');
+
+        $this->assertResponseStatusCodeSame(302);
+        $this->assertResponseRedirects('http://localhost/');
+    }
+
+    public function testLoginUnauthorized(): void
+    {
+        self::$client->request('GET', '/auth/login');
 
         $this->assertResponseIsSuccessful();
 
