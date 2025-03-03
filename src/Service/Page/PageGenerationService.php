@@ -10,8 +10,8 @@ use App\Entity\Page\PageSectionText;
 use App\Entity\Tag\Tag;
 use App\Entity\Tag\TagPage;
 use App\Entity\User\User;
+use App\Exception\BadRequestException;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class PageGenerationService
 {
@@ -57,7 +57,7 @@ class PageGenerationService
     public function generatePage(User $user, Page $page, string $title, string $content, ?Tag $tag = null, array $checklistItemNames = []): Page
     {
         if (!$this->isPageEmpty($page)) {
-            throw new BadRequestHttpException('The page is not empty; cannot generate contents for it.');
+            throw new BadRequestException('The page is not empty; cannot generate contents for it.');
         }
 
         $pageTab = $page->getPageTabs()[0];

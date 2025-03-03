@@ -6,6 +6,7 @@ use App\Service\Search\Entity\EntityVectorEmbeddingInterface;
 use App\Event\CreateCrudEntityEvent;
 use App\Event\DeleteCrudEntityEvent;
 use App\Event\UpdateCrudEntityEvent;
+use App\Service\Helper\ApplicationEnvironment;
 use App\Service\Search\EntityEmbeddingQueueService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -24,6 +25,10 @@ class EntityEmbeddingQueueSubscriber implements EventSubscriberInterface
     {
         $entity = $event->getEntity();
 
+        if (ApplicationEnvironment::isTestEnv()) {
+            return; // do not use tokens / vectors in test environment
+        }
+
         // only handle entities if they implement the EntityVectorEmbeddingInterface
         if ($entity instanceof EntityVectorEmbeddingInterface) {
             $this->entityEmbeddingQueueService->addToQueue($entity);
@@ -40,6 +45,10 @@ class EntityEmbeddingQueueSubscriber implements EventSubscriberInterface
     public function onDeleteCrudEntityEvent(DeleteCrudEntityEvent $event): void
     {
         $entity = $event->getEntity();
+
+        if (ApplicationEnvironment::isTestEnv()) {
+            return; // do not use tokens / vectors in test environment
+        }
 
         // only handle entities if they implement the EntityVectorEmbeddingInterface
         if ($entity instanceof EntityVectorEmbeddingInterface) {

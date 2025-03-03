@@ -8,16 +8,16 @@ use App\Entity\Page\PageSection;
 use App\Entity\Page\PageSectionUpload;
 use App\Entity\Page\PageTab;
 use App\Event\CreateCrudEntityEvent;
+use App\Exception\BadRequestException;
+use App\Exception\NotFoundException;
 use App\Form\Page\PageSectionForm;
 use App\Repository\PageTabRepository;
 use App\Service\File\Uploader;
 use App\Service\Helper\ApiControllerHelperService;
 use App\Service\OrderListHandler;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/api/page/section/upload')]
@@ -49,7 +49,7 @@ class PageSectionUploadApiController extends CrudApiController
         $pageTab = $this->pageTabRepository->find($pageTabId);
 
         if (null === $pageTab) {
-            throw new NotFoundHttpException('Invalid page tab ID');
+            throw new NotFoundException('Invalid page tab ID: '.$pageTabId);
         }
 
         // make sure the user has access to the page tab

@@ -5,8 +5,8 @@ namespace App\Service\Project;
 use App\Entity\Project\Project;
 use App\Entity\Project\ProjectUser;
 use App\Entity\User\User;
+use App\Exception\BadRequestException;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 class ProjectService
 {

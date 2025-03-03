@@ -7,9 +7,9 @@ use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\CrudEntityValidationInterface;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Entity\User\User;
+use App\Exception\Entity\EntityValidationException;
 use App\Repository\PageUserRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 #[ORM\Entity(repositoryClass: PageUserRepository::class)]
 class PageUser implements UserPermissionInterface, CrudEntityInterface, CrudEntityValidationInterface
@@ -72,7 +72,7 @@ class PageUser implements UserPermissionInterface, CrudEntityInterface, CrudEnti
     {
         foreach ($this->getPage()->getUsers() as $pageUser) {
             if ($pageUser !== $this && $pageUser->getUser() === $this->getUser()) {
-                throw new BadRequestException('User is already assigned to this page.');
+                throw new EntityValidationException('User is already assigned to this page.');
             }
         }
     }

@@ -11,6 +11,7 @@ use App\Entity\Project\Project;
 use App\Entity\Tag\TagPage;
 use App\Entity\Task;
 use App\Entity\User\User;
+use App\Exception\Entity\EntityValidationException;
 use App\Repository\PageRepository;
 use App\Serializer\Attribute\IgnoreWhenNested;
 use App\Service\File\Interface\EntityMultipleFileInterface;
@@ -237,11 +238,11 @@ implements
     public function validate(): void
     {
         if (null === $this->getUser() && null === $this->getProject()) {
-            throw new \RuntimeException('Page must either have a project or a user connected');
+            throw new EntityValidationException('Page must either have a project or a user connected');
         }
 
         if (\count($this->getPageTabs()) === 0) {
-            throw new \RuntimeException('Page must have at least one tab');
+            throw new EntityValidationException('Page must have at least one tab');
         }
     }
 

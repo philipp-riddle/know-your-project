@@ -3,8 +3,8 @@
 namespace App\Service;
 
 use App\Entity\Interface\OrderListItemInterface;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use App\Exception\BadRequestException;
+use App\Exception\NotFoundException;
 
 class OrderListHandler
 {
@@ -30,17 +30,17 @@ class OrderListHandler
     public function applyIdOrder(array &$orderListItems, array $idOrder): void
     {
         if (!\array_is_list($idOrder)) {
-            throw new BadRequestHttpException('ID order must be a list of IDs');
+            throw new BadRequestException('ID order must be a list of IDs');
         }
 
         $uniqueIdOrder = \array_unique($idOrder);
 
         if (\count($uniqueIdOrder) !== \count($idOrder)) {
-            throw new BadRequestHttpException('ID order must be a list of unique IDs');
+            throw new BadRequestException('ID order must be a list of unique IDs');
         }
 
         if (\count($idOrder) !== \count($orderListItems)) {
-            throw new BadRequestHttpException(\sprintf('ID order must be the same size as the ordered list itself (Provided ID Order: %d, List Size: %d)', \count($idOrder), \count($orderListItems)));
+            throw new BadRequestException(\sprintf('ID order must be the same size as the ordered list itself (Provided ID Order: %d, List Size: %d)', \count($idOrder), \count($orderListItems)));
         }
 
         // create a map of the items to find the items with specific IDs quicker
@@ -55,7 +55,7 @@ class OrderListHandler
 
         foreach ($idOrder as $orderListItemId) {
             if (!\is_int($orderListItemId)) {
-                throw new BadRequestHttpException(
+                throw new BadRequestException(
                     \sprintf(
                         'Supplied IDs must be format of integer, %s found (value: "%s")',
                         \gettype($orderListItemId),
@@ -65,7 +65,7 @@ class OrderListHandler
             }
 
             if (!\array_key_exists($orderListItemId, $hashmap)) {
-                throw new NotFoundHttpException(\sprintf('Item with ID %d not found in the list', $orderListItemId));
+                throw new NotFoundException(\sprintf('Item with ID %d not found in the list', $orderListItemId));
             }
 
             $hashmap[$orderListItemId]->setOrderIndex($i);

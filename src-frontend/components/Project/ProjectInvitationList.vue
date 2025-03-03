@@ -14,7 +14,7 @@
                     <h5 class="m-0">{{ invitation.email }}</h5>
                     <p class="text-muted m-0"><i>Invitation pending</i></p>
                 </div>
-                <button class="btn btn-dark-gray" v-tooltip="'Cancel invitation'" @click="() => userStore.deleteUserProjectInvitation(invitation.id)">
+                <button class="btn btn-dark-gray" v-tooltip="'Cancel invitation'" @click="() => userStore.deleteUserProjectInvitation(invitation)">
                     <font-awesome-icon :icon="['fas', 'trash']" />
                 </button>
             </div>

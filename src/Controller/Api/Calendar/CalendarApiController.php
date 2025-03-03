@@ -4,10 +4,10 @@ namespace App\Controller\Api\Calendar;
 
 use App\Controller\Api\ApiController;
 use App\Entity\Project\Project;
+use App\Exception\BadRequestException;
 use App\Repository\CalendarEventRepository;
 use App\Repository\TaskRepository;
 use App\Service\Helper\ApiControllerHelperService;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 

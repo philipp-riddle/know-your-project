@@ -13,6 +13,10 @@ class LoginController extends AbstractController
     #[Route(path: '/auth/login', name: 'app_auth_login')]
     public function login(AuthenticationUtils $authenticationUtils, TranslatorInterface $translator): Response
     {
+        if (null !== $this->getUser()) {
+            return $this->redirectToRoute('home'); // user is already logged in
+        }
+
         // get the login error if there is one
         $error = $authenticationUtils->getLastAuthenticationError();
 

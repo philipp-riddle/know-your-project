@@ -4,7 +4,8 @@ namespace App\Controller\Api\Project;
 
 use App\Controller\Api\CrudApiController;
 use App\Entity\Project\ProjectUser;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
+use App\Exception\BadRequestException;
+use App\Exception\PreconditionFailedException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -49,6 +50,6 @@ class ProjectUserApiController extends CrudApiController
 
     public function getFormClass(): string
     {
-        throw new \RuntimeException('Not implemented');
+        throw new PreconditionFailedException('Not implemented');
     }
 }

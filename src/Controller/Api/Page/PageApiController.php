@@ -27,12 +27,6 @@ class PageApiController extends CrudApiController
         parent::__construct($apiControllerHelperService);
     }
 
-    #[Route('/user-list', name: 'api_page_userList', methods: ['GET'])]
-    public function userList(): JsonResponse
-    {
-        return $this->crudList(['user' => $this->getUser(), 'project' => null]);
-    }
-
     #[Route('/project-list/{project}', name: 'api_page_projectList', methods: ['GET'])]
     public function projectList(Project $project, Request $request): JsonResponse
     {

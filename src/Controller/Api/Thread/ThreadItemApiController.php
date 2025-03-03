@@ -4,6 +4,7 @@ namespace App\Controller\Api\Thread;
 
 use App\Controller\Api\CrudApiController;
 use App\Entity\Thread\ThreadItem;
+use App\Exception\PreconditionFailedException;
 use App\Service\Helper\ApiControllerHelperService;
 use App\Service\Search\SearchEngine;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -32,6 +33,6 @@ class ThreadItemApiController extends CrudApiController
 
     public function getFormClass(): string
     {
-        throw new \Exception('Not implemented'); // we do not need a form for this controller
+        throw new PreconditionFailedException('Not implemented'); // we do not need a form for this controller
     }
 }

@@ -611,3 +611,42 @@ modal-backdrop.show {
         text-align: center;
     }
 }
+
+/* === TOASTS ============================================================= */
+
+/**
+ * Toasts are small messages that appear on the screen for a short period of time.
+ * They are used to inform the user about a specific event.
+ * They should be positioned absolute to be always present, ideally not covering any important content in the bottom left corner.
+ * The background color should be a light color, the text should be dark.
+ * The toast should have a border radius and a shadow to make it appear as a floating element.
+*/
+.toast-box {
+    position: absolute;
+    z-index: 1100; // to be above the Bootstrap modal (e.g. task detail modal
+    bottom: 1rem;
+    left: 1rem;
+
+    // limit the size of the toast box
+    width: 40%;
+    max-width: 20rem;
+
+    .toast-card {
+        box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+        transition: background-color 0.3s ease-in-out;
+        transition: color 0.3s ease-in-out;
+
+        &.bg-danger {
+            background-color: $light-red;
+            color: white;
+
+            .btn-toast-close {
+                color: white;
+            }
+
+            .text-muted {
+                color: $light-gray !important;
+            }
+        }
+    }
+}

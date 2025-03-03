@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="h-100 row m-0 p-0 d-flex flex-xl-column justify-content-xl-center mt-sm-3 mt-xl-0">
+        <div class="col-sm-12 offset-lg-3 col-lg-6 offset-xl-4 col-xl-4 d-flex flex-column gap-5">
+            <div class="navigation-sidebar">
+                <ul class="nav nav-pills d-flex flex-row justify-content-between">
+                    <div class="d-flex flex-row align-items-center gap-1">
+                        <li class="nav-item">
+                            <a href="/" class="nav-link btn btn-wide active">Unexpected error</a>
+                        </li>
+    
+                        {% if app.user %}
+                            <li class="nav-item">
+                                <a href="/" class="nav-link btn btn-wide inactive">Back to app</a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a href="/auth/login" class="nav-link btn btn-wide inactive">Back to login</a>
+                            </li>
+                        {% endif %}
+                    </div>
+
+                    <li class="nav-item"><a href="#" class="nav-link inactive">Know Your Project</a></li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <p class="m-0">{{ message }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

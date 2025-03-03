@@ -3,6 +3,7 @@
 namespace App\Service\Integration;
 
 use App\Entity\Prompt;
+use App\Exception\PreconditionFailedException;
 use OpenAI;
 use OpenAI\Client;
 use OpenAI\Responses\Chat\CreateResponse;
@@ -125,7 +126,7 @@ final class OpenAIIntegration
         $apiKey = $_ENV['OPENAI_API_KEY'] ?? '';
 
         if (\trim($apiKey) === '') {
-            throw new \RuntimeException('OPENAI_API_KEY is not set');
+            throw new PreconditionFailedException('OPENAI_API_KEY is not set');
         }
 
         return OpenAI::client($apiKey);

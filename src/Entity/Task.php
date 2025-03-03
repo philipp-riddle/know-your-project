@@ -10,12 +10,12 @@ use App\Entity\Interface\UserPermissionInterface;
 use App\Entity\Page\Page;
 use App\Entity\Project\Project;
 use App\Entity\User\User;
+use App\Exception\Entity\EntityValidationException;
 use App\Repository\TaskRepository;
 use App\Service\Search\Entity\CachedEntityVectorEmbedding;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\PersistentCollection;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
 class Task extends CachedEntityVectorEmbedding implements OrderListItemInterface, CrudEntityInterface, UserPermissionInterface, CrudEntityValidationInterface
@@ -144,7 +144,7 @@ class Task extends CachedEntityVectorEmbedding implements OrderListItemInterface
     public function validate(): void
     {
         if (!\in_array($this->stepType, self::STEP_TYPES, true)) {
-            throw new BadRequestHttpException('Invalid step type');
+            throw new EntityValidationException('Invalid step type');
         }
     }
 

@@ -4,9 +4,10 @@ namespace App\Controller\Api\User;
 
 use App\Controller\Api\CrudApiController;
 use App\Entity\User\User;
+use App\Exception\BadRequestException;
+use App\Exception\PreconditionFailedException;
 use App\Service\File\Uploader;
 use App\Service\Helper\ApiControllerHelperService;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
@@ -58,6 +59,6 @@ class UserApiController extends CrudApiController
 
     public function getFormClass(): string
     {
-        throw new \RuntimeException('Form not implemented for User entity.');
+        throw new PreconditionFailedException('Form not implemented for User entity.');
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\User\UserInvitation;
+use App\Exception\PreconditionFailedException;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
@@ -58,7 +59,7 @@ class MailerService
     public function sendUserInvitationToExistingUser(UserInvitation $userInvitation): void
     {
         if (null === $user = $userInvitation->getUser()) {
-            throw new \InvalidArgumentException('User invitation has no user set');
+            throw new PreconditionFailedException('User invitation has no user set');
         }
 
         $this->sendMail(
@@ -80,7 +81,7 @@ class MailerService
         $symfonyPublicUrl = \trim($_ENV['SYMFONY_PUBLIC_URL'] ?? '');
 
         if ('' === $symfonyPublicUrl) {
-            throw new \RuntimeException('SYMFONY_PUBLIC_URL is not set');
+            throw new PreconditionFailedException('SYMFONY_PUBLIC_URL is not set');
         }
 
         return \rtrim($symfonyPublicUrl, '/').'/'.$path;

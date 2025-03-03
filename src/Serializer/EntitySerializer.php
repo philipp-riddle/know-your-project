@@ -5,6 +5,7 @@ namespace App\Serializer;
 use App\Entity\Interface\AccessContext;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Entity\User\User;
+use App\Exception\Serializer\SerializerException;
 use App\Serializer\Attribute\IgnoreWhenNested;
 use App\Serializer\Attribute\KeepInSerializerContext;
 use Doctrine\Common\Proxy\Proxy;
@@ -164,8 +165,8 @@ final class EntitySerializer
                 try {
                     $nestedReflectionClass = $this->getReflectionEntityClassFromDocComment($method->getDocComment());
                     $typeName = $nestedReflectionClass->getName();
-                } catch (\RuntimeException $e) {
-                    throw new \RuntimeException(\sprintf('%s::%s: Could not find type name in doc comment "%s" ', \get_class($object), $method->getName(), $method->getDocComment()));
+                } catch (SerializerException $ex) {
+                    throw new SerializerException(\sprintf('%s::%s: Could not find type name in doc comment "%s" ', \get_class($object), $method->getName(), $method->getDocComment()), $ex);
                 }
             } else {
                 try {
@@ -297,7 +298,7 @@ final class EntitySerializer
                 $typeName = $typeNameCommaParts[1] ?? null; // always use the second part, i.e. the type of the value, the first part is the key
 
                 if ($typeName === null) {
-                    throw new \RuntimeException(\sprintf('Malformed doc comment: "%s" ', $docComment));
+                    throw new SerializerException(\sprintf('Malformed doc comment: "%s" ', $docComment));
                 }
             }
 
@@ -314,7 +315,7 @@ final class EntitySerializer
             $typeName = \trim($typeName);
 
             if ($typeName === null) {
-                throw new \RuntimeException(\sprintf('No type name part left to analyze in doc comment "%s" ', $docComment));
+                throw new SerializerException(\sprintf('No type name part left to analyze in doc comment "%s" ', $docComment));
             }
 
             // if the type name does not contain a backslash we assume it is a relative path to the entity
@@ -340,6 +341,6 @@ final class EntitySerializer
         }
         
 
-        throw new \RuntimeException(\sprintf('Could not find type name in doc comment "%s" ', $docComment));
+        throw new SerializerException(\sprintf('Could not find type name in doc comment "%s" ', $docComment));
     }
 }

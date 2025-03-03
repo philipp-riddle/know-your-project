@@ -2,6 +2,7 @@
 
 namespace App\Service\Integration;
 
+use App\Exception\PreconditionFailedException;
 use Qdrant\Config;
 use Qdrant\Http\Builder;
 use Qdrant\Models\Filter\Filter;
@@ -131,7 +132,7 @@ final class QdrantIntegration
         $apiKey = $_ENV['QDRANT_API_KEY'] ?? '';
 
         if (\trim($apiKey) === '') {
-            throw new \RuntimeException('QDRANT_API_KEY is not set');
+            throw new PreconditionFailedException('QDRANT_API_KEY is not set');
         }
 
         $config = new Config(static::HOST);

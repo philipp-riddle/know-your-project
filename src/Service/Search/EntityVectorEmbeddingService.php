@@ -6,6 +6,7 @@ use App\Entity\Interface\UserPermissionInterface;
 use App\Service\Search\Entity\EntityVectorEmbeddingInterface;
 use App\Entity\Project\Project;
 use App\Entity\User\User;
+use App\Exception\PreconditionFailedException;
 use App\Repository\PageRepository;
 use App\Repository\PageSectionRepository;
 use App\Repository\ProjectRepository;
@@ -96,7 +97,7 @@ final class EntityVectorEmbeddingService
     private function getEntitySearchResults(User $user, array $searchResult, float $scoreTreshold): \Generator
     {
         if ($searchResult['status'] !== 'ok') {
-            throw new \RuntimeException('Qdrant search failed. Status: '.$searchResult['status']);
+            throw new PreconditionFailedException('Qdrant search failed. Status: '.$searchResult['status']);
         }
 
         foreach ($searchResult['result'] as $result) {
@@ -150,7 +151,7 @@ final class EntityVectorEmbeddingService
         }
 
         if (!($entity instanceof UserPermissionInterface)) {
-            throw new \InvalidArgumentException('Entity does not implement UserPermissionInterface, cannot be used in search: ' . \get_class($entity));
+            throw new PreconditionFailedException('Entity does not implement UserPermissionInterface, cannot be used in search: ' . \get_class($entity));
         }
 
         if (!$entity->hasUserAccess($user)) {
@@ -209,7 +210,7 @@ final class EntityVectorEmbeddingService
         $entityId = $entityId ?? $entity->getId();
 
         if (null === $entityId) {
-            throw new \InvalidArgumentException('Entity needs to have an ID to generate a unique embedding ID');
+            throw new PreconditionFailedException('Entity needs to have an ID to generate a unique embedding ID');
         }
 
         $entityShortName = (new \ReflectionClass($entity))->getShortName();

@@ -9,15 +9,14 @@ use App\Entity\Page\PageSectionEmbeddedPage;
 use App\Entity\Page\PageSectionSummary;
 use App\Entity\Project\Project;
 use App\Entity\Prompt;
-use App\Entity\Tag\Tag;
 use App\Entity\Task;
 use App\Entity\Thread\ThreadItemPrompt;
 use App\Entity\User\User;
+use App\Exception\PreconditionFailedException;
 use App\Repository\TagRepository;
 use App\Service\Helper\DefaultNormalizer;
 use App\Service\Integration\OpenAIIntegration;
 use App\Service\Search\Entity\EntityVectorEmbeddingInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * This class is responsible for creating new content or filtering existing content, based on the user prompt input.
@@ -185,11 +184,13 @@ final class GenerationEngine
                 'content' => '
                     You will  first provided with context ("1. CONTEXT"; each context item delimited by "=== CONTEXT ===") and then the user question ("2. QUESTION").
                     Make sure to provide a relevant answer to the question and make use of the context provided.
-                    If there is no relevant context, you can still provide an answer BUT IT IS VERY IMPORTANT TO STATE THIS IN THE RESPONSE.
 
                     Respond in JSON format, adhering to the provided JSON schema.
                     Return a title, describing the nature of the creation, and content in HTML format for better readibility.
-                    DO NOT START WITH A HEADING; Start either with a paragraph or a list of items to make the content more readable. TRY NOT TO OVERSHARE.
+                    DO NOT START WITH A HEADING; Start either with a paragraph or a list of items to make the content more readable.
+    
+                    BE CAREFUL TO NOT OVERSHARE AND BE CONCISE.
+                    If there is no relevant context, you can still provide an answer BUT IT IS VERY IMPORTANT TO STATE THIS IN THE RESPONSE.
 
                     The user will now start with the 1. CONTEXT and then 2. QUESTION.
                 ',
@@ -299,7 +300,7 @@ final class GenerationEngine
         if (null !== $pageSectionContext = $threadItemPrompt->getThreadItem()->getThread()->getPageSectionContext()) {
             $messages = $this->getPageContextMessages($pageSectionContext->getPageSection()->getPageTab()->getPage());
         } else {
-            throw new \RuntimeException('The thread item must have a page section context to generate a chat response.');
+            throw new PreconditionFailedException('The thread item must have a page section context to generate a chat response.');
         }
 
         // now attach all thread messages to the context

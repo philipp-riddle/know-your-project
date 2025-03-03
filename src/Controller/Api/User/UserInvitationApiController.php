@@ -5,14 +5,14 @@ namespace App\Controller\Api\User;
 use App\Controller\Api\CrudApiController;
 use App\Entity\Project\Project;
 use App\Entity\User\UserInvitation;
+use App\Exception\BadRequestException;
 use App\Form\User\UserInvitationForm;
 use App\Repository\UserInvitationRepository;
 use App\Serializer\SerializerContext;
 use App\Service\Helper\ApiControllerHelperService;
-use App\Service\Helper\TestEnvironment;
+use App\Service\Helper\ApplicationEnvironment;
 use App\Service\MailerService;
 use App\Service\UserService;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
@@ -54,7 +54,7 @@ class UserInvitationApiController extends CrudApiController
                 $userInvitation->setCode(bin2hex(openssl_random_pseudo_bytes(10))); // attach random code to user invitation so that it can be used to verify the user
 
                 // send emails only when not in the test env
-                if (!TestEnvironment::isActive()) {
+                if (!ApplicationEnvironment::isTestEnv()) {
                     if ($isNewUser) {
                         $this->mailerService->sendUserInvitationToNewEmail($userInvitation);
                     } else {

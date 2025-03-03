@@ -10,13 +10,13 @@ use App\Entity\Interface\OrderListItemInterface;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Entity\Thread\ThreadPageSectionContext;
 use App\Entity\User\User;
+use App\Exception\Entity\EntityValidationException;
 use App\Repository\PageSectionRepository;
 use App\Service\File\Interface\EntityFileInterface;
 use App\Service\Search\Entity\CachedEntityVectorEmbedding;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\PersistentCollection;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 #[ORM\Entity(repositoryClass: PageSectionRepository::class)]
 class PageSection extends CachedEntityVectorEmbedding
@@ -318,11 +318,11 @@ implements
         $this->embeddedPage?->validate();
 
         if ($pageSectionTypesNotNull !== 1) {
-            throw new BadRequestHttpException('A page section must have exactly one content type');
+            throw new EntityValidationException('A page section must have exactly one content type');
         }
 
         if ($pageSectionTypesNull === \count($propertiesToCheckForNull)) {
-            throw new BadRequestHttpException('A page section must have a content type (text, checklist, URL, upload, embedded page, AI prompt)');
+            throw new EntityValidationException('A page section must have a content type (text, checklist, URL, upload, embedded page, AI prompt)');
         }
     }
 

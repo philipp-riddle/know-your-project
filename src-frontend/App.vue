@@ -9,8 +9,9 @@
         </div>
     </div>
 
-    <!-- <ThreadBox /> -->
     <SearchModal />
+
+    <ToastBox />
 </template>
 
 <script setup>
@@ -19,7 +20,7 @@
     import { useMagicKeys } from '@vueuse/core';
     import Navigation from '@/components/Navigation/Navigation.vue';
     import SearchModal from '@/components/Search/SearchModal.vue';
-    import ThreadBox from '@/components/Thread/ThreadBox.vue';
+    import ToastBox from '@/components/Util/Toast/ToastBox.vue';
     import { usePageStore } from '@/stores/PageStore.js';
     import { useProjectStore } from '@/stores/ProjectStore.js';
     import { useSearchStore } from '@/stores/SearchStore.js';
@@ -30,11 +31,13 @@
     const projectStore = useProjectStore();
     const searchStore = useSearchStore();
 
-    // specify the keys we want to monitor
-    const { control, shift, meta, p, f } = useMagicKeys({
+    // specify the keys we want to monitor globally (=> HOTKEYS)
+    const { control, meta, p, f } = useMagicKeys({
         passive: false,
         onEventFired(e) {
-            const mainKeyIsPressed = control.value || shift.value || meta.value;
+            // either command or control is pressed; the "main key"
+            const mainKeyIsPressed = control.value || meta.value;
+            // either p or f is pressed; the "second key"
             const secondKeyIsPressed = p.value || f.value;
 
             if (mainKeyIsPressed && secondKeyIsPressed) {

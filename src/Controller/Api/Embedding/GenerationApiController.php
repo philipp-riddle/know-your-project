@@ -8,6 +8,8 @@ use App\Entity\Page\Page;
 use App\Entity\Project\Project;
 use App\Entity\Tag\Tag;
 use App\Event\UpdateCrudEntityEvent;
+use App\Exception\AccessDeniedException;
+use App\Exception\BadRequestException;
 use App\Form\Embedding\GenerationAskForm;
 use App\Form\Embedding\GenerationCreateForm;
 use App\Form\Embedding\GenerationSaveForm;
@@ -17,8 +19,6 @@ use App\Service\PageService;
 use App\Service\Search\GenerationEngine;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/api/generation')]
@@ -69,7 +69,7 @@ class GenerationApiController extends ApiController
         $text = \trim($form->get('text')->getData() ?? '');
 
         if ($text === '') {
-            throw new BadRequestHttpException('The "text" field is required and must not be empty');
+            throw new BadRequestException('The "text" field is required and must not be empty');
         }
 
         return $this->createJsonResponse(
@@ -103,7 +103,7 @@ class GenerationApiController extends ApiController
         $tag = $form->get('tag')->getData();
 
         if (null !== $tag && !$tag->hasUserAccess($this->getUser())) {
-            throw new AccessDeniedHttpException('You do not have access to this tag');
+            throw new AccessDeniedException('You do not have access to this tag');
         }
 
         // dispatch an event to also update it for other users via Mercure

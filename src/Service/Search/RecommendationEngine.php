@@ -5,6 +5,7 @@ namespace App\Service\Search;
 use App\Entity\Page\Page;
 use App\Entity\Page\PageSection;
 use App\Entity\User\User;
+use App\Exception\PreconditionFailedException;
 use App\Service\Helper\DefaultNormalizer;
 use App\Service\Search\Entity\CachedEntityVectorEmbedding;
 use App\Service\Search\Entity\EntityVectorEmbeddingInterface;
@@ -68,7 +69,7 @@ final class RecommendationEngine
             list ($searchResult, $entity) = $searchResultResponse;
 
             if (!($entity instanceof EntityVectorEmbeddingInterface)) {
-                throw new \RuntimeException('The entity returned from the search results must implement the EntityVectorEmbeddingInterface. Class: '.\get_class($entity));
+                throw new PreconditionFailedException('The entity returned from the search results must implement the EntityVectorEmbeddingInterface. Class: '.\get_class($entity));
             }
 
             $flattenedSearchResult = $this->flattenSearchResult($searchResult, $entity);

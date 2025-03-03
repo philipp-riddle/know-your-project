@@ -1,4 +1,4 @@
-export function  useDateConverter() {
+export function useDateConverter() {
     /**
      * Given a date string, it returns a formatted date string presenting the "distance", e.g. "2 days ago", "in 3 days", "in 10 hours", etc.
      * @param {String} date 

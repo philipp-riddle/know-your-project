@@ -7,9 +7,9 @@ use App\Entity\Interface\CrudEntityInterface;
 use App\Entity\Interface\CrudEntityValidationInterface;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Entity\User\User;
+use App\Exception\Entity\EntityValidationException;
 use App\Repository\PageSectionEmbeddedPageRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 #[ORM\Entity(repositoryClass: PageSectionEmbeddedPageRepository::class)]
 class PageSectionEmbeddedPage implements UserPermissionInterface, CrudEntityInterface, CrudEntityValidationInterface
@@ -69,7 +69,7 @@ class PageSectionEmbeddedPage implements UserPermissionInterface, CrudEntityInte
     public function validate(): void
     {
         if ($this->page === $this->getpageSection()->getPageTab()->getPage()) {
-            throw new BadRequestHttpException('Cannot embed the page itself.');
+            throw new EntityValidationException('Cannot embed the page itself.');
         }
     }
 }

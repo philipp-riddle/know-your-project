@@ -23,6 +23,16 @@ class SignupController extends AbstractController
     #[Route('/auth/signup', name: 'app_auth_signup')]
     public function signup(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
     {
+        if (null !== $this->getUser()) {
+            return $this->redirectToRoute('home'); // user is already logged in
+        }
+
+        if (!\boolval($_ENV['SIGNUP_ENABLED'])) {
+            return $this->render('auth/signup_disabled.html.twig', [
+                'navigationRoutes' => ['login', 'signup'],
+            ]);
+        }
+
         $user = new User();
         $form = $this->createForm(UserRegistrationForm::class, $user);
 

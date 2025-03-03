@@ -4,8 +4,8 @@ namespace App\Service;
 
 use App\Entity\User\User;
 use App\Entity\Interface\UserPermissionInterface;
+use App\Exception\AccessDeniedException;
 use Doctrine\Common\Collections\Collection;
-use Symfony\Component\HttpFoundation\File\Exception\AccessDeniedException;
 
 class ManyToManyEntityHandler
 {

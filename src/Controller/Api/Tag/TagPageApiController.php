@@ -7,6 +7,8 @@ use App\Entity\Interface\AccessContext;
 use App\Entity\Project\Project;
 use App\Entity\Tag\Tag;
 use App\Entity\Tag\TagPage;
+use App\Exception\AccessDeniedException;
+use App\Exception\BadRequestException;
 use App\Form\Tag\TagPageForm;
 use App\Repository\PageRepository;
 use App\Repository\TagPageRepository;
@@ -16,7 +18,6 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 #[Route('/api/tag/page')]
 class TagPageApiController extends CrudApiController
@@ -46,7 +47,7 @@ class TagPageApiController extends CrudApiController
             onProcessEntity: function(TagPage $tagPage, FormInterface $form) {
                 if (null === $tagPage->getTag()) {
                     if (null === $newTagName = $form->get('tagName')->getData()) {
-                        throw new \InvalidArgumentException('Either an existing tag or a new tag name must be provided.');
+                        throw new BadRequestException('Either an existing tag or a new tag name must be provided.');
                     }
 
                     // if the user chooses to create a new tag with a provided name we must build, initialize, and persist a new entity
@@ -62,7 +63,7 @@ class TagPageApiController extends CrudApiController
                 } else {
                     foreach ($tagPage->getPage()->getTags() as $tag) {
                         if ($tag->getTag()->getId() === $tagPage->getTag()->getId()) {
-                            throw new \InvalidArgumentException('The tag is already associated with the page.');
+                            throw new BadRequestException('The tag is already associated with the page.');
                         }
                     }
                 }

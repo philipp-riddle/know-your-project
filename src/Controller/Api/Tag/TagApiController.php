@@ -6,6 +6,7 @@ use App\Controller\Api\CrudApiController;
 use App\Entity\Interface\AccessContext;
 use App\Entity\Project\Project;
 use App\Entity\Tag\Tag;
+use App\Exception\AccessDeniedException;
 use App\Form\Tag\TagForm;
 use App\Repository\TagRepository;
 use App\Service\Helper\ApiControllerHelperService;
@@ -13,7 +14,6 @@ use App\Service\OrderListHandler;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 #[Route('/api/tag')]
 class TagApiController extends CrudApiController

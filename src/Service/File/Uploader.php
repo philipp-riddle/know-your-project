@@ -5,7 +5,7 @@ namespace App\Service\File;
 use App\Entity\File;
 use App\Entity\Project\Project;
 use App\Entity\User\User;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
+use App\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\KernelInterface;
 

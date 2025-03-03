@@ -3,6 +3,7 @@
 namespace App\Service\File;
 
 use App\Entity\File;
+use App\Exception\BadRequestException;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 final class FileService
@@ -29,7 +30,7 @@ final class FileService
             }
 
             if (!($file instanceof File)) {
-                throw new \InvalidArgumentException('Expected an array of File entities, found '.\get_class($file));
+                throw new BadRequestException('Expected an array of File entities, found '.\get_class($file));
             }
 
             $fileAbsolutePath = $this->getAbsolutePath($file);

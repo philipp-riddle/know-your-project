@@ -13,6 +13,7 @@ use App\Event\CreateCrudEntityEvent;
 use App\Event\DeleteCrudEntityEvent;
 use App\Event\OrderCrudEntitiesEvent;
 use App\Event\UpdateCrudEntityEvent;
+use App\Exception\PreconditionFailedException;
 use App\Serializer\SerializerContext;
 use App\Service\OrderListHandler;
 use Doctrine\ORM\EntityRepository;
@@ -61,7 +62,7 @@ abstract class CrudApiController extends ApiController
     protected function crudDelete(UserPermissionInterface|CrudEntityInterface $userPermissionInterface, ?callable $onProcessEntity = null): JsonResponse
     {
         if (!($userPermissionInterface instanceof CrudEntityInterface) || !($userPermissionInterface instanceof UserPermissionInterface)) {
-            throw new \Exception('Entity must implement both CrudEntityInterface and UserPermissionInterface');
+            throw new PreconditionFailedException('Entity must implement both CrudEntityInterface and UserPermissionInterface');
         }
 
         $this->checkUserAccess($userPermissionInterface, AccessContext::DELETE);
@@ -120,9 +121,9 @@ abstract class CrudApiController extends ApiController
         // Each entity must implement both interfaces to work with this controller action.
         // This is enforced by the controller to ensure that all entities are checked for user access and for further validation + initialisation.
         if (!($entity instanceof UserPermissionInterface)) {
-            throw new \Exception('Entity must be an instance of UserPermissionInterface');
+            throw new PreconditionFailedException('Entity must be an instance of UserPermissionInterface');
         } elseif (!($entity instanceof CrudEntityInterface)) {
-            throw new \Exception('Entity must be an instance of CrudEntityInterface');
+            throw new PreconditionFailedException('Entity must be an instance of CrudEntityInterface');
         }
 
         if (null !== $onProcessEntity) {
@@ -231,7 +232,7 @@ abstract class CrudApiController extends ApiController
 
         foreach ($itemsToOrder as $itemToOrder) {
             if (!($itemToOrder instanceof UserPermissionInterface)) {
-                throw new \Exception('All items in the ordered list must be an instance of UserPermissionInterface');
+                throw new PreconditionFailedException('All items in the ordered list must be an instance of UserPermissionInterface');
             }
 
             $this->checkUserAccess($itemToOrder, AccessContext::UPDATE);
@@ -263,7 +264,7 @@ abstract class CrudApiController extends ApiController
     protected function crudUpdateOrCreateOrderListItem(?UserPermissionInterface $userPermissionInterface, Request $request, OrderListHandler $orderListHandler, callable $itemsToOrder, ?callable $onProcessEntity = null): JsonResponse
     {
         if (null !== $userPermissionInterface && !($userPermissionInterface instanceof OrderListItemInterface)) {
-            throw new \Exception('Entity must be an instance of OrderListItemInterface');
+            throw new PreconditionFailedException('Entity must be an instance of OrderListItemInterface');
         }
 
         return $this->crudUpdateOrCreate(
@@ -275,7 +276,7 @@ abstract class CrudApiController extends ApiController
                 }
 
                 if (!($entity instanceof OrderListItemInterface)) {
-                    throw new \Exception(\sprintf('Processed entity must be an instance of OrderListItemInterface (found: %s)', \get_class($entity)));
+                    throw new PreconditionFailedException(\sprintf('Processed entity must be an instance of OrderListItemInterface (found: %s)', \get_class($entity)));
                 }
 
                 $entityItemsToOrder = $itemsToOrder($entity);
@@ -287,7 +288,7 @@ abstract class CrudApiController extends ApiController
                 }
 
                 if (!\is_array($entityItemsToOrder)) {
-                    throw new \Exception('Items to order must return an array');
+                    throw new PreconditionFailedException('Items to order must return an array');
                 }
 
                 $orderListHandler->add($entity, $entityItemsToOrder);

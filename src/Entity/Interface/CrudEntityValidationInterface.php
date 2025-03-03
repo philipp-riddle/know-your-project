@@ -9,7 +9,7 @@ namespace App\Entity\Interface;
 interface CrudEntityValidationInterface
 {
     /**
-     * @throws \Symfony\Component\HttpKernel\Exception\BadRequestHttpException
+     * @throws \App\Exception\Entity\EntityValidationException
      */
     public function validate(): void;
 }

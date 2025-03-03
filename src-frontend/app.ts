@@ -21,7 +21,6 @@ library.add(faCode, faTrash, faCheck, faChevronUp, faChevronDown, faCog, faPlus)
 
 import Router from '@/router';
 
-import { createPinia, PiniaVuePlugin } from 'pinia';
 
 const app = createApp(App)
     .use(Router)
@@ -30,13 +29,19 @@ const app = createApp(App)
 
 /* add font awesome icon component */
 app.component('font-awesome-icon', FontAwesomeIcon)
+
+// add pinia; our state management library
+import { createPinia, PiniaVuePlugin } from 'pinia';
 app.component('Pinia', createPinia());
+
+// setup the axios interceptor for handling HTTP exceptions (... and displaying them to the user)
+import { useExceptionHandler } from '@/composables/ExceptionHandler';
+useExceptionHandler().setupInterceptor();
 
 // before mounting the app we setup the stores with data from the window and default data
 import { useProjectStore } from '@/stores/ProjectStore';
 import { useUserStore } from '@/stores/UserStore';
 import { useTagStore } from '@/stores/TagStore';
-
 useProjectStore().setup();
 useUserStore().setup();
 useTagStore().setup();
@@ -45,4 +50,5 @@ useTagStore().setup();
 import { useMercureEventSubscriber } from '@/events/MercureEventSubscriber';
 useMercureEventSubscriber().setup(window.mercureConfig); // use the config from the window object for the setup
 
+// in the last step we mount the app to the div with the id 'app'
 app.mount('#app');

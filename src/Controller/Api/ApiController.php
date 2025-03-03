@@ -5,6 +5,7 @@ namespace App\Controller\Api;
 use App\Entity\Interface\AccessContext;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Entity\User\User;
+use App\Exception\AccessDeniedException;
 use App\Repository\UserRepository;
 use App\Serializer\SerializerContext;
 use App\Service\Helper\ApiControllerHelperService;
@@ -15,7 +16,6 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
  * This is the base class for all API controllers.

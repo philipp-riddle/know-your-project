@@ -6,6 +6,7 @@ use App\Service\Search\Entity\EntityVectorEmbeddingInterface;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Entity\Project\Project;
 use App\Entity\User\User;
+use App\Exception\PreconditionFailedException;
 use App\Service\Helper\DefaultNormalizer;
 use App\Service\Helper\TextMarker;
 
@@ -66,7 +67,7 @@ final class SearchEngine
             list ($searchResult, $entity) = $searchResultResponse;
 
             if (!($entity instanceof EntityVectorEmbeddingInterface)) {
-                throw new \RuntimeException(\sprintf('The entity %s does not implement the EntityVectorEmbeddingInterface', \get_class($entity)));
+                throw new PreconditionFailedException(\sprintf('The entity %s does not implement the EntityVectorEmbeddingInterface', \get_class($entity)));
             }
 
             if (null === $entity->getTextForEmbedding() || null === $entity->getTitleForSearchResult()) {

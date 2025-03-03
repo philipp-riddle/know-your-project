@@ -6,11 +6,11 @@ use App\Controller\Api\CrudApiController;
 use App\Entity\Calendar\CalendarEvent;
 use App\Entity\Project\Project;
 use App\Entity\Tag\TagCalendarEvent;
+use App\Exception\BadRequestException;
 use App\Form\Calendar\CalendarEventForm;
 use App\Repository\TagRepository;
 use App\Service\Helper\ApiControllerHelperService;
 use Symfony\Component\Form\FormInterface;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
@@ -28,6 +28,7 @@ class CalendarEventApiController extends CrudApiController
     #[Route('', methods: ['POST'], name: 'api_calendar_event_create')]
     public function create(Request $request): JsonResponse
     {
+        throw new BadRequestException('Could not create calendar event');
         return $this->crudUpdateOrCreate(
             null,
             $request,
@@ -45,7 +46,7 @@ class CalendarEventApiController extends CrudApiController
                     $tag = $this->tagRepository->find($tagId);
 
                     if (null === $tag) {
-                        throw new BadRequestException('Invalid tag ID');
+                        throw new BadRequestException('Invalid tag ID: '.$tagId);
                     } else {
                         $this->checkUserAccess($tag); // check if the user has access to the tag
                     }

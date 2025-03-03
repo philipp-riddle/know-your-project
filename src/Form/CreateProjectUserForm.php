@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Project\Project;
 use App\Entity\Project\ProjectUser;
+use App\Exception\PreconditionFailedException;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -15,7 +16,7 @@ class CreateProjectUserForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         if (null !== $builder->getData()) {
-            throw new \RuntimeException('This form is currently only for creating new ProjectUser entities');
+            throw new PreconditionFailedException('This form is currently only for creating new ProjectUser entities');
         }
 
         $builder
