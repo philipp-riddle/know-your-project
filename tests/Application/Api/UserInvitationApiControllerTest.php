@@ -32,11 +32,11 @@ class UserInvitationApiControllerTest extends ApiControllerTestCase
 
     public function testCreateUserInvitation_error_403_otherUser(): void
     {
-        self::$client->loginUser($this->createUser());
+        $user2 = $this->createUser();
 
         $this->requestApi('POST', '/user/invitation', [
             'email' => 'test@company.io',
-            'project' => self::$loggedInUser->getSelectedProject()->getId(),
+            'project' => $user2->getSelectedProject()->getId(),
         ], expectStatusCode: 403);
     }
 

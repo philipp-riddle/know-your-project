@@ -3,14 +3,16 @@
 namespace App\Entity\Page;
 
 use App\Entity\Interface\AccessContext;
+use App\Entity\Interface\CrudEntityValidationInterface;
 use App\Entity\Interface\UserPermissionInterface;
 use App\Entity\User\User;
+use App\Exception\Entity\EntityValidationException;
 use App\Repository\PageSectionURLRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PageSectionURLRepository::class)]
-class PageSectionURL implements UserPermissionInterface
+class PageSectionURL implements UserPermissionInterface, CrudEntityValidationInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -24,10 +26,10 @@ class PageSectionURL implements UserPermissionInterface
     #[ORM\Column(type: Types::TEXT)]
     private ?string $url = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: false)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(length: 512, nullable: true)]
     private ?string $description = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -155,5 +157,14 @@ class PageSectionURL implements UserPermissionInterface
         }
 
         return $htmlText;
+    }
+
+    public function validate(): void
+    {
+        $url = \trim($this->getUrl());
+
+        if ($url !== '' && !\filter_var($url, FILTER_VALIDATE_URL)) {
+            throw new EntityValidationException('URL is not valid: '.$url);
+        }
     }
 }

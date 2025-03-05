@@ -11,6 +11,7 @@ use App\Entity\Tag\Tag;
 use App\Entity\Tag\TagPage;
 use App\Entity\User\User;
 use App\Exception\BadRequestException;
+use App\Service\Helper\HTMLValidator;
 use Doctrine\ORM\EntityManagerInterface;
 
 class PageGenerationService
@@ -56,6 +57,9 @@ class PageGenerationService
      */
     public function generatePage(User $user, Page $page, string $title, string $content, ?Tag $tag = null, array $checklistItemNames = []): Page
     {
+        $title = \strip_tags($title);
+        HTMLValidator::validate($content); // make sure there is no illegal content in the HTML
+
         if (!$this->isPageEmpty($page)) {
             throw new BadRequestException('The page is not empty; cannot generate contents for it.');
         }

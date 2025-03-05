@@ -53,7 +53,7 @@ abstract class ApiController extends AbstractController
 
     protected function checkUserAccess(UserPermissionInterface $userPermissionInterface, AccessContext $accessContext = AccessContext::READ): void
     {
-        if (!$userPermissionInterface->hasUserAccess($this->getUser())) {
+        if (!$userPermissionInterface->hasUserAccess($this->getUser(), $accessContext)) {
             throw new AccessDeniedException('You do not have access to this '.\get_class($userPermissionInterface));
         }
     }

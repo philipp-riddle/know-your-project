@@ -36,6 +36,20 @@ class ProjectUserApiControllerTest extends ApiControllerTestCase
         $this->requestApi('DELETE', '/project/user/' . $newUser->getSelectedProject()->getProjectUsers()[0]->getId(), expectStatusCode: 403);
     }
 
+    public function testDeleteProjectUser_error_403_notOwner()
+    {
+        $newUser = $this->createUser();
+        $newProjectUser = (new ProjectUser())
+            ->setUser($newUser)
+            ->setProject(self::$loggedInUser->getSelectedProject())
+            ->setCreatedAt(new \DateTime());
+        self::$em->persist($newProjectUser);
+        self::$em->flush();
+
+        self::$client->loginUser($newUser);
+        $this->requestApi('DELETE', '/project/user/' . $newProjectUser->getId(), expectStatusCode: 403);
+    }
+
     public function testDeleteProjectUser_error_404()
     {
         $this->requestApi('DELETE', '/project/user/999999', expectStatusCode: 404);

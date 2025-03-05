@@ -66,27 +66,38 @@ abstract class ApplicationTestCase extends WebTestCase
         self::$em->flush();
 
         if (null === $selectedProject) {
-            $selectedProject = (new Project())
-                ->setName('Test Project')
-                ->setOwner($user)
-                ->setCreatedAt(new \DateTimeImmutable());
+            $selectedProject = $this->createProject($user, flush: false);
             $user->setSelectedProject($selectedProject);
-            self::$em->persist($selectedProject);    
         } else {
             // the passed $selectedProject could be unmanaged; thus, fetch a new managed instance from Doctrine.
             $selectedProject = self::$em->getRepository(Project::class)->find($selectedProject->getId());
         }
 
-        if ($selectedProject->getProjectUser($user) === null) {
-            $projectUser = (new ProjectUser())
-                ->setUser($user)
-                ->setCreatedAt(new \DateTime());
-            $selectedProject->addProjectUser($projectUser);
-            self::$em->persist($projectUser);
-        }
-
         self::$em->flush();
 
         return $user;
+    }
+
+    protected function createProject(User $owner, bool $flush = true): Project
+    {
+        $project = (new Project())
+            ->setName('Test Project')
+            ->setOwner($owner)
+            ->setCreatedAt(new \DateTimeImmutable());
+        self::$em->persist($project);
+
+        if ($project->getProjectUser($owner) === null) {
+            $projectUser = (new ProjectUser())
+                ->setUser($owner)
+                ->setCreatedAt(new \DateTime());
+            $project->addProjectUser($projectUser);
+            self::$em->persist($projectUser);
+        }
+
+        if ($flush) {
+            self::$em->flush();
+        }
+
+        return $project;
     }
 }

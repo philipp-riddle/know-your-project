@@ -158,24 +158,7 @@ abstract class CrudApiController extends ApiController
             $entity = $afterProcessEntity($entity, $originalEntity);
         }
 
-        // additional data to serialize and return in the JSON response.
-        $additionalData = $this->getAdditionalDataToSerialize($entity, httpMethod: $request->getMethod());
-
-        return $this->jsonSerialize($entity, additionalData: $additionalData);
-    }
-
-    /**
-     * Returns additional data to serialize after the entity has been persisted.
-     * 
-     * @param UserPermissionInterface $entity The entity that has been persisted
-     * @param string $httpMethod The HTTP method that was used to persist the entity
-     * 
-     * @return array An array of additional data to return in the JSON response
-     */
-    protected function getAdditionalDataToSerialize(UserPermissionInterface $entity, string $httpMethod): array
-    {
-        // override this method in child classes to add additional processing after the entity has been persisted
-        return [];
+        return $this->jsonSerialize($entity);
     }
 
     /**

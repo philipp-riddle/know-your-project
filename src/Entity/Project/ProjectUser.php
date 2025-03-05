@@ -88,11 +88,11 @@ class ProjectUser implements UserPermissionInterface, CrudEntityInterface
         $isOwnerAccessContext = $accessContext === AccessContext::DELETE;
         $isOwner = $this->getProject()->getOwner() === $user;
 
-        if ($isOwnerAccessContext && !$isOwner) {
-            return false;
+        if ($isOwnerAccessContext || $isOwner) {
+            return $isOwner;
         }
 
-        return $isOwner || $this->getUser() === $user;
+        return $this->getUser() === $user;
     }
 
     public function initialize(): static

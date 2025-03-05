@@ -104,9 +104,9 @@ class TaskApiControllerTest extends ApiControllerTestCase
 
         $orderResponse = $this->requestJsonApi('POST', '/task/Discover/order', ['idOrder' => $newOrder]);
 
-        $this->assertSame($orderResponse[0]['orderIndex'], 1);
-        $this->assertSame($orderResponse[1]['orderIndex'], 2);
-        $this->assertSame($orderResponse[2]['orderIndex'], 0);
+        $this->assertSame($orderResponse[0]['orderIndex'], 0);
+        $this->assertSame($orderResponse[1]['orderIndex'], 1);
+        $this->assertSame($orderResponse[2]['orderIndex'], 2);
     }
 
     public function testChangeTaskOrder_error_tooManyItems(): void

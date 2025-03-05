@@ -219,7 +219,6 @@ class TextMarkerTest extends TestCase
         $this->assertNull($markedText);
     }
 
-
     public function testGetMarkedText_withIncludedStrongTag()
     {
         $text = '
@@ -234,6 +233,55 @@ class TextMarkerTest extends TestCase
             It advocates for the consolidation of critical';
 
         $this->assertSame($expectedMarkedText, $markedText);
+    }
+
+    public function testGetMarkedText_inUrl_fullWordMatch()
+    {
+        $text = 'https://www.example.com';
+        $searchTerm = 'example';
+
+        $markedText = TextMarker::getMarkedText($searchTerm, $text);
+        $expectedMarkedText = 'https://www.<mark>example</mark>.com';
+
+        $this->assertSame($expectedMarkedText, $markedText);
+    }
+
+    public function testGetMarkedText_inUrl_partialWordMatch()
+    {
+        $text = 'https://www.example.com';
+        $searchTerm = 'exam';
+
+        $markedText = TextMarker::getMarkedText($searchTerm, $text);
+        $expectedMarkedText = 'https://www.<mark>example</mark>.com';
+
+        $this->assertSame($expectedMarkedText, $markedText);
+    }
+
+    public function testGetMarkedText_inUrl_multipleWordsWithDots()
+    {
+        $text = 'https://www.example.com';
+        $searchTerm = 'www.example';
+
+        $markedText = TextMarker::getMarkedText($searchTerm, $text);
+        $expectedMarkedText = 'https://<mark>www.example</mark>.com';
+
+        $this->assertSame($expectedMarkedText, $markedText);
+    }
+
+    public function testGetMatches_inUrl_multipleWordsWithDots()
+    {
+        $text = 'https://www.example.com';
+        $searchTerm = 'www.example';
+
+        $matches = TextMarker::getMatches($searchTerm, $text);
+        $expectedMatches = [
+            [
+                'text' => 'www.example',
+                'index' => 8,
+            ],
+        ];
+
+        $this->assertSame($expectedMatches, $matches);
     }
 
     public function testGetMatches_oneWord()

@@ -6,7 +6,7 @@ use Twig\Extension\AbstractExtension;
 
 class TwigExtension extends AbstractExtension
 {
-    public function getFilters()
+    public function getFilters(): array
     {
         return [
             new \Twig\TwigFilter('json_variable_encode', array($this, 'jsonVariableEncode')),
@@ -14,7 +14,8 @@ class TwigExtension extends AbstractExtension
     }
 
     /**
-     * Taken from https://mathiasbynens.be/notes/json-dom-csp
+     * Taken from https://mathiasbynens.be/notes/json-dom-csp.
+     * Otherwise it is not possible for us to use the variable json-encoded in a script tag.
      */
     public function jsonVariableEncode($object): string
     {

@@ -5,7 +5,7 @@ namespace App\Serializer\Attribute;
 use App\Serializer\SerializerContext;
 
 /**
- * This attribute indicates any Entity properties which should be kept in all cases when a specific serializer context is given.
+ * This attribute indicates any Entity methods which should be kept in all cases when a specific serializer context is given.
  */
 #[\Attribute(\Attribute::TARGET_METHOD)]
 class KeepInSerializerContext

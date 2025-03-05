@@ -14,24 +14,24 @@ class SearchApiControllerTest extends ApiControllerTestCase
         PageSectionText::class,
     ];
 
-    // public function testCreateSearchSimplePage(): void
-    // {
-    //     $pageTab = $this->getPageTab();
-    //     $pageTab->getPage()->setName('API security checkup');
-    //     self::$em->flush();
+    public function testCreateSearchSimplePage(): void
+    {
+        $pageTab = $this->getPageTab();
+        $pageTab->getPage()->setName('API security checkup');
+        self::$em->flush();
 
-    //     // insert the entity into Qdrant, the vector database and update the vector embedding.
-    //     $this->getEntityVectorEmbeddingService()->updateEmbeddedEntity($pageTab->getPage());
+        // insert the entity into Qdrant, the vector database and update the vector embedding.
+        $this->getEntityVectorEmbeddingService()->updateEmbeddedEntity($pageTab->getPage());
 
-    //     $searchResponse = $this->requestJsonApi('POST', '/search/project/'.self::$loggedInUser->getSelectedProject()->getId(), [
-    //         'search' => 'API security checkup',
-    //     ]);
+        $searchResponse = $this->requestJsonApi('POST', '/search/project/'.self::$loggedInUser->getSelectedProject()->getId(), [
+            'search' => 'API security checkup',
+        ]);
 
-    //     $this->assertCount(1, $searchResponse);
-    //     $this->assertSame('Page:'.$pageTab->getPage()->getId(), $searchResponse[0]['id']);
-    //     $this->assertSame('Page', $searchResponse[0]['type']);
-    //     $this->assertSame($pageTab->getPage()->getId(), $searchResponse[0]['result']['id']);
-    // }
+        $this->assertCount(1, $searchResponse);
+        $this->assertSame('Page:'.$pageTab->getPage()->getId(), $searchResponse[0]['id']);
+        $this->assertSame('Page', $searchResponse[0]['type']);
+        $this->assertSame($pageTab->getPage()->getId(), $searchResponse[0]['result']['id']);
+    }
 
     public function testCreateSearchPageAndPageSectionMatch(): void
     {

@@ -67,6 +67,7 @@ abstract class ApiControllerTestCase extends ApplicationTestCase
         $page = (new Page())
             ->setName('Test Page')
             ->setProject($project)
+            ->setUser($user ?? self::$loggedInUser)
             ->setCreatedAt(new \DateTime());
         self::$em->persist($page);
 

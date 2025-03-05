@@ -114,7 +114,7 @@ final class TextMarker
             foreach ($matches[0] as $match) {
                 $matchText = $match[0];
                 $matchIndex = $match[1];
-                $textCut = self::cutWord($text, $matchIndex, $matchIndex + \mb_strlen($searchTerm));
+                $textCut = self::cutWord($text, $matchIndex, $matchIndex + \mb_strlen($matchText));
 
                 // if the cut text is different than the original matched text we must adjust the index
                 if ($matchText !== $textCut) {
@@ -174,7 +174,7 @@ final class TextMarker
 
     public static function isEndChar(string $char): bool
     {
-        return \ctype_space($char) || \in_array($char, ['.', ',', ';', ':', '!', '?', '(', ')', '[', ']', '{', '}', '<', '>', '"', "'"], true);
+        return \ctype_space($char) || \in_array($char, ['.', ',', ';', ':', '!', '?', '(', ')', '[', ']', '{', '}', '<', '>', '"', "'", '/'], true);
     }
 
     /**

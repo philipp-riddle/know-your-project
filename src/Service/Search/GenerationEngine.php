@@ -233,7 +233,7 @@ final class GenerationEngine
             return;
         }
 
-        $summarizeUserMessage = 'Here is the HTML content of the summary I want to summarize: '.$pageHtml;
+        $summarizeUserMessage = 'Here is the HTML content I want to summarize: '.$pageHtml;
         $messages = [
             [
                 // inject an additional system instruction to the chat response to make sure the assistant knows what to do with this special task.

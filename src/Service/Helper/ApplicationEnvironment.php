@@ -12,7 +12,7 @@ final class ApplicationEnvironment
      */
     public static function isTestEnv(): bool
     {
-        return 'test' === $_ENV['APP_ENV'];
+        return \str_contains($_ENV['APP_ENV'], 'test');
     }
 
     /**
@@ -23,7 +23,7 @@ final class ApplicationEnvironment
      */
     public static function isDevEnv(): bool
     {
-        return 'dev' === $_ENV['APP_ENV'];
+        return \str_contains($_ENV['APP_ENV'], 'dev');
     }
 
     /**
@@ -34,6 +34,6 @@ final class ApplicationEnvironment
      */
     public static function isProdEnv(): bool
     {
-        return 'prod' === $_ENV['APP_ENV'];
+        return \str_contains($_ENV['APP_ENV'], 'prod');
     }
 }

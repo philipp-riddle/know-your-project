@@ -42,9 +42,9 @@ class OrderListHandlerTest extends TestCase
 
         $this->assertEquals(1, $itemToAdd->getOrderIndex());
         $this->assertEquals(0, $items[0]->getOrderIndex());
-        $this->assertEquals(2, $items[1]->getOrderIndex());
-        $this->assertEquals(3, $items[2]->getOrderIndex());
-        $this->assertEquals(1, $items[3]->getOrderIndex());
+        $this->assertEquals(1, $items[1]->getOrderIndex());
+        $this->assertEquals(2, $items[2]->getOrderIndex());
+        $this->assertEquals(3, $items[3]->getOrderIndex());
     }
 
     public function testApplyIdOrder_default()
@@ -58,9 +58,9 @@ class OrderListHandlerTest extends TestCase
         
         (new OrderListHandler())->applyIdOrder($items, $idOrder);
 
-        $this->assertEquals(2, $items[0]->getOrderIndex());
+        $this->assertEquals(0, $items[0]->getOrderIndex());
         $this->assertEquals(1, $items[1]->getOrderIndex());
-        $this->assertEquals(0, $items[2]->getOrderIndex());
+        $this->assertEquals(2, $items[2]->getOrderIndex());
     }
 
     public function testApplyIdOrder_mismatchingCounts()

@@ -54,15 +54,7 @@ abstract class Controller extends AbstractController
          * We allow ONLY sources from our own domain with the addition of connecting to the Mercure hub on port 3001 with connect-src.
          * Furthermore, we allow inline styles for Vue.js and its components as they do not expose any security risks.
          */
-        $response->headers->set('Content-Security-Policy', "
-            default-src 'self' $allowedHosts;
-            script-src 'self' $allowedHosts;
-            style-src 'self' $allowedHosts 'unsafe-inline';
-            font-src 'self' $allowedHosts;
-            img-src 'self' $allowedHosts;
-            frame-src 'self' $allowedHosts;
-            connect-src 'self' $allowedConnectHosts;
-        ");
+        $response->headers->set('Content-Security-Policy', "default-src 'self' $allowedHosts; script-src 'self' $allowedHosts; style-src 'self' $allowedHosts 'unsafe-inline'; font-src 'self' $allowedHosts; img-src http: https: data:; frame-src 'self' $allowedHosts; connect-src 'self' $allowedConnectHosts;");
 
         // Add HSTS header for production environment; enforces HTTPS on every channel
         if (ApplicationEnvironment::isProdEnv()) {

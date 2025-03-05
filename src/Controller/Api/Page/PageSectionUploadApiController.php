@@ -69,7 +69,8 @@ class PageSectionUploadApiController extends CrudApiController
             $createdPageSectionUploads[] = $pageSection = $this->handlePageSectionUpload($pageTab, $file);
             $this->em->flush();
 
-            // we have to dispatch the event after the page section is persisted and flushed
+            // we have to dispatch the event after the page section is persisted and flushed;
+            // this way it is published through the Mercure hub to others users and additionally the entity  (i.e. the file name) is available in the search.
             $this->eventDispatcher->dispatch(new CreateCrudEntityEvent($pageSection, $this->getUser()));
             $this->em->persist($pageSection);
         }

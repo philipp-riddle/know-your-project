@@ -66,12 +66,13 @@ final class EntitySerializer
         //    - if we reached max depth we only return the default for the object (object ID / empty array).
         //    - if not we need to go deeper recursively (by adding it to the $foundNestedTypes property)
         foreach ($reflection->getMethods(\ReflectionMethod::IS_PUBLIC) as $propertyMethod) {
-            if (!$this->shouldSerializeMethod($propertyMethod)) {
+            // get the associated property from the reflection class property;
+            // if we do not want to serialize the property we can skip it by returning null.
+            if (null === $propertyName = $this->getPropertyNameFromMethod($propertyMethod)) {
                 continue;
             }
 
             // now we determine through the return type whether or not we want to allow the normalization of this property in the given class and at the current depth
-            $propertyName = \lcfirst(\substr($propertyMethod->getName(), 3));
             $nestedReflectionClass = $this->getNestedReflectionClass($currentUser, $object, $propertyMethod, $serializerContext, $currentDepth);
             $nestedValue = $propertyMethod->invoke($object);
 
@@ -207,25 +208,28 @@ final class EntitySerializer
         return null;
     }
 
-    public function shouldSerializeMethod(\ReflectionMethod $method): bool
+    public function getPropertyNameFromMethod(\ReflectionMethod $method): ?string
     {
-        if (!\str_starts_with($method->getName(), 'get')) {
-            return false;
+        $isGetter = \str_starts_with($method->getName(), 'get');
+        $isIs = \str_starts_with($method->getName(), 'is');
+
+        if (!$isGetter && !$isIs) {
+            return null;
         }
 
         foreach ($method->getParameters() as $parameter) {
             if (!$parameter->isOptional()) {
-                return false; // if the method has any required parameters we cannot serialize it
+                return null; // if the method has any required parameters we cannot serialize it
             }
         }
 
-        return true;
+        return \lcfirst(\substr($method->getName(), $isGetter ? 3 : 2));
     }
 
     public function getMappedEntityValue(?\ReflectionClass $class, $nestedTypeValue, ?string $propertyName = null)
     {
         if ($propertyName === 'password') {
-            return null; // never expose ANY password
+            return null; // NEVER expose the password
         }
 
         // if there was no class given but the given value is an object we assume the class to map to is the class of the nested value

@@ -66,7 +66,21 @@ class ProjectApiController extends CrudApiController
     #[Route('/{project}', name: 'api_project_delete', methods: ['DELETE'])]
     public function delete(Project $project): JsonResponse
     {
-        return $this->crudDelete($project);
+        return $this->crudDelete(
+            $project,
+            onProcessEntity: function (Project $project) {
+                // custom logic if the user deletes the selected project:
+                if ($project === $this->getUser()->getSelectedProject()) {
+                    // select the next project; if there is no next project, the user will have no selected project
+                    foreach ($this->getUser()->getProjectUsers() as $projectUser) {
+                        if ($projectUser->getProject() !== $project) {
+                            $this->getUser()->setSelectedProject($projectUser->getProject());
+                            break;
+                        }
+                    }
+                }
+            }
+        );
     }
 
     public function getEntityClass(): string

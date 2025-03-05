@@ -85,6 +85,12 @@ class GenerationApiController extends ApiController
         if (null === $page) {
             $page = $this->pageService->createEmptyPage($this->getUser(), $project, 'New Page');
             $this->em->flush();
+        } else {
+            $this->checkUserAccess($page);
+
+            if ($page->getProject() !== $project) {
+                throw new BadRequestException('The page does not belong to the specified project');
+            }
         }
 
         $form = $this->createForm(GenerationSaveForm::class);
@@ -102,15 +108,19 @@ class GenerationApiController extends ApiController
         /** @var ?Tag */
         $tag = $form->get('tag')->getData();
 
-        if (null !== $tag && !$tag->hasUserAccess($this->getUser())) {
-            throw new AccessDeniedException('You do not have access to this tag');
+        if (null !== $tag) {
+            $this->checkUserAccess($tag);
+
+            if ($tag->getProject() !== $project) {
+                throw new BadRequestException('The tag does not belong to the specified project');
+            }
         }
+
+        $pageGeneration = $this->pageGenerationService->generatePage($this->getUser(), $page, $title, $content, $tag, $checklistItems);
 
         // dispatch an event to also update it for other users via Mercure
         $this->eventDispatcher->dispatch(new UpdateCrudEntityEvent($page, $this->getUser(), $page));
 
-        return $this->jsonSerialize(
-            $this->pageGenerationService->generatePage($this->getUser(), $page, $title, $content, $tag, $checklistItems),
-        );
+        return $this->jsonSerialize($pageGeneration);
     }
 }

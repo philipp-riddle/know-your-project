@@ -52,7 +52,7 @@ class PageSectionApiController extends CrudApiController
             $pageSection,
             $request,
             onProcessEntity: function (PageSection $pageSection) {
-                $this->pageSectionService->processUpdate($pageSection);
+                $this->pageSectionService->processUpdate($this->getUser(), $pageSection);
 
                 return $pageSection;
             },
@@ -92,12 +92,12 @@ class PageSectionApiController extends CrudApiController
                     $this->em->persist($pageSectionEmbeddedPage);
 
                 // edge case: empty AI prompt creation
-                } else if ('' === @$requestContent['aiPrompt']['prompt']['promptText']) {
+                } else if (null !== @$requestContent['aiPrompt']['prompt'] && null !== $promptText = @$requestContent['aiPrompt']['prompt']['promptText']) {
                     $prompt = (new Prompt())
                         ->setProject($pageSection->getPageTab()->getPage()->getProject())
                         ->setUser($this->getUser()) // log the current user - this can be used to further personalise the AI response for the user
-                        ->setPromptText('')
-                        ->setCreatedAt(new \DateTime());
+                        ->setPromptText($promptText)
+                        ->initialize();
                     $pageSectionAIPrompt = (new PageSectionAIPrompt())
                         ->setPrompt($prompt);
                     $pageSection->setAiPrompt($pageSectionAIPrompt);
@@ -132,17 +132,11 @@ class PageSectionApiController extends CrudApiController
                     $this->em->persist($pageSectionCalendarEvent);
                 }
 
-                // == GENERATION ENGINE PART
-                // If the block is connected to an AI prompt, generate the AI prompt response immediately if the prompt is not empty
-
-                if (null !== $pageSection->getAiPrompt()) {
-                    // generate the AI prompt response; this is done by chatting with the AI and using the page contents as context
-                    $this->generationEngine->generatePageSectionAIPrompt($pageSection->getPageTab()->getPage(), $pageSection->getAiPrompt());
-                } else if (null !== $pageSection->getPageSectionSummary()) {
-                    // generate the summary for the page section
-                    $this->generationEngine->generatePageSummary($this->getUser(), $pageSection->getPageTab()->getPage(), $pageSection->getPageSectionSummary());
-                    $this->em->persist($pageSectionSummary->getPrompt());
-                }
+                // can use generative AI if the page section is a prompt / summary;
+                // can fetch meta data from a URL;
+                // can validate the HTML content of a text block;
+                // ...
+                $this->pageSectionService->processUpdate($this->getUser(), $pageSection);
 
                 return $pageSection;
             }

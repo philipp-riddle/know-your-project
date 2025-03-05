@@ -5,13 +5,12 @@ namespace App\Controller\Api\User;
 use App\Controller\Api\CrudApiController;
 use App\Entity\Project\Project;
 use App\Entity\User\UserInvitation;
-use App\Exception\BadRequestException;
 use App\Form\User\UserInvitationForm;
 use App\Repository\UserInvitationRepository;
 use App\Serializer\SerializerContext;
 use App\Service\Helper\ApiControllerHelperService;
-use App\Service\Helper\ApplicationEnvironment;
 use App\Service\MailerService;
+use App\Service\User\UserInvitationService;
 use App\Service\UserService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,6 +24,7 @@ class UserInvitationApiController extends CrudApiController
         private UserService $userService,
         private MailerService $mailerService,
         private UserInvitationRepository $userInvitationRepository,
+        private UserInvitationService $userInvitationService,
     ) {
         parent::__construct($apiControllerHelperService);
     }
@@ -36,33 +36,7 @@ class UserInvitationApiController extends CrudApiController
             null,
             $request,
             onProcessEntity: function (UserInvitation $userInvitation) {
-                if (null !== $user = $this->userRepository->findOneBy(['email' => $userInvitation->getEmail()])) {
-                    $userInvitation->setUser($user);
-                    $isNewUser = false;
-                } else {
-                    $isNewUser = true;
-                }
-
-                if (null !== $this->userInvitationRepository->findOneBy(['user' => $userInvitation->getUser(), 'project' => $userInvitation->getProject()])) {
-                    throw new BadRequestException('User was already invited to this project');
-                }
-
-                if ($this->userInvitationRepository->findOneBy(['project' => $userInvitation->getProject(), 'email' => $userInvitation->getEmail()])) {
-                    throw new BadRequestException('User with this email was already invited');
-                }
-
-                $userInvitation->setCode(bin2hex(openssl_random_pseudo_bytes(10))); // attach random code to user invitation so that it can be used to verify the user
-
-                // send emails only when not in the test env
-                if (!ApplicationEnvironment::isTestEnv()) {
-                    if ($isNewUser) {
-                        $this->mailerService->sendUserInvitationToNewEmail($userInvitation);
-                    } else {
-                        $this->mailerService->sendUserInvitationToExistingUser($userInvitation);
-                    }
-                }
-
-                return $userInvitation;
+                return $this->userInvitationService->createInvitation($userInvitation->getEmail(), $userInvitation->getProject());
             },
         );
     }

@@ -5,7 +5,9 @@ namespace App\Tests\Unit\Serializer;
 use App\Entity\File;
 use App\Entity\Page\Page;
 use App\Entity\Page\PageSection;
+use App\Entity\Page\PageSectionChecklistItem;
 use App\Entity\Page\PageSectionText;
+use App\Entity\Page\PageSectionURL;
 use App\Entity\Page\PageTab;
 use App\Entity\Project\Project;
 use App\Entity\Project\ProjectUser;
@@ -183,7 +185,7 @@ class EntitySerializerTest extends ApplicationTestCase
     public function testSerialize_pageTab_emptyPageSections_depth1(): void
     {
         $owner = $this->createUser();
-        $pageTab = $this->getPageTab($owner);;
+        $pageTab = $this->getPageTab($owner);
         $serialized = (new EntitySerializer())->serialize($owner, $pageTab, 1);
 
         $this->assertSame($pageTab->getId(), $serialized['id']);
@@ -353,18 +355,25 @@ class EntitySerializerTest extends ApplicationTestCase
         $this->assertNotNull($reflectionClass);
     }
 
-    public function testShouldSerializeMethod_pageTab_getPage()
+    public function testGetPropertyNameFromMethod_pageTab_getPage()
     {
         $reflectionMethod = (new ReflectionClass(PageTab::class))->getMethod('getPage');
 
-        $this->assertTrue((new EntitySerializer())->shouldSerializeMethod($reflectionMethod));
+        $this->assertSame('page', (new EntitySerializer())->getPropertyNameFromMethod($reflectionMethod));
     }
 
-    public function testShouldSerializeMethod_pageTab_initialize()
+    public function testGetPropertyNameFromMethod_pageSectionChecklistItem_isComplete()
+    {
+        $reflectionMethod = (new ReflectionClass(PageSectionChecklistItem::class))->getMethod('isComplete');
+
+        $this->assertSame('complete', (new EntitySerializer())->getPropertyNameFromMethod($reflectionMethod));
+    }
+
+    public function testGetPropertyNameFromMethod_pageTab_initialize()
     {
         $reflectionMethod = (new ReflectionClass(PageTab::class))->getMethod('initialize');
 
-        $this->assertFalse((new EntitySerializer())->shouldSerializeMethod($reflectionMethod));
+        $this->assertNull((new EntitySerializer())->getPropertyNameFromMethod($reflectionMethod));
     }
 
     public function testGetEntityClassFromDocComment_simpleReturn()

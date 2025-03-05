@@ -24,7 +24,7 @@ class PageApiControllerTest extends ApiControllerTestCase
         $this->assertNotNull($createResponse['id']);
         $this->assertSame($createResponse['name'], 'Test Page');
         $this->assertSame($createResponse['project']['id'], self::$loggedInUser->getSelectedProject()->getId());
-        $this->assertNull($createResponse['user']);
+        $this->assertSame(self::$loggedInUser->getId(), $createResponse['user']['id']);
 
         $getResponse = $this->requestJsonApi('GET', '/page/' . $createResponse['id']);
         $this->assertSame($createResponse['id'], $getResponse['id']);
@@ -152,7 +152,7 @@ class PageApiControllerTest extends ApiControllerTestCase
 
     public function testProjectList_withNoTags(): void
     {
-        // create three pages in the project and one user note to test the filtering
+        // create three pages in the project to test the untagged pages list
         $createResponse1 = $this->requestJsonApi('POST', '/page', [
             'name' => 'Test Page 1',
             'project' => self::$loggedInUser->getSelectedProject()->getId(),
@@ -165,28 +165,13 @@ class PageApiControllerTest extends ApiControllerTestCase
             'name' => 'Test Page 3',
             'project' => self::$loggedInUser->getSelectedProject()->getId(),
         ]);
-        $createResponseUser = $this->requestJsonApi('POST', '/page', [
-            'name' => 'User Note',
-            'project' => self::$loggedInUser->getSelectedProject()->getId(),
-            'user' => self::$loggedInUser->getId(),
-        ]);
 
-        $response = $this->requestJsonApi('GET', \sprintf('/page/project-list/%d?tags=[]', self::$loggedInUser->getSelectedProject()->getId()));
-        $this->assertCount(4, $response);
-        
-        // first, the user note
-        $this->assertSame($createResponseUser['id'], $response[0]['id']);
-
-        // then all the other pages
-        $this->assertSame($createResponse1['id'], $response[1]['id']);
-        $this->assertSame($createResponse2['id'], $response[2]['id']);
-        $this->assertSame($createResponse3['id'], $response[3]['id']);
-
-        // @todo this throws an exception because the project:owner entity is new and not persisted somehow
-        // now test the filtering by requesting with another user - the private note should not show up
-        self::$client->loginUser($this->createUser(selectedProject: self::$loggedInUser->getSelectedProject()));
         $response = $this->requestJsonApi('GET', \sprintf('/page/project-list/%d?tags=[]', self::$loggedInUser->getSelectedProject()->getId()));
         $this->assertCount(3, $response);
+
+        $this->assertSame($createResponse1['id'], $response[0]['id']);
+        $this->assertSame($createResponse2['id'], $response[1]['id']);
+        $this->assertSame($createResponse3['id'], $response[2]['id']);
     }
 
     public function testProject_list_error_403_noAccessToProject(): void

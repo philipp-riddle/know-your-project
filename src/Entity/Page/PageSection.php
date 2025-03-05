@@ -316,6 +316,7 @@ implements
         }
 
         $this->embeddedPage?->validate();
+        $this->pageSectionURL?->validate();
 
         if ($pageSectionTypesNotNull !== 1) {
             throw new EntityValidationException('A page section must have exactly one content type');
