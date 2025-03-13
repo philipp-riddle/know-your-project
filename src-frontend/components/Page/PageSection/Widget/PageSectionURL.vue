@@ -20,8 +20,19 @@
                             >
                         </a>
                         <div>
-                            <h5 v-if="pageSection.pageSectionURL.isInitialized" class="m-0">{{ pageSection.pageSectionURL.name }}</h5>
-                            
+                            <h5 
+                                v-if="pageSection.pageSectionURL.isInitialized"
+                                class="m-0"
+                            >
+                                <TextEditor
+                                    class="flex-fill"
+                                    :text=" pageSection.pageSectionURL.name"
+                                    @onChange="onChangeName"
+                                    @enter="onChangeName"
+                                    placeholder="URL name"
+                                />
+                            </h5>
+
                             <a
                                 v-if="pageSection.pageSectionURL.isInitialized"
                                 :href="pageSection.pageSectionURL.url"
@@ -39,6 +50,7 @@
                                 placeholder="Enter an URL and press Enter"
                                 :disabled="isLoading"
                             />
+
                             <p v-if="!isLoading && !canSubmit" class="text-danger">Invalid URL</p>
                         </div>
                     </div>
@@ -59,12 +71,20 @@
             </div>
 
             <div
-                v-if="pageSection.pageSectionURL.description !== null"
+                v-if="pageSection.pageSectionURL.isInitialized"
                 :style="backgroundCoverImageStylings"
                 class="url-description"
             >
                 <div class="p-3">
-                    <p class="m-0 text-muted">{{ pageSection.pageSectionURL.description }}</p>
+                    <p class="m-0 text-muted">
+                        <TextEditor
+                            class="flex-fill"
+                            :text=" pageSection.pageSectionURL.description ?? ''"
+                            @onChange="onChangeDescription"
+                            @enter="onChangeDescription"
+                            placeholder="URL description"
+                        />
+                    </p>
                 </div>
             </div>
         </div>
@@ -73,6 +93,7 @@
 
 <script setup>
     import { computed, ref } from 'vue';
+    import { useDebounceFn } from '@vueuse/core';
     import TextEditor from '@/components/Util/TextEditor.vue';
 
     const props = defineProps({
@@ -110,7 +131,21 @@
         }
 
         return pageSection.value.pageSectionURL.url;
-    })
+    });
+
+    const onChangeName = (newName) => {
+        pageSection.value.pageSectionURL.name = newName;
+        isDebouncing.value = true;
+
+        debouncedSubmit();
+    };
+
+    const onChangeDescription = (newDescription) => {
+        pageSection.value.pageSectionURL.description = newDescription;
+        isDebouncing.value = true;
+
+        debouncedSubmit();
+    };
 
     const canSubmit = computed(() => {
         if (isLoading.value) {
@@ -125,17 +160,34 @@
         }
     });
 
-    const submit = () => {
+    const isDebouncing = ref(false);
+    const debouncedSubmit = useDebounceFn(() => submit(null, true), 500);
+
+    const submit = (text, isDebounce=false) => {
         if (!canSubmit.value) {
             return;
         }
 
-        isLoading.value = true;
-        props.onPageSectionSubmit({
+        // this protects us against double submissions when the user presses enter + the debouncing time is not over
+        if (isDebounce && !isDebouncing.value) {
+            return;
+        }
+
+        isDebouncing.value = false;
+
+        let updatedPageSectionURL = {
             pageSectionURL: {
                 url: currentUrl.value,
             },
-        }).then((updatedSection) => {
+        };
+
+        if (pageSection.value.pageSectionURL.isInitialized) {
+            updatedPageSectionURL.pageSectionURL.name = pageSection.value.pageSectionURL.name;
+            updatedPageSectionURL.pageSectionURL.description = pageSection.value.pageSectionURL.description;
+        }
+
+        isLoading.value = true;
+        props.onPageSectionSubmit(updatedPageSectionURL).then((updatedSection) => {
             pageSection.value = updatedSection;
         }).finally(() => {
             isLoading.value = false;

@@ -66,7 +66,7 @@ class PageSectionService
         try {
             $contents = \file_get_contents($url);
         } catch (\Exception) {
-            $pageSectionURL->setName('URL'); // use this as a fallback; this is something the user can see and change
+            $pageSectionURL->setName($pageSectionURL->getName() ?? 'URL'); // use this as a fallback; this is something the user can see and change
             return;
         }
 

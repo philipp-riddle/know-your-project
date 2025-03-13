@@ -21,7 +21,10 @@ class PageService
 
     public function createDefaultTaskPage(User $user, Task $task, string $pageName): Page
     {
-        $page = $this->createEmptyPage($user, $task->getProject(), $pageName);
+        $page = $this
+            ->createEmptyPage($user, $task->getProject(), $pageName)
+            ->setTask($task);
+        $this->em->persist($page);
 
         $pageSection = (new PageSection())
             ->setUpdatedAt(new \DateTimeImmutable())

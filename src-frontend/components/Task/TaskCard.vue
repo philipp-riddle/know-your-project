@@ -25,9 +25,10 @@
                             :user="pageUser.user"
                             imageSize="xxs"
                         />
-                        <small v-for="tagPage in pageStore.displayedPages[task.page.id].tags">
-                            <span class="btn btn-tag me-1" :style="{'background-color': tagPage.tag.color}" v-tooltip="'Tag: '+tagPage.tag.name">&nbsp;&nbsp;&nbsp;</span>
-                        </small>
+                        <TagBadge
+                            v-for="tagPage in pageStore.displayedPages[task.page.id].tags"
+                            :tag="tagPage.tag"
+                        />
                     </div>
 
                     <div class="d-flex flex-row gap-1 align-items-center justify-content-end">
@@ -66,6 +67,7 @@
 <script setup>
     import { computed } from 'vue';
     import UserBadge from '@/components/User/UserBadge.vue';
+    import TagBadge from '@/components/Tag/TagBadge.vue';
     import { useDateFormatter } from '@/composables/DateFormatter.js';
     import { useTaskStore } from '@/stores/TaskStore.js';
     import { usePageStore } from '@/stores/PageStore.js';

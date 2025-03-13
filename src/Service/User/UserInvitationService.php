@@ -25,19 +25,25 @@ class UserInvitationService
      * 
      * @param string $email The email of the user to invite
      * @param Project|null $project The project to preselect for the user when logging in; if not given the user starts in the setup step
+     * @param string|null $name The name of the user to invite; personalises the experience
+     * @param bool $quiet Whether to suppress sending emails
      * @return UserInvitation The created user invitation
      * 
      * @throws BadRequestException When the user was already invited to the project
      * @throws BadRequestException When the user with the given email was already invited
      * @throws BadRequestException When the user with the given email already exists
-     * 
-     * @return UserInvitation The created user invitation
      */
-    public function createInvitation(string $email, ?Project $project): UserInvitation
+    public function createInvitation(string $email, ?Project $project, ?string $name = null, bool $quiet = false): UserInvitation
     {
+        if (!\filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            throw new BadRequestException('Invalid email address.');
+        }
+
         $userInvitation = (new UserInvitation())
+            ->initialize()
             ->setEmail($email)
-            ->setProject($project);
+            ->setProject($project)
+            ->setName($name);
 
         // check if the user of the given invitation email already exists;
         // if so, attach the user to the invitation.
@@ -53,7 +59,7 @@ class UserInvitationService
             throw new BadRequestException(\sprintf('User %s was already invited to project %s', $userInvitation->getEmail(), $userInvitation->getProject()->getName()));
         }
 
-        if ($this->userInvitationRepository->findOneBy(['project' => $userInvitation->getProject(), 'email' => $userInvitation->getEmail()])) {
+        if (null !== $project && $this->userInvitationRepository->findOneBy(['project' => $userInvitation->getProject(), 'email' => $userInvitation->getEmail()])) {
             throw new BadRequestException(\sprintf('User with email %s was already invited to project %s', $userInvitation->getEmail(), $userInvitation->getProject()->getName()));
         }
 
@@ -61,7 +67,7 @@ class UserInvitationService
         $userInvitation->setCode(\bin2hex(\openssl_random_pseudo_bytes(10)));
 
         // send emails only when not in the test env
-        if (!ApplicationEnvironment::isTestEnv()) {
+        if (!$quiet && !ApplicationEnvironment::isTestEnv()) {
             if (null === $user) {
                 $this->mailerService->sendUserInvitationToNewEmail($userInvitation);
             } else {

@@ -57,7 +57,8 @@ implements
     #[ORM\OneToMany(mappedBy: 'page', targetEntity: PageTab::class, orphanRemoval: true)]
     private Collection $pageTabs;
 
-    #[ORM\OneToOne(mappedBy: 'page')]
+    #[ORM\OneToOne(mappedBy: 'page', targetEntity: Task::class)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
     private ?Task $task;
 
     /**

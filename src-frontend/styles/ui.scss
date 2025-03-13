@@ -46,21 +46,20 @@
     // typically they are a circle with a border and a background color.
     // later on the user image will be shown in the background
     &.btn-tag {
-        height: 2rem;
-        width: 2rem;
-        border-radius: 50%;
-        border-width: 2px;
-        padding: 0.5rem !important;
-        margin: 0 !important;
-        font-size: 1.25em;
-        transition: background-color 0.3s ease-in-out;
+        // border-radius: 50%;
+        // border-width: 2px;
+        // font-size: 1.25em;
         filter: brightness(1.0);
         transition: filter 0.3s ease-in-out;
 
         &.btn-sm {
-            height: 1.5rem;
-            width: 1.5rem;
+            // height: 1.5rem;
+            // width: 1.5rem;
             padding: 0.3rem !important;
+        }
+
+        font-awesome-icon {
+            transition: color 0.3s ease-in-out;
         }
 
         &:hover {
@@ -79,6 +78,13 @@
 
 hr {
     margin: 0;
+}
+
+/* == MARK ============================================================= */
+
+mark {
+    background-color: $light-green-60;
+    color: black;
 }
 
 /* === CARDS ============================================================= */
@@ -443,10 +449,13 @@ modal-backdrop.show {
 
 .task-card {
     border-width: 0 !important;
+    transition:  background-color 0.3s linear;
+    min-height: 5rem;
 
     &:hover {
         cursor: pointer;
-        border-width: 1px !important;
+        background-color: $light-green-40;
+        transition:  background-color 0.3s linear;
     }
 }
 

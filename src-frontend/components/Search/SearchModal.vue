@@ -169,6 +169,8 @@
     watch(() => searchStore.isSearching, (newValue) => {
         if (newValue) {
             showModal();
+        } else {
+            hideModal();
         }
     });
 
@@ -198,8 +200,8 @@
     };
 
     const checkIfUserClickedOutside = (e) => {
-        // when the user clicks on the modal itself, we hide the modal as this is outside of the search dialogue
-        if (e.target.classList.contains('modal')) {
+        // when the user clicks on the modal or the modal body itself, we hide the modal as this is outside of the search dialogue
+        if (e.target.classList.contains('modal')  || e.target.classList.contains('modal-body')) {
             hideModal();
         }
     };

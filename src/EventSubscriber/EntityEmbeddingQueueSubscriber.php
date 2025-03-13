@@ -56,7 +56,7 @@ class EntityEmbeddingQueueSubscriber implements EventSubscriberInterface
 
             // also delete all child entities via the queue, e.g. page => page sections
             foreach ($entity->getChildEntities() as $childEntity) {
-                $this->entityEmbeddingQueueService->addToQueue($childEntity, delete: true, entityId: $event->getEntityId());
+                $this->entityEmbeddingQueueService->addToQueue($childEntity, delete: true);
             }
         }
     }

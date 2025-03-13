@@ -84,7 +84,7 @@ export const useUserStore = defineStore('user', () => {
     async function deleteUserProjectInvitation(invitation) {
         return new Promise((resolve) => {
             fetchDeleteUserProjectInvitation(invitation.id).then(() => {
-                userProjectInvitations.value = userProjectInvitations.value.filter((invitation) => invitation.id !== invitationId);
+                userProjectInvitations.value = userProjectInvitations.value.filter((userInvitation) => invitation.id !== userInvitation.id);
                 resolve();
             });
         });

@@ -2,7 +2,7 @@
     <div class="container-fluid p-0 m-0 h-100 w-100">
         <div class="d-flex row h-100 p-0 m-0">
             <div class="h-100 col-sm-12 d-flex flex-column gap-4">
-                <Navigation v-if="!isUserInSetup" />
+                <Navigation v-if="!isUserInSetup && currentRoute.name !== 'Setup'" />
 
                 <router-view></router-view>
             </div>
@@ -35,6 +35,10 @@
     const { control, meta, p, f } = useMagicKeys({
         passive: false,
         onEventFired(e) {
+            if (isUserInSetup.value) {
+                return;
+            }
+
             // either command or control is pressed; the "main key"
             const mainKeyIsPressed = control.value || meta.value;
             // either p or f is pressed; the "second key"

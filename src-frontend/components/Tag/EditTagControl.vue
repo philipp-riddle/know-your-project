@@ -10,14 +10,12 @@
                 @keyup.enter.stop="$emit('enter')"
                 @click="handleTagUpdate"
             >
-            <button
-                class="btn btn-sm btn-tag"
+            <TagBadge
+                :tag="tag"
+                size="lg"
                 v-tooltip="'Change color'"
                 @click="toggleColorpicker"
-                :style="{'background-color': tag.color}"
-            >
-                &nbsp;&nbsp;&nbsp;
-            </button>
+            />
         </div>
         <input
             type="text"
@@ -39,6 +37,7 @@
 <script setup>
     import { onMounted, ref, watch } from 'vue';
     import { useDebounceFn } from '@vueuse/core';
+    import TagBadge from '@/components/Tag/TagBadge.vue';
     import { useTagStore } from '@/stores/TagStore';
 
     const emit = defineEmits(['enter']);

@@ -1,8 +1,11 @@
 <template>
     <div v-if="isWikiEmpty" class="mt-5 d-flex flex-row justify-content-center align-items-center">
         <div class="d-flex flex-column align-items-center">
-            <h4 class="bold">No pages created yet.</h4>
-            <p class="m-0 text-muted">Create pages and tasks to browse here.</p>
+            <h4 class="bold">Seems empty here.</h4>
+            <p class="m-0 text-muted">
+                To start, create a page or task in the top navigation with the
+                &nbsp;<span class="btn btn-sm btn-primary white"><font-awesome-icon :icon="['fas', 'plus']" /></span>&nbsp;&nbsp;
+                button.</p>
         </div>
     </div>
     <div class="flex-fill d-flex row wiki-container m-0 p-0">
@@ -57,10 +60,12 @@
     });
 
     onMounted(() => {
-        // get all untagged pages; then redirect to the first untagged page if there is one
-        pageStore.getPageList(projectStore.selectedProject.id, []).then(() => {
-            redirectToFirstPage();
-        });
+        if (pageStore.selectedProject) {
+            // get all untagged pages; then redirect to the first untagged page if there is one
+            pageStore.getPageList(projectStore.selectedProject.id, []).then(() => {
+                redirectToFirstPage();
+            });
+        }
     });
 
     /**

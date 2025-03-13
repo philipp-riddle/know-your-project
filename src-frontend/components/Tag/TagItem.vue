@@ -14,11 +14,15 @@
                 :class="{'active': isActive, inactive: !isActive}"
                 @click="() => onClick(tag)"
             >
-                <div class="d-flex flex-row jus tify-content-between align-items-center gap-3">
+                <div class="flex-fill d-flex flex-row align-items-center gap-3">
                     <span v-if="isNested" class="btn btn-sm dark-gray">
                         <font-awesome-icon :icon="['fas', 'arrow-right']" />
                     </span>
-                    <span v-else class="btn btn-sm" :style="{'background-color': (tag.parent ?? tag).color}">&nbsp;&nbsp;&nbsp;</span>
+                    <TagBadge
+                        v-else
+                        :tag="tag"
+                        size="lg"
+                    />
 
                     <div v-if="isActive" class="d-flex flex-column">
                         <h5 class="m-0">{{ tag.name }}</h5>
@@ -96,6 +100,7 @@
     import CreateParentTagControl from '@/components/Tag/CreateParentTagControl.vue';
     import EditTagControl from '@/components/Tag/EditTagControl.vue';
     import NestedTagItem from '@/components/Tag/NestedTagItem.vue';
+    import TagBadge from '@/components/Tag/TagBadge.vue';
     import { useTagStore } from '@/stores/TagStore.js';
 
     const emit = defineEmits(['click', 'add', 'remove']);

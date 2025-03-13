@@ -13,7 +13,7 @@
     >
         <font-awesome-icon
             v-if="page.task"
-            :icon="['fas', 'list-check']"
+            :icon="['fas', 'pager']"
             v-tooltip="'This page belongs to a task.'"
         />
         <!-- for accessibility also a link -->

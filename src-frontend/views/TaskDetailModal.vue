@@ -81,13 +81,19 @@
         padding-right: 0%;
         padding-top: 0%;
         padding-bottom: 0%;
+
+        @media (max-width: 1600px) {
+            padding-left: 30%;
+        }
+
+        @media (max-width: 1400px) {
+            padding-left: 20%;
+        }
         
         // on mobile we want a margin on the top
         @media (max-width: 768px) {
             padding-left: 0%;
-            padding-right: 0%;
             padding-top: 10%;
-            padding-bottom: 0%;
         }
     }
 

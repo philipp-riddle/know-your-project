@@ -22,9 +22,6 @@
                         <div class="d-flex flex-row gap-2">
                             <div v-if="tags.length > 0" class="d-flex flex-row gap-1">
                                 <div class="d-flex flex-row gap-1 align-items-center">
-                                    <span class="btn m-0 p-0">
-                                        <font-awesome-icon :icon="['fas', 'tag']" />
-                                    </span>
                                     <TagBadge
                                         v-for="tag in tags"
                                         :key="tag.id"
@@ -150,9 +147,9 @@
     const accessibilityHelper = usePageSectionAccessibilityHelper();
     const searchResultIcon = computed(() => {
         if (props.result.type === 'Page') {
-            return 'fa-file-alt';
+            return 'file-lines';
         } else if (props.result.type === 'Task') {
-            return 'fa-tasks';
+            return 'pager';
         } else if (props.result.type === 'PageSection') {
             return accessibilityHelper.getIcon(props.result.result);
         } else if (props.result.type === 'ThreadItem') {

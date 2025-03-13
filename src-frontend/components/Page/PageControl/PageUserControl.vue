@@ -6,9 +6,6 @@
             <button
                 class="btn btn-dark-gray"
                 v-tooltip="'Manage page users'"
-                :class="{
-                    'inactive': page.users.length === 0,
-                }"
             >
                 <font-awesome-icon :icon="['fas', 'user']" />
             </button>

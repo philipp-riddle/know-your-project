@@ -37,7 +37,7 @@ class Task extends CachedEntityVectorEmbedding implements OrderListItemInterface
     private ?Project $project = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Page $page = null;
 
     #[ORM\Column]

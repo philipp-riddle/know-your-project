@@ -17,7 +17,10 @@
                         <font-awesome-icon :icon="['fas', 'chevron-'+(tagStore.shownTags[element.id] ? 'down' : 'right')]" />
                         <span>{{ element.name }}</span>
                     </span>
-                    <span class="btn btn-sm me-2" :style="{'background-color': element.color}">&nbsp;&nbsp;&nbsp;</span>
+                    <TagBadge
+                        :tag="element"
+                        size="lg"
+                    />
                 </p>
 
                 <PageList
@@ -33,6 +36,7 @@
     import { computed, ref, onMounted, watch } from 'vue';
 	import draggable from "vuedraggable";
     import PageList from '@/components/Page/Explorer/PageList.vue';
+    import TagBadge from '@/components/Tag/TagBadge.vue';
     import { useTagStore } from '@/stores/TagStore.js';
 
     const props = defineProps({

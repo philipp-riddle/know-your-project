@@ -2,6 +2,7 @@
     <VDropdown
         :shown="showDueDatePopover"
         class="d-flex flex-row align-items-center p-1 gap-1"
+        v-if="pageStore.selectedPage.task"
     >
         <button
             class="btn m-0 p-1 d-flex flex-row align-items-center gap-3"
