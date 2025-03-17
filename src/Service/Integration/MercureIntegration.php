@@ -100,8 +100,12 @@ class MercureIntegration
         ]);
     }
 
-    public function publish(Project $project, string $endpoint, array $data): void
+    public function publish(Project $project, string $endpoint, array $data, ?User $user = null): void
     {
+        if ($user !== null && !$this->shouldPublishUserEvent($user)) {
+            return;
+        }
+
         $data['endpoint'] = $endpoint;
         $update = new Update(
             \sprintf('%s/%d/%s', $this->getMercurePublicHostUrl(), $project->getId(), $endpoint),

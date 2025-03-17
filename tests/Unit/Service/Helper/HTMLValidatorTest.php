@@ -24,6 +24,14 @@ class HTMLValidatorTest extends TestCase
         $this->expectNotToPerformAssertions();
     }
 
+    public function testValidate_validHtml_realApplicationCase()
+    {
+        $html = '<h2>Frequently Asked Questions</h2><ul><li><p><strong>What is \"Know Your Project\"?</strong><br>This initiative aims to improve knowledge sharing and project management efficiency within teams, ensuring that critical information is accessible to everyone.</p></li><li><p><strong>Why is this important?</strong><br>Effective communication and documentation reduce inefficiencies, allowing team members to work collaboratively without constantly seeking information from others.</p></li><li><p><strong>Who is involved in this initiative?</strong><br>All team members, including software engineers, product managers, support staff, and customers, are encouraged to participate in enhancing knowledge sharing.</p></li><li><p><strong>How can I contribute to \"Know Your Project\"?</strong><br>You can contribute by documenting relevant information, sharing insights from your work, and collaborating with colleagues to consolidate knowledge.</p></li><li><p><strong>Where can I find the project documentation?</strong><br>Documentation can be retrieved from our centralized knowledge management system where all relevant resources are stored.</p></li></ul><p>For any additional queries, please collaborate with your team leads or check the documentation system for more details.</p><p></p>';
+        HTMLValidator::validate($html);
+
+        $this->expectNotToPerformAssertions();
+    }
+
     public function testValidate_invalidHTML_shouldBeTreatedAsText()
     {
         $html = '{"test": "invalid"}';

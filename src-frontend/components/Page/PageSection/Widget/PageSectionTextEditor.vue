@@ -59,7 +59,7 @@
         },
         onBlur: ({ editor, event }) => {
             // user clicked on toolbar - ignore blur; instead we want to keep the editor open and refocus it
-            if (event.relatedTarget?.getAttribute('editor-cmd') || event.relatedTarget?.getAttribute('id')?.includes('popper')) {
+            if (event.relatedTarget?.getAttribute('editor-cmd') || event.relatedTarget?.getAttribute('id')?.includes('popper') || event.relatedTarget?.classList.contains('text-editor-control')) {
                 editor.commands.focus();
             } else {
                 pageSectionStore.selectedPageSectionTextEditor = null;

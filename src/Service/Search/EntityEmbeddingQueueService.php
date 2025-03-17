@@ -3,7 +3,9 @@
 namespace App\Service\Search;
 
 use App\Entity\Embedding\EntityEmbeddingQueueItem;
+use App\Exception\PreconditionFailedException;
 use App\Repository\EntityEmbeddingQueueItemRepository;
+use App\Service\Helper\ApplicationEnvironment;
 use App\Service\Helper\Debug;
 use App\Service\Integration\QdrantIntegration;
 use App\Service\Search\Entity\EntityVectorEmbeddingInterface;
@@ -30,7 +32,17 @@ final class EntityEmbeddingQueueService
             return null;
         }
 
-        $entityId ??= $entity->getId();
+        if ($entityId === null && \method_exists($entity, 'getId')) {
+            $entityId = $entity->getId();
+        }
+
+        if (null === $entityId) {
+            if (ApplicationEnvironment::isDevEnv()) {
+                throw new PreconditionFailedException(\sprintf('Entity ID is required for adding entities to the queue (Entity: %s, Delete: %s)', \get_class($entity), $delete ? 'Yes' : 'No'));
+            }
+
+            return null;
+        }
 
         // check if the queue item already exists.
         // if not, create a new one.
