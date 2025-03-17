@@ -1,7 +1,7 @@
 <template>
     <div class="d-flex flex-row align-items-center gap-1">
         <VDropdown>
-            <button class="btn" v-tooltip="'Assign tags to this user'">
+            <button class="btn p-1" v-tooltip="'Assign tags to this user'">
                 <font-awesome-icon :icon="['fas', 'tag']" />
             </button>
             
@@ -18,21 +18,19 @@
         </VDropdown>
 
         <div class="d-flex flex-row flex-wrap gap-2">
-            <button
+            <TagBadge
                 v-if="projectUser.tags"
                 v-for="tag in projectUser.tags"
-                class="btn btn-sm btn-tag"
-                :style="{backgroundColor: tag.tag.color}"
-                v-tooltip="tag.tag.name"
-            >
-                &nbsp;&nbsp;&nbsp;&nbsp;
-            </button>
+                :tag="tag.tag"
+                size="lg"
+            />
         </div>
     </div>
 </template>
 
 <script setup>
     import { computed, ref, watch, onMounted } from 'vue';
+    import TagBadge from '@/components/Tag/TagBadge.vue';
     import TagDialogue from '@/components/Tag/TagDialogue.vue';
     import { fetchCreateTagProjectUserFromTagId, fetchCreateTagProjectUserFromTagName, fetchDeleteTagProjectUser } from '@/stores/fetch/TagFetcher.js';
     import { useProjectStore } from '@/stores/ProjectStore.js';

@@ -28,7 +28,6 @@ class CalendarEventApiController extends CrudApiController
     #[Route('', methods: ['POST'], name: 'api_calendar_event_create')]
     public function create(Request $request): JsonResponse
     {
-        throw new BadRequestException('Could not create calendar event');
         return $this->crudUpdateOrCreate(
             null,
             $request,

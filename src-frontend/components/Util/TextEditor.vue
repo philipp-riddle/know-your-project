@@ -81,7 +81,7 @@
         extensions: [
             StarterKit, // add custom starter kit; otherwise the editor cannot render due to missing schemas
             Placeholder.configure({
-                placeholder: props.placeholder ,
+                placeholder: props.placeholder,
                 emptyEditorClass: 'is-editor-empty',
             }),
             Link,
@@ -143,14 +143,6 @@
 
 
 <style lang="scss" scoped>
-    .tiptap p.is-editor-empty:first-child::before {
-        color: #adb5bd;
-        content: attr(data-placeholder);
-        float: left;
-        height: 0;
-        pointer-events: none;
-    }
-
     :focus-visible {
         outline: none !important;
     }
