@@ -4,7 +4,7 @@
             v-if="user.profilePicture != null"
             class="profile-picture-container"
             :class="imageSizeClass"
-            :style="{ backgroundImage: 'url(' + user.profilePicture.publicFilePath + ')' }"
+            :style="imageStyles"
             v-tooltip="user.email"
         >
             &nbsp;&nbsp;&nbsp;
@@ -40,10 +40,28 @@
             type: String,
             required: false,
             default: 'xs',
+        },
+        borderColor: {
+            type: String,
+            required: false,
         }
     });
 
     const imageSizeClass = computed(() => {
         return 'profile-picture-container-'+props.imageSize;
+    });
+
+    const imageStyles = computed(() => {
+        const styles = {};
+
+        if (props.user.profilePicture != null) {
+            styles.backgroundImage = 'url(' + props.user.profilePicture.publicFilePath + ')';
+        }
+
+        if (props.borderColor) {
+            styles.borderColor = props.borderColor + ' !important';
+        }
+
+        return styles;
     });
 </script>

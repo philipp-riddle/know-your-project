@@ -10,6 +10,7 @@ import { usePageSectionChecklistItemEventHandler } from '@/events/handlers/PageS
 import { useTagEventHandler } from '@/events/handlers/TagEventHandler';
 import { useTagPageEventHandler } from '@/events/handlers/TagPageEventHandler';
 import { useTaskEventHandler } from '@/events/handlers/TaskEventHandler';
+import { useUserMovementEventHandler } from '@/events/handlers/UserMovementEventHandler';
 
 export function useMercureEventSubscriber() {
     const mercureStore = useMercureStore();
@@ -25,6 +26,7 @@ export function useMercureEventSubscriber() {
     const tagEventHandler = useTagEventHandler();
     const tagPageEventHandler = useTagPageEventHandler();
     const taskEventHandler = useTaskEventHandler();
+    const userMovementEventHandler = useUserMovementEventHandler();
 
     watch(() => mercureStore.jws, (newJws) => {
         if  (newJws) {
@@ -102,7 +104,7 @@ export function useMercureEventSubscriber() {
         eventSource.value.onmessage = (event) => {
             const data = JSON.parse(event.data);
 
-            if (data.user == userStore.currentUser.id) {
+            if (data.user == userStore.currentUser.id || data.user?.id == userStore.currentUser.id) {
                 return; // ignore events that were triggered by the current user
             }
 
@@ -124,6 +126,8 @@ export function useMercureEventSubscriber() {
                 tagEventHandler.handle(data);
             } else if (data.endpoint === 'TagPage') {
                 tagPageEventHandler.handle(data);
+            } else if (data.endpoint === 'UserMovement') {
+                userMovementEventHandler.handle(data);
             } else {
                 console.error('Unknown endpoint', data.endpoint);
                 console.error('Event', event);

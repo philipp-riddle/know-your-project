@@ -55,3 +55,20 @@ export async function fetchDeleteUserProjectInvitation(invitationId) {
 
     return resp.data;
 }
+
+
+const BaseMouseMovementService = BaseService + "/movement";
+
+export async function fetchRegisterMovement(projectId, routeName, x, y, hoveredElementDomPath, hoveredElementOffsetRelativeX, hoveredElementOffsetRelativeY) {
+    const resp = await axios.post(`${BaseMouseMovementService}`, {
+        project: projectId,
+        routeName: routeName,
+        mouseRelativeX: x / window.screen.width,
+        mouseRelativeY: y / window.screen.height,
+        hoveredElementDomPath: hoveredElementDomPath,
+        hoveredElementOffsetRelativeX: hoveredElementOffsetRelativeX,
+        hoveredElementOffsetRelativeY: hoveredElementOffsetRelativeY,
+    });
+
+    return resp.data;
+}

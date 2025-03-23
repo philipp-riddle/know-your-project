@@ -4,7 +4,7 @@
     max-height: 100vh !important;
 }
 
-/* ==== BUTTONS ============================================================= */
+/* ==== BUTTONS & BADGES ============================================================= */
 
 .btn {
     border-radius: 2rem;
@@ -71,6 +71,13 @@
 
     &.btn-wide {
         min-width: 10rem;
+    }
+}
+
+.badge {
+    &.badge-cursor {
+        background-color: $light-gray-30;
+        border-radius: 2rem;
     }
 }
 

@@ -1,5 +1,3 @@
-import { h } from "vue";
-
 export function  useTextMarker() {
     /**
      * Given a text, this function will generate a HTML string that highlights the search term in the text.

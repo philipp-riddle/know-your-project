@@ -45,9 +45,11 @@ useExceptionHandler().setupInterceptor();
 // before mounting the app we setup the stores with the previously loaded data from the given DOM variables.
 import { useProjectStore } from '@/stores/ProjectStore';
 import { useUserStore } from '@/stores/UserStore';
+import { useUserMovementStore } from '@/stores/UserMovementStore';
 import { useTagStore } from '@/stores/TagStore';
 useProjectStore().setup();
 useUserStore().setup();
+useUserMovementStore().setup();
 useTagStore().setup();
 
 // setup the mercure event subscriber and the connection to Mercure

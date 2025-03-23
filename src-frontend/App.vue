@@ -10,8 +10,8 @@
     </div>
 
     <SearchModal />
-
     <ToastBox />
+    <UserCursorContainer />
 </template>
 
 <script setup>
@@ -21,6 +21,7 @@
     import Navigation from '@/components/Navigation/Navigation.vue';
     import SearchModal from '@/components/Search/SearchModal.vue';
     import ToastBox from '@/components/Util/Toast/ToastBox.vue';
+    import UserCursorContainer from '@/components/User/UserCursorContainer.vue';
     import { usePageStore } from '@/stores/PageStore.js';
     import { useProjectStore } from '@/stores/ProjectStore.js';
     import { useSearchStore } from '@/stores/SearchStore.js';
