@@ -19,11 +19,20 @@
         </div>
         <div v-if="!minimal">
             <p class="m-0">{{ user.email }}</p>
+            <div class="d-flex flex-row gap-2">
+                <TagBadge
+                    v-for="projectUserTag in projectUserTags"
+                    :key="projectUserTag.id"
+                    :tag="projectUserTag.tag"
+                />
+            </div>
         </div>
     </div>
 </template>
 
 <script setup>
+    import TagBadge from '@/components/Tag/TagBadge.vue';
+    import { useProjectStore } from '@/stores/ProjectStore.js';
     import { computed } from 'vue';
 
     const props = defineProps({
@@ -46,6 +55,7 @@
             required: false,
         }
     });
+    const projectStore = useProjectStore();
 
     const imageSizeClass = computed(() => {
         return 'profile-picture-container-'+props.imageSize;
@@ -64,4 +74,10 @@
 
         return styles;
     });
+
+    const projectUserTags = computed(() => {
+        return projectStore.selectedProject.projectUsers.find((projectUser) => {
+            return projectUser.user.id === props.user.id;
+        })?.tags ?? [];
+    })
 </script>

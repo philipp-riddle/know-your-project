@@ -176,6 +176,28 @@ class TextMarkerTest extends TestCase
         $this->assertSame($expectedMarkedText, $markedText);
     }
 
+    public function testGetMarkedText_inMiddleOfSentence_fullMatch()
+    {
+        $text = 'But I have heard that Tailwind is better than Bootstrap.';
+        $searchTerm = 'tailwind';
+
+        $markedText = TextMarker::getMarkedText($searchTerm, $text);
+        $expectedMarkedText = 'But I have heard that <mark>Tailwind</mark> is better than Bootstrap.';
+
+        $this->assertSame($expectedMarkedText, $markedText);
+    }
+
+    public function testGetMarkedText_inMiddleOfSentence_partialMatch()
+    {
+        $text = 'But I have heard that Tailwind is better than Bootstrap.';
+        $searchTerm = 'ailwind';
+
+        $markedText = TextMarker::getMarkedText($searchTerm, $text);
+        $expectedMarkedText = 'But I have heard that <mark>Tailwind</mark> is better than Bootstrap.';
+
+        $this->assertSame($expectedMarkedText, $markedText);
+    }
+
     public function testGetMarkedText_atStartOfSentence()
     {
         $text = 'This is a test string. Perfect test for the TextMarker class.';

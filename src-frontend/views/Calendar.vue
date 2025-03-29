@@ -69,27 +69,10 @@
                                 v-for="event in date.events[eventType]"
                                 class="calendar-event"
                             >
-                                <button
-                                    class="btn m-0 w-100 p-2 flex-fill d-flex flex-row align-items-center gap-2"
-                                    @click="() => openEventModal(event)"
+                                <CalendarManageTask
                                     v-if="eventType == 'tasks'"
-                                >
-                                    <span class="btn btn-lg m-0 p-1 btn-dark-gray" v-tooltip="'This calendar entry is related to a task due date.'">
-                                        <font-awesome-icon :icon="['fas', 'list-check']" />
-                                    </span>
-                                    <div class="d-flex flex-column justify-content-start gap-1">
-                                        <p class="m-0" style="text-align: left;">{{ event.page.name }}</p>
-                                        <span
-                                            class="btn btn-sm btn-tag"
-                                            v-for="pageTag in event.page.tags"
-                                            :key="pageTag.id"
-                                            v-tooltip="pageTag.tag.name"
-                                            :style="{'background-color': pageTag.tag.color}"
-                                        >
-                                            &nbsp;&nbsp;&nbsp;
-                                        </span>
-                                    </div>
-                                </button>
+                                    :event="event"
+                                />
                                 <CalendarManageEventDropdown
                                     v-else-if="eventType == 'events'"
                                     :event="event"
@@ -110,19 +93,18 @@
     import CalendarDateDropdown from '@/components/Calendar/CalendarDateDropdown.vue';
     import CalendarCreateEventDropdown from '@/components/Calendar/Event/CalendarCreateEventDropdown.vue';
     import CalendarManageEventDropdown from '@/components/Calendar/Event/CalendarManageEventDropdown.vue';
+    import CalendarManageTask from '@/components/Calendar/CalendarManageTask.vue';
     import { useDateConverter } from '@/composables/DateConverter';
     import { fetchProjectEvents } from '@/stores/fetch/CalendarFetcher';
     import { useCalendarStore } from '@/stores/CalendarStore';
     import { useProjectStore } from '@/stores/ProjectStore';
     import { useTaskStore } from '@/stores/TaskStore';
     import { ref, onMounted, watch } from 'vue';
-    import { useRouter } from 'vue-router';
     import { useDebounceFn } from '@vueuse/core';
 
     const calendarStore = useCalendarStore();
     const projectStore = useProjectStore();
     const taskStore = useTaskStore();
-    const router = useRouter();
     const dateConverter = useDateConverter();
     const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -181,12 +163,6 @@
         currentYear.value = currentMonth.value === 11 ? currentYear.value + 1 : currentYear.value;
         currentMonth.value = currentMonth.value === 11 ? 0 : currentMonth.value + 1;
         reloadDateValues();
-    }
-
-    const openEventModal = (event) => {
-        if (event.page) { // is a task
-            router.push({ name: 'CalendarPage', params: {id: event.id}});
-        }
     }
 
     const updateDateValues = (event) => {

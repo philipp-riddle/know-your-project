@@ -54,20 +54,23 @@
                     <div class="d-flex flex-column gap-2">
                         <div v-if="creationResponse.answer.tag != null" class="d-flex flex-row gap-2 align-items-center">
                             <div class="text-muted d-flex flex-row gap-2 align-items-center">
-                                <font-awesome-icon :icon="['fas', 'tag']" />
-                                <p class="m-0">Tag</p>
-                                <span class="btn btn-tag btn-sm me-1" :style="{'background-color': creationResponse.answer.tag.color}" v-tooltip="'Suggested tag'">&nbsp;&nbsp;&nbsp;</span>
+                                <font-awesome-icon
+                                    v-tooltip="'Automatically generated tag'"
+                                    :icon="['fas', 'tag']"
+                                />
+                                <TagBadge 
+                                    :tag="creationResponse.answer.tag"
+                                />
                             </div>
-                            <p class="m-0">{{ creationResponse.answer.tag.name }}</p>
                         </div>
 
-                        <p class="m-0">Content was generated. If you want to save the changes click the check button on the right.</p>
+                        <p class="m-0">Content was generated. If you want to save the changes click the 'apply' button on the right.</p>
                     </div>
                     <button
                         @click="handleSave"
                         :disabled="isSaving"
                         class="btn btn-primary"
-                        v-tooltip="'Save generated content to page'"
+                        v-tooltip="'Apply generated content to page'"
                     >
                         <div v-if="isSaving" class="spinner-border spinner-border-sm text-white" role="status">
                             <span class="visually-hidden">Saving to page...</span>
@@ -100,6 +103,7 @@
 <script setup>
     import { computed, watch, ref } from 'vue';
     import { useRouter } from 'vue-router';
+    import TagBadge from '@/components/Tag/TagBadge.vue';
     import { usePageStore } from '@/stores/PageStore.js';
     import { usePageSectionStore } from '@/stores/PageSectionStore.js';
     import { useProjectStore } from '@/stores/ProjectStore.js';

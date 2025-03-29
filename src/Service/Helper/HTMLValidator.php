@@ -6,7 +6,7 @@ use App\Exception\HTML\HTMLValidationException;
 
 class HTMLValidator
 {
-    public const ALLOWED_TAGS = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'span', 'li', 'ul', 'ol', 'strong', 'i', 's', 'u', 'b', 'a', 'img', 'em', 'br', 'hr', 'div'];
+    public const ALLOWED_TAGS = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'span', 'li', 'ul', 'ol', 'strong', 'i', 's', 'u', 'b', 'a', 'img', 'em', 'br', 'hr', 'div', 'section'];
 
     public static function validate(string $html): void
     {

@@ -56,7 +56,7 @@
     // if the tag store changes, we need to update this list as well.
     const tagPages = ref(null);
 
-    onMounted(async () => {
+    onMounted(() => {
         userStore.getCurrentUser().then((user) => {
             const selectedProject = props.project ?? userStore.currentUser?.selectedProject;
             

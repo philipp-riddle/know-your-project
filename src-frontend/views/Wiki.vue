@@ -9,8 +9,9 @@
         </div>
     </div>
     <div class="flex-fill d-flex row wiki-container m-0 p-0">
-        <div v-if="!isWikiEmpty && !isFullscreenMode" class="wiki-col col-sm-4 col-xl-2 p-0 m-0 d-flex flex-column align-items-start">
+        <div v-if="!isFullscreenMode" class="wiki-col col-sm-4 col-xl-2 p-0 m-0 d-flex flex-column align-items-start">
             <button
+                v-if="!isWikiEmpty"
                 class="btn"
                 @click="isFullscreenMode = !isFullscreenMode"
                 v-tooltip="isFullscreenMode ? 'Exit fullscreen mode' : 'Enter fullscreen mode'"

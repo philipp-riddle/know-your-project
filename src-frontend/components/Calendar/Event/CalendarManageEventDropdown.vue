@@ -12,16 +12,11 @@
             <div>
                 <p class="m-0">{{ calendarEvent.name }}</p>
                 <div class="d-flex flex-row align-items-center gap-1">
-                    <span
-                        class="btn btn-sm btn-tag"
+                    <TagBadge 
                         v-for="eventTag in calendarEvent.eventTags"
                         :key="eventTag.id"
-                        v-tooltip="eventTag.tag.name"
-                        :style="{'background-color': eventTag.tag.color}"
-                        @click="isInTaskContext = !isInTaskContext"
-                    >
-                        &nbsp;&nbsp;&nbsp;
-                    </span>
+                        :tag="eventTag.tag"
+                    />
                 </div>
             </div>
         </button>
@@ -122,6 +117,7 @@
     import { computed, nextTick, onMounted, watch, ref, useTemplateRef } from 'vue';
     import { useDebounceFn } from '@vueuse/core';
     import CalendarEventTagDropdown from '@/components/Calendar/Event/CalendarEventTagDropdown.vue';
+    import TagBadge from '@/components/Tag/TagBadge.vue';
     import { useCalendarStore } from '@/stores/CalendarStore';
 
     const calendarStore = useCalendarStore();
